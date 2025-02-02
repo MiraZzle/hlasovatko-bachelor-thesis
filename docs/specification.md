@@ -16,7 +16,7 @@ Each activity has **configurable options** such as **anonymous responses** and *
 - **Polls & Surveys** – Collects instant feedback
 - **Live Q&A** – Allows students to submit and upvote questions
 - **Quick Voting** – Simple and fast method for gathering opinions
-- **Predefined Activities** – Some activities (e.g., Q&A before a lecture) can remain **active for days**, enabling students to submit questions in advance and providing teachers with **early feedback**
+- **Predefined Activities** – Some activities (for example Q&A before a lecture) can remain **active for days**, enabling students to submit questions in advance and providing teachers with **early feedback**
 
 ---
 
