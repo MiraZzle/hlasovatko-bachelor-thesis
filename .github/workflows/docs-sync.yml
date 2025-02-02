@@ -1,0 +1,24 @@
+name: Sync Markdown to Wiki
+on:
+  push:
+    branches: [master]
+    paths:
+      - "docs/**"
+concurrency:
+  group: sync-wiki
+  cancel-in-progress: true
+permissions:
+  contents: write
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Sync Wiki
+        uses: Andrew-Chen-Wang/github-wiki-action@v4
+        with:
+          wiki_token: ${{ secrets.GH_PAT }}
+          repository: ${{ github.repository }}
+          path: docs
