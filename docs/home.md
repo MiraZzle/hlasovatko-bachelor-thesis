@@ -4,6 +4,6 @@
 
 ## Links
 
-- [Project specification](https://)
-- [Coding Standarts](./coding_standarts.md)
+- [Project specification](/docs/specification.md)
+- [Coding Standarts](/docs/coding_standarts.md)
 - [Overleaf thesis](https://www.overleaf.com/read/ghkpfkxdbsyv#629916)
