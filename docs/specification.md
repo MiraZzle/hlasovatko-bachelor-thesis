@@ -65,7 +65,7 @@ Hlasovátko is designed for **mobile and desktop** use:
 
 - **Anonymous responses** – Teachers can enable or disable anonymity for participants
 - **Role-based access control** – Ensures that only authorized users can manage activities
-- **Data security & encryption** – All responses and results are securely stored
+- **Data security & encryption** – All data will be securely stored in localized database
 
 ---
 
