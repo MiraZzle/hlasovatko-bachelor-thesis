@@ -1,4 +1,7 @@
 
+using Microsoft.EntityFrameworkCore;
+using server.Data;
+
 namespace server
 {
     public class Program
@@ -6,10 +9,10 @@ namespace server
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            // POC -> user in mem db
+            builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("Hlasovatko"));
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -22,10 +25,7 @@ namespace server
             }
 
             app.UseAuthorization();
-
-
             app.MapControllers();
-
             app.Run();
         }
     }
