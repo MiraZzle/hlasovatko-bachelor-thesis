@@ -29,5 +29,35 @@ namespace server.Controllers
                 return BadRequest($"Error processing session: {ex.Message}");
             }
         }
+
+        [HttpGet("{sessionId}")]
+        public async Task<IActionResult> GetSession(Guid sessionId) {
+            try {
+                var session = await _context.Sessions.FindAsync(sessionId);
+                if (session == null) {
+                    return NotFound();
+                }
+                return Ok(session);
+            }
+            catch (Exception ex) {
+                return BadRequest($"Error retrieving session: {ex.Message}");
+            }
+        }
+
+        [HttpPost("{sessionId}/submit")]
+        public async Task<IActionResult> SubmitAnswers(Guid sessionId, [FromBody] JsonElement answers) {
+            try {
+                var session = await _context.Sessions.FindAsync(sessionId);
+                if (session == null) {
+                    return NotFound();
+                }
+                // add logic to process answers
+                Console.WriteLine($"Answers received for session {sessionId}: {JsonSerializer.Serialize(answers)}");
+                return Ok(new { message = "Answers submitted successfully!" });
+            }
+            catch (Exception ex) {
+                return BadRequest($"Error submitting answers: {ex.Message}");
+            }
+        }
     }
 }
