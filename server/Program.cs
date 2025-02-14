@@ -9,6 +9,16 @@ namespace server
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("Allow manager FE",
+                    policy => {
+                        policy.WithOrigins("http://localhost:5173") // allow teacher
+                              .AllowAnyMethod()
+                              .AllowAnyHeader();
+                    });
+            });
+
 
             builder.Services.AddControllers();
             // POC -> user in mem db
