@@ -1,5 +1,5 @@
-import type { PageLoad } from '$lib/types';
 import { API_URL } from '$lib/config';
+import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }: { params: { sessionId: string } }) => {
 	const { sessionId } = params;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { writable } from 'svelte/store';
 	import { API_URL } from '$lib/config';
+	import { STUDENT_FE_URL } from '$lib/config';
 
 	let sessionId = writable<string | null>(null);
 	let jsonInput = writable<string>('');
@@ -47,7 +48,7 @@
 
 {#if $sessionId}
 	<p>Share this link with students:</p>
-	<a href={`https://yourgithubusername.github.io/student?sessionId=${$sessionId}`} target="_blank">
+	<a href={`${STUDENT_FE_URL}/event/${$sessionId}`} target="_blank">
 		https://yourgithubusername.github.io/student?sessionId={$sessionId}
 	</a>
 {/if}

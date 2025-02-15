@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { API_URL } from '$lib/config';
 	import type { Session, Question } from '$lib/types';
+	import type { PageProps } from './$types';
 
 	export let data: { session: Session | null };
 

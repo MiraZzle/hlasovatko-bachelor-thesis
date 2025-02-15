@@ -11,9 +11,9 @@ namespace server
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowManagerFE",
+                options.AddPolicy("AllowFrontendClients",
                     policy => {
-                        policy.WithOrigins("http://localhost:5173") // allow teacher
+                        policy.WithOrigins("http://localhost:3000", "http://localhost:3001") // allow frontends
                               .AllowAnyMethod()
                               .AllowAnyHeader();
                     });
@@ -28,7 +28,7 @@ namespace server
 
             var app = builder.Build();
 
-            app.UseCors("AllowManagerFE");
+            app.UseCors("AllowFrontendClients");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment()) {
