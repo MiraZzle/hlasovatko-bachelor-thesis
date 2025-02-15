@@ -1,0 +1,21 @@
+{
+  "title": "Math & Science Quiz",
+  "activities": [
+    {
+      "type": "Quiz",
+      "title": "General Knowledge",
+      "questions": [
+        {
+          "question": "What is 5 + 3?",
+          "options": ["6", "7", "8", "9"],
+          "correctOptionIndex": 2
+        },
+        {
+          "question": "What is the chemical symbol for water?",
+          "options": ["O2", "H2O", "CO2", "NaCl"],
+          "correctOptionIndex": 1
+        }
+      ]
+    }
+  ]
+}

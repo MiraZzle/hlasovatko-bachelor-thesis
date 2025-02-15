@@ -11,7 +11,7 @@ namespace server
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("Allow manager FE",
+                options.AddPolicy("AllowManagerFE",
                     policy => {
                         policy.WithOrigins("http://localhost:5173") // allow teacher
                               .AllowAnyMethod()
@@ -27,6 +27,8 @@ namespace server
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+
+            app.UseCors("AllowManagerFE");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment()) {
