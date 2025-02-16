@@ -1,5 +1,6 @@
-﻿using server.Utils;
-using System.Text.Json;
+﻿using System.Text.Json;
+using System.Collections.Generic;
+using server.Utils;
 
 namespace server.Models.Activities
 {
@@ -7,9 +8,9 @@ namespace server.Models.Activities
     {
         private static readonly Dictionary<string, Func<JsonElement, Activity>> _activityRegistry = new();
 
-        // register basic activities
+        // Register default activity types
         static ActivityFactory() {
-            RegisterActivityType("Quiz", json => CreateQuizActivity(json));
+            RegisterActivityType("Quiz", CreateQuizActivity);
         }
 
         public static void RegisterActivityType(string type, Func<JsonElement, Activity> creator) {
@@ -31,7 +32,7 @@ namespace server.Models.Activities
 
         private static Activity CreateQuizActivity(JsonElement json) {
             return new QuizActivity {
-                activityName = json.GetProperty("title").GetString(),
+                ActivityName = json.GetProperty("title").GetString(),
                 Questions = json.GetProperty("questions").EnumerateArray()
                     .Select(q => new QuizQuestion {
                         Question = q.GetProperty("question").GetString(),

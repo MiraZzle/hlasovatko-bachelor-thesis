@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using server.Data;
+using server.Services;
 
 namespace server
 {
@@ -23,8 +24,15 @@ namespace server
             builder.Services.AddControllers();
             // POC -> user in mem db
             builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("Hlasovatko"));
+
+            // register custom app services
+            builder.Services.AddScoped<ActivityService>();
+            builder.Services.AddScoped<SessionService>();
+
+            // register api explorer and swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            
 
             var app = builder.Build();
 

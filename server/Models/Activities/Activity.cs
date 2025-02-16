@@ -1,10 +1,14 @@
 ﻿using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
+
 namespace server.Models.Activities
 {
-    public abstract class Activity {
-        public Guid activityId = Guid.NewGuid();
-        public string activityName;
-        public abstract string ActivityType { get; } // must be defined in derived activity
+    public class Activity : IActivity {
+        [Key]
+        public Guid ActivityId { get; set; } = Guid.NewGuid();
+        public string ActivityName { get; set; } = string.Empty;
+        public virtual string ActivityType => throw new NotImplementedException(); // Ensure derived classes implement it
+        // public JsonDocument Definition { get; set; }
 
         public static Activity Create(JsonElement definition) {
             return ActivityFactory.CreateActivity(definition);
