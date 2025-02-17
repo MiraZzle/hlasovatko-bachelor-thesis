@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace server.Models.Activities
 {
-    public class Activity : IActivity {
+    public abstract class Activity : IActivity {
         [Key]
         public Guid ActivityId { get; set; } = Guid.NewGuid();
         public string ActivityName { get; set; } = string.Empty;
