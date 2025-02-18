@@ -15,12 +15,6 @@ namespace server.Entities
 
         public void InitializeFromJson(JsonElement definition) {
             SessionName = definition.GetProperty("title").GetString();
-            var definedActivities = definition.GetProperty("activities");
-
-            foreach (var activity in definedActivities.EnumerateArray()) {
-                Activities.Add(Activity.Create(activity));
-                Console.WriteLine(activity.GetProperty("type").GetString());
-            }
         }
 
         public void Start() {

@@ -31,6 +31,9 @@ namespace server.Controllers
         public async Task<IActionResult> GetSession(Guid sessionId) {
             try {
                 var session = await _sessionService.GetSessionAsync(sessionId);
+                // write out serialized session object
+                Console.WriteLine(
+                    JsonSerializer.Serialize(session, new JsonSerializerOptions { WriteIndented = true }));
                 if (session == null) {
                     return NotFound();
                 }
