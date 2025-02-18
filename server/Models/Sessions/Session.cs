@@ -9,7 +9,7 @@ namespace server.Entities
         public Guid SessionId { get; set; } = new Guid();
         public string SessionName { get; set; }
 
-        public List<Activity> activities = new List<Activity>();
+        public List<Activity> Activities { get; set; } = new List<Activity>();
 
         public Session() { }
 
@@ -18,7 +18,7 @@ namespace server.Entities
             var definedActivities = definition.GetProperty("activities");
 
             foreach (var activity in definedActivities.EnumerateArray()) {
-                activities.Add(Activity.Create(activity));
+                Activities.Add(Activity.Create(activity));
                 Console.WriteLine(activity.GetProperty("type").GetString());
             }
         }

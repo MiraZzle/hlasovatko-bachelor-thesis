@@ -34,7 +34,6 @@ namespace server.Controllers
                 if (session == null) {
                     return NotFound();
                 }
-
                 return Ok(session);
             }
             catch (Exception ex) {

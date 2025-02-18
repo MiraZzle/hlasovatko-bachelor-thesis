@@ -13,7 +13,7 @@ namespace server.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             modelBuilder.Entity<Session>()
-                .HasMany(s => s.activities)
+                .HasMany(s => s.Activities)
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
         }

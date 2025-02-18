@@ -23,7 +23,7 @@ namespace server.Services
             var activitiesJson = sessionDefinition.GetProperty("activities");
             foreach (var activityJson in activitiesJson.EnumerateArray()) {
                 var activity = await _activityService.CreateActivityFromDefinitionAsync(activityJson);
-                session.activities.Add(activity);
+                session.Activities.Add(activity);
             }
 
             _context.Sessions.Add(session);
@@ -33,7 +33,7 @@ namespace server.Services
 
         public async Task<Session?> GetSessionAsync(Guid sessionId) {
             return await _context.Sessions
-                .Include(s => s.activities)
+                .Include(s => s.Activities)
                 .FirstOrDefaultAsync(s => s.SessionId == sessionId);
         }
     }

@@ -24,7 +24,8 @@ namespace server.Models.Activities
 
             string type = typeProperty.GetString();
             if (_activityRegistry.TryGetValue(type, out var creator)) {
-                return creator(activityJson);
+                var createdActivity = creator(activityJson);
+                return createdActivity;
             }
 
             throw new NotSupportedException($"Unsupported activity type: {type}");
