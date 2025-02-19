@@ -28,6 +28,7 @@ namespace server
             // register custom app services
             builder.Services.AddScoped<ActivityService>();
             builder.Services.AddScoped<SessionService>();
+            builder.Services.AddScoped<AnswerService>();
 
             // register api explorer and swagger
             builder.Services.AddEndpointsApiExplorer();

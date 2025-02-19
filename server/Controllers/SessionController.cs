@@ -43,10 +43,5 @@ namespace server.Controllers
                 return BadRequest($"Error retrieving session: {ex.Message}");
             }
         }
-
-        [HttpPost("{sessionId}/submit")]
-        public async Task<IActionResult> SubmitAnswers(Guid sessionId, [FromBody] JsonElement answers) {
-            return Ok(new { message = "Answers submitted successfully!" });
-        }
     }
 }
