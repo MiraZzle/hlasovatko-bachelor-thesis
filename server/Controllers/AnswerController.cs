@@ -27,6 +27,7 @@ namespace server.Controllers
                 return Ok(new { message = "Answer submitted successfully!" });
             }
             catch (Exception ex) {
+                Console.WriteLine($"Err with answer: {ex.Message}");
                 return BadRequest($"Error submitting answer: {ex.Message}");
             }
         }

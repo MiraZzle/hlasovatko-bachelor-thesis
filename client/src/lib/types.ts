@@ -1,18 +1,26 @@
-export type Session = {
+export type QuizAnswer = {
 	sessionId: string;
-	title: string;
-	activities: Activity[];
-};
-
-export type Activity = {
 	activityId: string;
-	title: string;
-	type: 'quiz' | 'poll' | 'qa'; // allowed activity types
-	questions: Question[];
+	questionId: string;
+	selectedOption: string;
 };
 
 export type Question = {
 	questionId: string;
 	question: string;
 	options: string[];
+	correctOptionIndex: number;
+};
+
+export type Activity = {
+	activityId: string;
+	activityType: string;
+	title: string;
+	questions: Question[]; // Only available if it's a quiz
+};
+
+export type Session = {
+	sessionId: string;
+	title: string;
+	activities: Activity[];
 };
