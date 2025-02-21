@@ -15,11 +15,11 @@ namespace server.Services
         }
 
         public async Task<bool> SubmitAnswerAsync(JsonElement answerJson) {
-            var answer = AnswerFactory.CreateAnswer(answerJson);
-            if (answer == null)
+            var answers = AnswerFactory.CreateAnswer(answerJson);
+            if (answers == null || answers.Count == 0)
                 return false;
 
-            _context.Answers.Add(answer);
+            _context.Answers.AddRange(answers);
             await _context.SaveChangesAsync();
             return true;
         }

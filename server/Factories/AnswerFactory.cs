@@ -7,19 +7,19 @@ namespace server.Utils
 {
     public static class AnswerFactory
     {
-        private static readonly Dictionary<string, Func<JsonElement, Answer>> _answerRegistry = new();
+        private static readonly Dictionary<string, Func<JsonElement, List<Answer>>> _answerRegistry = new();
 
         static AnswerFactory() {
-            RegisterAnswerType("Quiz", CreateQuizAnswer);
+            RegisterAnswerType("Quiz", CreateQuizAnswers);
         }
 
-        public static void RegisterAnswerType(string type, Func<JsonElement, Answer> creator) {
+        public static void RegisterAnswerType(string type, Func<JsonElement, List<Answer>> creator) {
             _answerRegistry[type] = creator;
         }
 
-        public static Answer CreateAnswer(JsonElement answerJson) {
-            if (!answerJson.TryGetProperty("AnswerType", out var typeProperty)) {
-                throw new ArgumentException("Answer JSON must contain an 'AnswerType' field.");
+        public static List<Answer> CreateAnswer(JsonElement answerJson) {
+            if (!answerJson.TryGetProperty("answerType", out var typeProperty)) {
+                throw new ArgumentException("Answer JSON must contain an 'answerType' field.");
             }
 
             string type = typeProperty.GetString();
@@ -30,12 +30,34 @@ namespace server.Utils
             throw new NotSupportedException($"Unsupported answer type: {type}");
         }
 
-        private static Answer CreateQuizAnswer(JsonElement json) {
+
+        private static List<Answer> CreateQuizAnswers(JsonElement json) {
+            var sessionId = Guid.Parse(json.GetProperty("sessionId").GetString());
+            var activityId = Guid.Parse(json.GetProperty("activityId").GetString());
+
+            var answers = new List<Answer>();
+
+            // property 'answers' is set -> multiple answers
+            if (json.TryGetProperty("answers", out var answersJson) && answersJson.ValueKind == JsonValueKind.Array) {
+                foreach (var answer in answersJson.EnumerateArray()) {
+                    answers.Add(CreateSingleQuizAnswer(sessionId, activityId, answer));
+                }
+            } else {
+                answers.Add(CreateSingleQuizAnswer(sessionId, activityId, json));
+            }
+
+            return answers;
+        }
+
+        private static Answer CreateSingleQuizAnswer(Guid sessionId, Guid activityId, JsonElement answerJson) {
+            var questionId = Guid.Parse(answerJson.GetProperty("questionId").GetString());
+            var selectedOption = answerJson.GetProperty("selectedOption").GetString();
+
             return new QuizAnswer {
-                SessionId = Guid.Parse(json.GetProperty("sessionId").GetString()),
-                ActivityId = Guid.Parse(json.GetProperty("activityId").GetString()),
-                QuestionId = Guid.Parse(json.GetProperty("questionId").GetString()),
-                SelectedOption = json.GetProperty("selectedOption").GetString()
+                SessionId = sessionId,
+                ActivityId = activityId,
+                QuestionId = questionId,
+                SelectedOption = selectedOption
             };
         }
     }
