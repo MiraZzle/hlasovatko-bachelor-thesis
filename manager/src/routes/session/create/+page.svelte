@@ -58,13 +58,18 @@
 {/if}
 
 {#if $sessionId}
+	<h2>Session ID: {$sessionId}</h2>
+
 	<h2>Student Join Link:</h2>
 	<a href={`${STUDENT_FE_URL}/session/${$sessionId}`} target="_blank">
-		${STUDENT_FE_URL}/session/{$sessionId}
+		{STUDENT_FE_URL}/session/{$sessionId}
 	</a>
 
 	<h3>QR Code:</h3>
 	{#if $qrCodeUrl}
 		<img src={$qrCodeUrl} alt="QR Code to join session" />
 	{/if}
+
+	<h2>Results Link:</h2>
+	<a href={`/results/${$sessionId}`} target="_blank"> Live results </a>
 {/if}
