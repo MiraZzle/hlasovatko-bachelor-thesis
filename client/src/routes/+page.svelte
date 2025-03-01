@@ -5,7 +5,7 @@
 
 	function joinSession() {
 		if (sessionId.trim()) {
-			goto(`/event/${sessionId}`);
+			goto(`/session/${sessionId}`);
 		}
 	}
 </script>
