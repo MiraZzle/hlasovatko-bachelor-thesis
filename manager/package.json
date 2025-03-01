@@ -31,6 +31,7 @@
 		"jsdom": "^25.0.1",
 		"prettier": "^3.4.2",
 		"prettier-plugin-svelte": "^3.3.3",
+		"sass-embedded": "^1.85.1",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",

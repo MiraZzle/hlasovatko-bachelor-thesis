@@ -32,13 +32,15 @@
 		}
 	}
 
-	fetchAnswers(); // Initial fetch
-	intervalId = setInterval(fetchAnswers, 5000); // Fetch every 5 seconds
+	fetchAnswers();
+	intervalId = setInterval(fetchAnswers, 5000);
 
 	onDestroy(() => {
-		clearInterval(intervalId); // Stop polling when component is destroyed
+		clearInterval(intervalId);
 	});
 </script>
+
+<div class="answer-container"></div>
 
 {#if loading}
 	<p>Loading answers...</p>

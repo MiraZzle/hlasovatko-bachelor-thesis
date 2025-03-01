@@ -7,6 +7,13 @@ export default defineConfig({
 	server: {
 		port: 3001
 	},
+	css: {
+		preprocessorOptions: {
+			scss: {
+				additionalData: '@import "src/styles/variables.scss";'
+			}
+		}
+	},
 	test: {
 		workspace: [
 			{
