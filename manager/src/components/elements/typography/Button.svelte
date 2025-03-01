@@ -25,9 +25,8 @@
 </button>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.btn {
+		cursor: pointer;
 		display: flex;
 		border-radius: 8px;
 		padding: 12px;
@@ -36,6 +35,9 @@
 		justify-content: center;
 		align-items: center;
 		font-weight: 500;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
 
 		&.btn_disabled {
 			cursor: not-allowed;
@@ -56,33 +58,40 @@
 		}
 
 		&_primary {
-			//background-color: $c-blue;
-			//color: $c-white;
+			background-color: #007bff;
+			color: #ffffff;
 
 			&:hover {
-				// background-color: $c-black;
+				background-color: #0056b3;
 			}
 		}
+
 		&_secondary {
 			background: none;
-			// border: 1px solid $c-gray-dark;
-			// color: $c-gray-dark;
+			border: 1px solid #6c757d;
+			color: #6c757d;
 
 			&:hover {
 				background-color: #dfdfdf;
 			}
 		}
+
 		&_dark {
-			// background-color: $c-gray-dark;
-			// color: $c-white;
+			background-color: #343a40;
+			color: #ffffff;
 
 			&:hover {
-				// background-color: $c-blue;
+				background-color: #1d2124;
 			}
 		}
+
 		&_danger {
-			// background-color: $c-red;
-			// color: $c-white;
+			background-color: #dc3545;
+			color: #ffffff;
+
+			&:hover {
+				background-color: #bd2130;
+			}
 		}
 	}
 </style>

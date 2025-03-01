@@ -22,8 +22,6 @@
 </textarea>
 
 <style lang="scss">
-	@import '../../../../styles/variables.scss';
-
 	.text-area__input {
 		width: 100%;
 		padding: 0.5rem;
@@ -37,7 +35,7 @@
 
 		&:focus {
 			outline: none;
-			box-shadow: 0 0 0 3px rgba($primary, 0.2);
+			box-shadow: 0 0 0 3px rgba(#007bff, 0.2);
 		}
 	}
 </style>
