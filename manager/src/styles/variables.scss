@@ -75,6 +75,13 @@ $line-height-heading: 1.2;
 
 // 📐 Layout & Spacing
 // ---
+
+$content-max-width: 1200px; // Added specific variable for page content
+
+// Container widths (can be used for other elements if needed)
+$container-max-width-sm: 640px;
+// ...
+
 // Base spacing unit
 $spacing-base: 8px;
 

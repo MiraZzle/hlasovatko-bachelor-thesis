@@ -109,6 +109,18 @@ button {
 
 // --- Utility Classes (Optional but often helpful) ---
 
+// --- Utility Classes ---
+
+// Utility for centering content with max-width
+.page-container {
+	width: 100%;
+	max-width: $content-max-width; // Use the new variable
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: $spacing-lg; // Add some padding (e.g., 24px)
+	padding-right: $spacing-lg;
+}
+
 .container {
 	width: 100%;
 	margin-left: auto;
