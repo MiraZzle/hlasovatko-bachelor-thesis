@@ -1,23 +1,25 @@
-<script>
-	import { goto } from '$app/navigation';
-	import Header from '$components/elements/typography/Header.svelte';
-	import Button from '$components/elements/typography/Button.svelte';
+<script lang="ts">
+	import Hero from '$components/sections/Hero.svelte';
+	import JoinSession from '$components/sections/JoinSession.svelte';
+	import Features from '$components/sections/Features.svelte';
+	import Benefits from '$components/sections/Benefits.svelte';
+	import EmailSignup from '$components/sections/EmailSignup.svelte';
+	import Footer from '$components/sections/Footer.svelte';
+	import Navbar from '$components/sections/Navbar.svelte';
+
+	// Potential page-specific metadata (using $page store from SvelteKit)
+	// import { page } from '$app/stores';
+	// $: title = 'EngaGenie - Interactive Lectures'; // Example title
 </script>
 
-<div class="action-container">
-	<Header>Hlasovatko</Header>
-	<Button action={() => goto('/session/create')}>Create a session</Button>
-</div>
+<Navbar />
 
-<style lang="scss">
-	.action-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 100vh;
-		max-width: 960px;
-		gap: 16px;
-		margin: auto;
-	}
-</style>
+<main>
+	<Hero />
+	<JoinSession />
+	<Features />
+	<Benefits />
+	<EmailSignup />
+</main>
+
+<Footer />
