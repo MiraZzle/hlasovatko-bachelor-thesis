@@ -1,1 +1,134 @@
-$primary: #ff0000;
+// src/styles/variables.scss
+
+// 🎨 Colors
+// ---
+// Primary brand colors
+$color-primary: #4a47a3; // Example: A nice purple
+$color-primary-light: #7e7cdb;
+$color-primary-dark: #2d2a62;
+
+// Secondary accent colors
+$color-secondary: #ff9f43; // Example: An orange accent
+$color-secondary-light: #ffb77e;
+$color-secondary-dark: #c77014;
+
+// Neutral background and surface colors
+$color-background: #f4f5f7;
+$color-surface: #ffffff;
+$color-surface-alt: #eef0f2; // Slightly different surface, e.g., for inputs
+
+// Text colors
+$color-text-primary: #333333;
+$color-text-secondary: #666666;
+$color-text-on-primary: #ffffff; // Text on primary background
+$color-text-on-secondary: #ffffff; // Text on secondary background
+$color-text-disabled: #aaaaaa;
+$color-link: $color-primary;
+$color-link-hover: $color-primary-dark;
+
+// Status colors
+$color-success: #2ecc71;
+$color-error: #e74c3c;
+$color-warning: #f39c12;
+$color-info: #3498db;
+
+// Border colors
+$color-border: #cccccc;
+$color-border-light: #e0e0e0;
+
+// Specific UI Element Colors (Optional but can be useful)
+$color-button-disabled-bg: #e0e0e0;
+$color-input-border: $color-border;
+$color-input-focus-border: $color-primary;
+
+// ண்ட் Typography
+// ---
+// Font families
+$font-family-primary: 'Inter', sans-serif; // Example: Clean sans-serif for UI
+$font-family-secondary: 'Poppins', sans-serif; // Example: Slightly more playful for headings
+
+// Base font size (used for rem calculation)
+$font-size-base: 16px; // Typically 16px
+
+// Font sizes (using rem for scalability)
+$font-size-xs: 0.75rem; // 12px
+$font-size-sm: 0.875rem; // 14px
+$font-size-md: 1rem; // 16px (base)
+$font-size-lg: 1.125rem; // 18px
+$font-size-xl: 1.25rem; // 20px
+$font-size-2xl: 1.5rem; // 24px
+$font-size-3xl: 1.875rem; // 30px
+$font-size-4xl: 2.25rem; // 36px
+$font-size-5xl: 3rem; // 48px
+
+// Font weights
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 800;
+
+// Line heights
+$line-height-base: 1.5;
+$line-height-heading: 1.2;
+
+// 📐 Layout & Spacing
+// ---
+// Base spacing unit
+$spacing-base: 8px;
+
+// Spacing scale
+$spacing-xs: $spacing-base * 0.5; // 4px
+$spacing-sm: $spacing-base; // 8px
+$spacing-md: $spacing-base * 2; // 16px
+$spacing-lg: $spacing-base * 3; // 24px
+$spacing-xl: $spacing-base * 4; // 32px
+$spacing-2xl: $spacing-base * 6; // 48px
+$spacing-3xl: $spacing-base * 8; // 64px
+
+// Container widths
+$container-max-width-sm: 640px;
+$container-max-width-md: 768px;
+$container-max-width-lg: 1024px;
+$container-max-width-xl: 1280px;
+
+// 🖼️ Borders & Shadows
+// ---
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 16px;
+$border-radius-pill: 9999px;
+$border-radius-circle: 50%;
+
+$border-width-thin: 1px;
+$border-width-medium: 2px;
+$border-width-thick: 3px;
+
+$box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$box-shadow-md:
+	0 4px 6px -1px rgba(0, 0, 0, 0.1),
+	0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$box-shadow-lg:
+	0 10px 15px -3px rgba(0, 0, 0, 0.1),
+	0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$box-shadow-xl:
+	0 20px 25px -5px rgba(0, 0, 0, 0.1),
+	0 10px 10px -5px rgba(0, 0, 0, 0.04);
+$box-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+// 📱 Breakpoints (adjust as needed)
+// ---
+$breakpoint-xs: 0;
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+$breakpoint-xl: 1280px;
+$breakpoint-2xl: 1536px;
+
+// ⏱️ Transitions
+// ---
+$transition-duration-fast: 150ms;
+$transition-duration-base: 300ms;
+$transition-duration-slow: 500ms;
+$transition-timing-function: ease-in-out;
