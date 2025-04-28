@@ -11,7 +11,8 @@
 		required = false,
 		disabled = false,
 		label = null as string | null,
-		ariaLabel = null as string | null // For accessibility when label is not visible
+		ariaLabel = null as string | null, // For accessibility when label is not visible
+		oninput = null as ((event: Event) => void) | null
 	} = $props<{
 		type?: 'text' | 'email' | 'password' | 'number';
 		name?: string;
@@ -22,6 +23,7 @@
 		disabled?: boolean;
 		label?: string | null;
 		ariaLabel?: string | null;
+		oninput?: (event: Event) => void;
 	}>();
 
 	// Generate default id if not provided
@@ -46,6 +48,7 @@
 		{required}
 		{disabled}
 		aria-label={ariaLabel || label}
+		{oninput}
 	/>
 </div>
 
