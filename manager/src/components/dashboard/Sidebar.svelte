@@ -7,15 +7,14 @@
 	const IconAnalytics = '📊';
 	const IconActivityBank = '🏦';
 
-	const mainNavLinks = [
-		{ href: '/templates', label: 'My Templates', icon: IconTemplates },
-		{ href: '/sessions', label: 'My Sessions', icon: IconSessions }, // Assuming route exists
-		{ href: '/analytics', label: 'Analytics', icon: IconAnalytics } // Assuming route exists
-	];
+	const linkBase = '/overview'; // Base path for the sidebar links
 
-	const secondaryNavLinks = [
-		{ href: '/activity-bank', label: 'Activity Bank', icon: IconActivityBank }
-	]; // Assuming route exists
+	const mainNavLinks = [
+		{ href: `${linkBase}/templates`, label: 'My Templates', icon: IconTemplates },
+		{ href: `${linkBase}/sessions`, label: 'My Sessions', icon: IconSessions }, // Assuming route exists
+		{ href: `${linkBase}/analytics`, label: 'Analytics', icon: IconAnalytics },
+		{ href: `${linkBase}/activity-bank`, label: 'Activity Bank', icon: IconActivityBank }
+	];
 
 	function isActive(href: string): boolean {
 		// Check if the current page pathname starts with the link's href
@@ -30,24 +29,6 @@
 	<nav class="sidebar__nav sidebar__nav--main" aria-label="Main">
 		<ul>
 			{#each mainNavLinks as link}
-				<li>
-					<a
-						href={link.href}
-						class="sidebar__link"
-						class:sidebar__link--active={isActive(link.href)}
-						aria-current={isActive(link.href) ? 'page' : undefined}
-					>
-						<span class="sidebar__link-icon" aria-hidden="true">{link.icon}</span>
-						<span class="sidebar__link-text">{link.label}</span>
-					</a>
-				</li>
-			{/each}
-		</ul>
-	</nav>
-
-	<nav class="sidebar__nav sidebar__nav--secondary" aria-label="Secondary">
-		<ul>
-			{#each secondaryNavLinks as link}
 				<li>
 					<a
 						href={link.href}
