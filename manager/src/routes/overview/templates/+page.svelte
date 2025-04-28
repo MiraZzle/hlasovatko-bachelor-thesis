@@ -134,7 +134,7 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
+	@import '../../../styles/variables.scss';
 
 	// Block: templates-page (Page Root)
 	.templates-page {
