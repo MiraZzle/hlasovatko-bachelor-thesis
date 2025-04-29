@@ -3,6 +3,9 @@
 	import Input from '$components/elements/typography/Input.svelte';
 	import TemplateRow from '$components/dashboard/TemplateRow.svelte';
 
+	import ModalDialog from '$components/elements/ModalDialog.svelte';
+	import Select from '$components/elements/typography/Select.svelte'; // Assuming Select is in elements
+
 	interface Template {
 		id: string;
 		title: string;
@@ -51,11 +54,20 @@
 		}
 	]);
 
+	// --- NEW State for Modal ---
+	let isCreateModalOpen = $state(false);
+	let newTemplateName = $state('');
+	let deriveFromTemplateId = $state<string>('none'); // Default to 'none'
+
+	const deriveOptions = $derived(() => {
+		const options = [{ value: 'none', label: 'None' }];
+		// In real app, map existing templates:
+		// templates.forEach(t => options.push({ value: t.id, label: t.title }));
+		return options;
+	});
+
 	// --- Dummy Handlers ---
 	function handleSearch() {
-		/* ... */
-	}
-	function createNewTemplate() {
 		/* ... */
 	}
 	function handleAction(templateId: string) {
@@ -66,6 +78,47 @@
 	}
 	function handleNextPage() {
 		/* ... */
+	}
+
+	// --- NEW Modal Handlers ---
+	function openCreateModal(): void {
+		newTemplateName = ''; // Reset form
+		deriveFromTemplateId = 'none'; // Reset form
+		isCreateModalOpen = true;
+	}
+
+	function closeCreateModal(): void {
+		isCreateModalOpen = false;
+	}
+
+	function handleCreateSubmit(): void {
+		if (!newTemplateName.trim()) {
+			alert('Please enter a template name.'); // Basic validation
+			return;
+		}
+		console.log('Creating template:', {
+			name: newTemplateName,
+			deriveFrom: deriveFromTemplateId
+		});
+		// --- TODO: Add actual API call here ---
+		// Example: Add to dummy data
+		const newId = `t${Math.random().toString(16).substring(2, 8)}`;
+		templates.push({
+			id: newId,
+			title: newTemplateName,
+			code: `#${newId.substring(1)}`,
+			dateCreated: new Date().toISOString(),
+			status: 'Inactive',
+			tags: []
+		});
+		templates = templates; // Trigger reactivity if needed for non-rune state
+
+		closeCreateModal(); // Close modal after submission
+	}
+
+	// --- Update original createNewTemplate handler ---
+	function createNewTemplate(): void {
+		openCreateModal();
 	}
 
 	function getFilteredTemplates() {
@@ -131,6 +184,37 @@
 			<Button variant="outline" onclick={handleNextPage}>Next &rarr;</Button>
 		</div>
 	</footer>
+
+	<ModalDialog
+		bind:open={isCreateModalOpen}
+		onclose={closeCreateModal}
+		width="sm"
+		titleId="create-template-title"
+		descriptionId="create-template-desc"
+	>
+		<h2 id="create-template-title" class="create-template-modal__title">Create template</h2>
+		<form onsubmit={handleCreateSubmit} class="create-template-modal__form">
+			<Input
+				label="Template name"
+				id="template-name"
+				bind:value={newTemplateName}
+				required
+				placeholder="e.g., Weekly Physics Quiz"
+			/>
+
+			<Select
+				label="Derive from"
+				id="derive-from"
+				options={deriveOptions()}
+				bind:value={deriveFromTemplateId}
+			/>
+
+			<div class="create-template-modal__actions">
+				<Button type="button" variant="outline" onclick={closeCreateModal}>Cancel</Button>
+				<Button type="submit" variant="primary">Create</Button>
+			</div>
+		</form>
+	</ModalDialog>
 </div>
 
 <style lang="scss">
