@@ -20,44 +20,47 @@
 		onActionClick?: (id: string) => void;
 	} = $props();
 
-	// Format date
-	const formattedDate = $derived(() => {
+	// Format date helper (using $: for reactivity)
+	function formatDate(dateString: string): string {
 		try {
-			return new Date(session.created).toLocaleDateString(undefined, {
+			return new Date(dateString).toLocaleDateString(undefined, {
 				year: 'numeric',
 				month: '2-digit',
 				day: '2-digit'
 			});
 		} catch (e) {
+			console.error('Error formatting date:', dateString, e);
 			return 'Invalid Date';
 		}
-	});
+	}
+	let formattedDate = $derived(formatDate(session.created));
 
-	// Determine status class (similar to TemplateRow)
-	const statusClass = $derived(() => `data-table__status--${session.status.toLowerCase()}`);
+	// Lowercase status for class modifier
+	const statusModifier = $derived(() => session.status.toLowerCase());
 </script>
 
-<tr>
-	<td>
-		<div class="data-table__cell-primary">{session.title}</div>
-		<div class="data-table__cell-secondary">({session.templateCode})</div>
+<tr class="session-row">
+	<td class="session-row__cell session-row__cell--title-code">
+		<span class="session-row__title">{session.title}</span>
+		<span class="session-row__code">({session.templateCode})</span>
 	</td>
 
-	<td>{formattedDate}</td>
+	<td class="session-row__cell session-row__cell--date">{formattedDate}</td>
 
-	<td>
-		<span class="data-table__status {statusClass}">
+	<td class="session-row__cell session-row__cell--status">
+		<span class="session-row__status session-row__status--{statusModifier}">
 			{session.status}
 		</span>
 	</td>
 
-	<td>{session.participants}</td>
+	<td class="session-row__cell session-row__cell--participants">{session.participants}</td>
 
-	<td>
+	<td class="session-row__cell session-row__cell--actions">
 		<button
-			class="data-table__action-button"
+			class="session-row__action-button"
 			aria-label={`Actions for session ${session.title}`}
 			onclick={() => onActionClick(session.id)}
+			type="button"
 		>
 			<svg
 				width="20"
@@ -88,19 +91,106 @@
 </tr>
 
 <style lang="scss">
-	// Import variables if needed for unique styles
-	@import '../../styles/variables.scss';
+	@import '../../styles/variables.scss'; // Adjust path if needed
 
-	// Add status modifiers if not handled globally by .data-table__status--*
-	// These should match the statuses defined in the Session interface
-	:global(.data-table__status--inactive) {
-		/* ... */
-	}
-	:global(.data-table__status--active) {
-		/* ... */
-	}
-	:global(.data-table__status--finished) {
-		background-color: darken($color-surface-alt, 5%);
-		color: $color-text-disabled;
+	// Block: session-row (applies to the <tr>)
+	.session-row {
+		transition: background-color $transition-duration-fast;
+		&:hover {
+			background-color: $color-surface-alt;
+		}
+
+		// Element: Cell (td)
+		&__cell {
+			padding: $spacing-sm $spacing-md; // Vertical: 16px, Horizontal: 8px
+			text-align: left;
+			border-bottom: $border-width-thin solid $color-border-light;
+			white-space: nowrap;
+			color: $color-text-primary;
+			vertical-align: middle;
+
+			// --- Cell Modifiers ---
+			&--title-code {
+				/* specific styles */
+			}
+			&--date {
+				white-space: nowrap;
+			}
+			&--status {
+				/* specific styles */
+			}
+			&--participants {
+			} // Align numbers right
+			&--actions {
+			}
+		}
+
+		// Element: Title text
+		&__title {
+			display: block;
+			font-weight: $font-weight-medium;
+			color: $color-text-primary;
+		}
+
+		// Element: Code text (Template code)
+		&__code {
+			display: block;
+			font-size: $font-size-xs;
+			color: $color-text-secondary;
+			margin-top: $spacing-xs * 0.5;
+		}
+
+		// Element: Status Indicator
+		&__status {
+			display: inline-block;
+			border-radius: $border-radius-pill;
+			font-size: $font-size-xs;
+			font-weight: $font-weight-medium;
+			text-transform: uppercase;
+			white-space: nowrap;
+
+			// -- Status Modifiers --
+			&--inactive {
+				background-color: $color-surface-alt;
+				color: $color-text-secondary;
+			}
+			&--active {
+				background-color: rgba($color-success, 0.15);
+				// color: darken($color-success, 10%);
+			}
+			&--finished {
+				// Added Finished status style
+				// background-color: darken($color-surface-alt, 5%);
+				color: $color-text-disabled;
+			}
+		}
+
+		// Element: Action Button
+		&__action-button {
+			background: none;
+			border: none;
+			padding: $spacing-xs;
+			cursor: pointer;
+			color: $color-text-secondary;
+			border-radius: $border-radius-circle;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			line-height: 0;
+			svg {
+				width: 18px;
+				height: 18px;
+				stroke-width: 1.5;
+			}
+			&:hover {
+				background-color: $color-surface-alt;
+				color: $color-text-primary;
+			}
+			&:focus-visible {
+				outline: 2px solid $color-primary-light;
+				outline-offset: 1px;
+			}
+		}
+		// Note: No __tags or __tag elements in SessionRow
 	}
 </style>

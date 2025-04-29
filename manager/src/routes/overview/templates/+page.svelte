@@ -139,8 +139,13 @@
 	let filteredTemplates = $derived(getFilteredTemplates());
 </script>
 
+<svelte:head>
+	<title>My Templates - EngaGenie</title>
+</svelte:head>
+
 <div class="templates-page">
 	<header class="templates-page__header">
+		<h1 class="templates-page__title">My Templates</h1>
 		<div class="templates-page__search">
 			<Input
 				placeholder="Search Templates by title, type, code"
@@ -222,6 +227,14 @@
 
 	// Block: templates-page (Page Root)
 	.templates-page {
+		&__title {
+			// Added Title style
+			font-size: $font-size-3xl;
+			font-weight: $font-weight-bold;
+			margin: 0; // Remove default margin
+			// Ensure it doesn't cause wrapping issues with search/button
+			flex-grow: 1; // Allow title to take space if header is flex
+		}
 		// Element: Header Section
 		&__header {
 			display: flex;

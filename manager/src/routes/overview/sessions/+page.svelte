@@ -215,6 +215,45 @@
 		}
 	}
 
+	// Block: data-table (Styles for overall table structure and header)
+	.data-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: $font-size-sm;
+
+		thead {
+			th {
+				padding: $spacing-md; // 8px horizontal padding
+				text-align: left;
+				border-bottom: $border-width-thin solid $color-border-light;
+				white-space: nowrap;
+				font-weight: $font-weight-semibold;
+				color: $color-text-secondary;
+				background-color: $color-surface-alt;
+
+				&:first-child {
+					border-top-left-radius: $border-radius-lg;
+				}
+				&:last-child {
+					border-top-right-radius: $border-radius-lg;
+				}
+			}
+		}
+
+		tbody {
+			/* No direct td styling needed */
+		}
+
+		// Element: Row shown when no results
+		&__no-results {
+			text-align: center;
+			padding: $spacing-xl;
+			color: $color-text-secondary;
+		}
+
+		// --- Styles for row internal elements have been REMOVED ---
+	}
+
 	// Reuse data-table styles (ensure they are globally available or copy here)
 	// --- PASTE .data-table SCSS block here if not globally available ---
 	// .data-table { ... all nested styles ... }
