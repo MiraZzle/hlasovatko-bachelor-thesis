@@ -1,6 +1,5 @@
 <script lang="ts">
-	// If defined globally: import type { Template } from '$lib/types';
-	// Or define locally:
+	// Define Template type (or import)
 	interface Template {
 		id: string;
 		title: string;
@@ -10,59 +9,65 @@
 		tags: string[];
 	}
 
-	// Props: template data and the action callback
+	// Props
 	let {
 		template,
 		onActionClick = (id: string) => {
-			console.warn('onActionClick not provided for', id);
+			console.warn('onActionClick not provided for template', id);
 		}
 	}: {
 		template: Template;
-		onActionClick?: (id: string) => void; // Callback function prop
+		onActionClick?: (id: string) => void;
 	} = $props();
 
-	// Format date for display
-	const formattedDate = $derived(() => {
+	// Format date helper
+	function formatDate(dateString: string): string {
 		try {
-			return new Date(template.dateCreated).toLocaleDateString(undefined, {
-				// Use locale-aware formatting
+			return new Date(dateString).toLocaleDateString(undefined, {
 				year: 'numeric',
 				month: '2-digit',
 				day: '2-digit'
 			});
 		} catch (e) {
+			console.error('Error formatting date:', e);
 			return 'Invalid Date';
 		}
-	});
+	}
+	// Reactive formatted date (using $: as requested previously)
+	let formattedDate = $derived(formatDate(template.dateCreated));
+
+	// Lowercase status for class modifier
+	const statusModifier = $derived(() => template.status.toLowerCase());
 </script>
 
-<tr>
-	<td>
-		<div class="data-table__cell-primary">{template.title}</div>
-		<div class="data-table__cell-secondary">{template.code}</div>
+<tr class="template-row">
+	<td class="template-row__cell template-row__cell--title-code">
+		<span class="template-row__title">{template.title}</span>
+		<span class="template-row__code">{template.code}</span>
 	</td>
 
-	<td>{formattedDate}</td>
+	<td class="template-row__cell template-row__cell--date">{formattedDate}</td>
 
-	<td>
-		<span class="data-table__status data-table__status--{template.status.toLowerCase()}">
+	<td class="template-row__cell template-row__cell--status">
+		<span class="template-row__status template-row__status--{statusModifier}">
 			{template.status}
 		</span>
 	</td>
 
-	<td>
-		<div class="data-table__tags">
+	<td class="template-row__cell template-row__cell--tags">
+		<div class="template-row__tags">
 			{#each template.tags as tag (tag)}
-				<span class="data-table__tag">{tag}</span>
+				<span class="template-row__tag">{tag}</span>
 			{/each}
 		</div>
 	</td>
 
-	<td>
+	<td class="template-row__cell template-row__cell--actions">
 		<button
-			class="data-table__action-button"
+			class="template-row__action-button"
 			aria-label={`Actions for ${template.title}`}
 			onclick={() => onActionClick(template.id)}
+			type="button"
 		>
 			<svg
 				width="20"
@@ -93,27 +98,132 @@
 </tr>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Import if using variables here
+	@import '../../styles/variables.scss'; // Adjust path if needed
 
-	// Example: Styling for status indicator
-	.data-table__status {
-		padding: $spacing-xs $spacing-sm;
-		border-radius: $border-radius-pill;
-		font-size: $font-size-xs;
-		font-weight: $font-weight-medium;
-		text-transform: uppercase;
+	// Block: template-row (applies to the <tr>)
+	.template-row {
+		// Styles for the row itself (e.g., hover, transitions)
+		transition: background-color $transition-duration-fast;
 
-		&--inactive {
+		&:hover {
+			background-color: $color-surface-alt; // Example hover
+		}
+
+		// Element: Cell (td)
+		&__cell {
+			padding: $spacing-sm $spacing-md; // Vertical: 16px, Horizontal: 8px
+			text-align: left;
+			border-bottom: $border-width-thin solid $color-border-light;
+			white-space: nowrap;
+			color: $color-text-primary;
+			vertical-align: middle; // Keep content centered vertically
+
+			// --- Cell Modifiers ---
+			&--title-code {
+				// Specific styles if needed
+			}
+			&--date {
+				// Specific styles if needed
+				white-space: nowrap; // Ensure date doesn't wrap
+			}
+			&--status {
+				// Specific styles if needed
+			}
+			&--tags {
+				white-space: normal; // Allow this specific cell to wrap content
+			}
+			&--actions {
+				text-align: right; // Align action button right
+			}
+		}
+
+		// Element: Title text
+		&__title {
+			display: block; // Ensure it takes block space if needed
+			font-weight: $font-weight-medium;
+			color: $color-text-primary;
+		}
+
+		// Element: Code text
+		&__code {
+			display: block; // Ensure it takes block space
+			font-size: $font-size-xs;
+			color: $color-text-secondary;
+			margin-top: $spacing-xs * 0.5;
+		}
+
+		// Element: Status Indicator
+		&__status {
+			display: inline-block; // Allows padding/background
+			// padding: $spacing-xs $spacing-sm;
+			border-radius: $border-radius-pill;
+			font-size: $font-size-xs;
+			font-weight: $font-weight-medium;
+			text-transform: uppercase;
+			white-space: nowrap;
+
+			// -- Status Modifiers --
+			&--inactive {
+				// Corresponds to template.status = 'Inactive'
+				background-color: $color-surface-alt;
+				color: $color-text-secondary;
+			}
+			&--active {
+				// Corresponds to template.status = 'Active'
+				background-color: rgba($color-success, 0.15);
+				color: darken($color-success, 10%);
+			}
+			// Add other status modifiers as needed
+		}
+
+		// Element: Tags Container
+		&__tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: $spacing-xs;
+			max-width: 250px; // Keep max-width to prevent excessive cell stretching
+		}
+
+		// Element: Individual Tag
+		&__tag {
 			background-color: $color-surface-alt;
 			color: $color-text-secondary;
+			padding: $spacing-xs $spacing-sm;
+			border-radius: $border-radius-pill;
+			font-size: $font-size-xs;
+			font-weight: $font-weight-medium;
+			white-space: nowrap;
 		}
-		&--active {
-			background-color: rgba($color-success, 0.15);
-			color: darken($color-success, 10%);
-		}
-		// Add more status styles as needed
-	}
 
-	// Ensure parent styles apply correctly, if not, duplicate necessary td/tag styles here.
-	// Styles like padding, text-align, borders should ideally be handled by .data-table td/th
+		// Element: Action Button
+		&__action-button {
+			background: none;
+			border: none;
+			padding: $spacing-xs;
+			cursor: pointer;
+			color: $color-text-secondary;
+			border-radius: $border-radius-circle;
+			display: inline-flex; // Use inline-flex for alignment
+			align-items: center;
+			justify-content: center;
+			line-height: 0; // Prevent extra height
+
+			// --- SVG inside button ---
+			svg {
+				width: 18px;
+				height: 18px;
+				stroke-width: 1.5;
+			}
+
+			// --- Button States ---
+			&:hover {
+				background-color: $color-surface-alt;
+				color: $color-text-primary;
+			}
+			&:focus-visible {
+				outline: 2px solid $color-primary-light;
+				outline-offset: 1px;
+			}
+		}
+	}
 </style>
