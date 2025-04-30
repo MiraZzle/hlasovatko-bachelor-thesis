@@ -2,6 +2,7 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
 	import ActivityCard from '$components/dashboard/ActivityCard.svelte';
+	import AddActivityModal from '$components/elements/AddActivityModal.svelte';
 	import { get } from 'svelte/store';
 
 	// Define type locally or import
@@ -11,6 +12,117 @@
 		question: string;
 		tags: string[];
 		category?: string; // Added for filtering
+	}
+
+	interface NewActivityData {
+		title: string;
+		type: string;
+		definition: string;
+		categories: string[];
+	}
+
+	// --- State for Modal ---
+	let isCreateActivityModalOpen = $state(false);
+	// Options needed for the modal's select dropdown
+	const availableActivityTypes = $state([
+		{ value: 'quiz', label: 'Quiz' },
+		{ value: 'rating', label: 'Rating' },
+		{ value: 'poll', label: 'Poll' },
+		{ value: 'word_cloud', label: 'Word Cloud' }
+		// Add other types here
+	]);
+
+	let fileInputRef: HTMLInputElement | null = null; // Reference variable
+
+	// --- Modal Handlers ---
+	function openCreateActivityModal(): void {
+		isCreateActivityModalOpen = true;
+	}
+	function closeCreateActivityModal(): void {
+		isCreateActivityModalOpen = false;
+	}
+	function handleAddActivitySubmit(data: NewActivityData): void {
+		console.log('Adding activity (from page):', data);
+		// --- TODO: Call API to save activity ---
+
+		// Example: Add to dummy list (adapt structure as needed)
+		activities.push({
+			id: `act-${Math.random().toString(16).substring(2, 8)}`,
+			// title: data.title, // Title isn't part of ActivityCard, maybe add?
+			type: data.type, // Might need mapping label back from value?
+			question: data.definition.substring(0, 50) + '...', // Example: Use definition snippet as question for card
+			tags: data.categories
+			// definition: data.definition // Store full definition if needed
+			// category: ??? // Determine category somehow?
+		});
+		activities = activities; // Trigger reactivity
+
+		// Modal closes itself via onclose binding/callback
+	}
+
+	// --- Import Activity Handlers ---
+	// Updated: This function now triggers the hidden file input
+	function triggerImport(): void {
+		// Optional: Reset file input value before opening dialog
+		if (fileInputRef) {
+			fileInputRef.value = '';
+		}
+		fileInputRef?.click(); // Programmatically click the hidden input
+	}
+
+	// NEW: Handles the file selection after the user chooses a file
+	async function handleFileSelected(event: Event): Promise<void> {
+		const target = event.target as HTMLInputElement;
+		const files = target.files;
+
+		if (files && files.length > 0) {
+			const file = files[0];
+			console.log('Selected file:', file.name, file.type, file.size);
+
+			// Basic validation
+			if (!file.name.toLowerCase().endsWith('.json') && file.type !== 'application/json') {
+				alert('Please select a valid JSON file (.json).');
+				return;
+			}
+
+			// --- TODO: Process the file ---
+			// Option 1: Read content client-side (if small / needed for preview)
+			// const reader = new FileReader();
+			// reader.onload = (e) => {
+			//     try {
+			//         const content = e.target?.result as string;
+			//         const jsonData = JSON.parse(content);
+			//         console.log('Imported JSON content:', jsonData);
+			//         // Add logic to create activity from jsonData
+			//         alert(`Successfully read ${file.name}`);
+			//     } catch (err) {
+			//         console.error("Error reading/parsing file:", err);
+			//         alert(`Error reading file: ${err instanceof Error ? err.message : 'Invalid JSON format'}`);
+			//     }
+			// };
+			// reader.onerror = (e) => {
+			//     console.error("FileReader error:", e);
+			//     alert('Error reading file.');
+			// };
+			// reader.readAsText(file);
+
+			// Option 2: Send file to server (more common)
+			console.log(`Placeholder: Uploading ${file.name} to server...`);
+			alert(`Importing ${file.name}... (Placeholder)`);
+			// const formData = new FormData();
+			// formData.append('activityFile', file);
+			// try {
+			//      const response = await fetch('/api/activities/import', { method: 'POST', body: formData });
+			//      // ... handle response ...
+			// } catch (err) { console.error(err); alert('Import failed'); }
+		} else {
+			console.log('No file selected.');
+		}
+
+		// It's generally good practice to clear the input value after handling
+		// But since we clear it *before* click, it might not be needed here unless
+		// there was an error during processing.
+		// if (target) target.value = '';
 	}
 
 	// --- State ---
@@ -114,8 +226,17 @@
 
 	<div class="activity-bank-page__controls">
 		<div class="activity-bank-page__actions">
-			<Button variant="primary" onclick={createActivity}>Create Activity</Button>
-			<Button variant="outline" onclick={importActivity}>Import</Button>
+			<Button variant="primary" onclick={openCreateActivityModal}>Create Activity</Button>
+			<Button variant="outline" onclick={triggerImport}>Import from JSON</Button>
+			<input
+				type="file"
+				accept=".json,application/json"
+				bind:this={fileInputRef}
+				on:change={handleFileSelected}
+				style="display: none;"
+				aria-hidden="true"
+				tabindex="-1"
+			/>
 		</div>
 		<div class="activity-bank-page__filters">
 			<Select
@@ -140,6 +261,13 @@
 			<p class="activity-bank-page__no-results">No activities found matching your filters.</p>
 		{/each}
 	</div>
+
+	<AddActivityModal
+		bind:open={isCreateActivityModalOpen}
+		activityTypes={availableActivityTypes}
+		onAdd={handleAddActivitySubmit}
+		onclose={closeCreateActivityModal}
+	/>
 </div>
 
 <style lang="scss">

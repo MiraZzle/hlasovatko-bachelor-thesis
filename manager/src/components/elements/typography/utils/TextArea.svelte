@@ -1,41 +1,96 @@
 <script lang="ts">
-	export let value: string = '';
-	export let placeholder: string = '';
-	export let rows: number = 3;
-	export let cols: number = 50;
-	export let disabled: boolean = false;
-	export let textAlign: 'left' | 'center' | 'right' = 'left';
-	export let borderColor: string = 'gray';
+	let {
+		name = '',
+		id = '',
+		placeholder = '',
+		value = $bindable(''), // Bindable value
+		required = false,
+		disabled = false,
+		rows = 4, // Default number of rows
+		label = null as string | null,
+		ariaLabel = null as string | null,
+		oninput = null as ((event: Event & { currentTarget: HTMLTextAreaElement }) => void) | null
+	} = $props<{
+		name?: string;
+		id?: string;
+		placeholder?: string;
+		value?: string;
+		required?: boolean;
+		disabled?: boolean;
+		rows?: number;
+		label?: string | null;
+		ariaLabel?: string | null;
+		oninput?: (event: Event & { currentTarget: HTMLTextAreaElement }) => void;
+	}>();
 
-	$: styleAttr = `text-align: ${textAlign}; border-color: ${borderColor};`;
+	const defaultId = `textarea-${Math.random().toString(36).substring(2, 9)}`;
+	let currentId = id || defaultId;
 </script>
 
-<textarea
-	class="text-area__input"
-	bind:value
-	{placeholder}
-	{rows}
-	{cols}
-	{disabled}
-	style={styleAttr}
->
-</textarea>
+<div class="textarea-wrapper">
+	{#if label}
+		<label for={currentId} class="textarea-wrapper__label">
+			{label}
+		</label>
+	{/if}
+	<textarea
+		class="textarea-wrapper__textarea"
+		bind:value
+		{name}
+		id={currentId}
+		{placeholder}
+		{required}
+		{disabled}
+		{rows}
+		aria-label={ariaLabel || label}
+		{oninput}
+	></textarea>
+</div>
 
 <style lang="scss">
-	.text-area__input {
-		width: 100%;
-		padding: 0.5rem;
-		border: 1px solid;
-		border-radius: 4px;
-		font-size: 1rem;
-		resize: vertical;
-		transition:
-			border-color 0.2s ease,
-			box-shadow 0.2s ease;
+	@import '../../../../styles/variables.scss'; // Adjust path if needed
 
-		&:focus {
-			outline: none;
-			box-shadow: 0 0 0 3px rgba(#007bff, 0.2);
+	// Block: textarea-wrapper (Similar to input-wrapper)
+	.textarea-wrapper {
+		width: 100%;
+
+		&__label {
+			display: block;
+			margin-bottom: $spacing-xs;
+			font-weight: $font-weight-medium;
+			font-size: $font-size-sm;
+			color: $color-text-secondary;
+		}
+
+		&__textarea {
+			width: 100%;
+			padding: $spacing-sm $spacing-md;
+			border: $border-width-thin solid $color-input-border;
+			border-radius: $border-radius-md;
+			background-color: $color-surface;
+			font-size: $font-size-md;
+			color: $color-text-primary;
+			font-family: inherit; // Ensure consistent font
+			line-height: $line-height-base;
+			resize: vertical; // Allow vertical resize, disable horizontal
+			transition: border-color $transition-duration-fast $transition-timing-function;
+
+			&::placeholder {
+				color: $color-text-disabled;
+				opacity: 1;
+			}
+
+			&:focus {
+				outline: none;
+				border-color: $color-input-focus-border;
+				box-shadow: 0 0 0 2px rgba($color-primary, 0.2);
+			}
+
+			&:disabled {
+				background-color: $color-surface-alt;
+				cursor: not-allowed;
+				opacity: 0.7;
+			}
 		}
 	}
 </style>

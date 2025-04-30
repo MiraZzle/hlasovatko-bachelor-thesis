@@ -1,6 +1,11 @@
 <script lang="ts" generics="T extends string | number">
 	type Option = { value: T; label: string };
 
+	interface ActivityTypeOption {
+		value: T; // e.g., 'quiz', 'poll'
+		label: string; // e.g., 'Quiz', 'Poll'
+	}
+
 	let {
 		options,
 		value = $bindable(), // The bindable prop from the parent (Type T)
@@ -14,7 +19,7 @@
 			console.warn('onchange not provided', event.currentTarget.value);
 		}
 	}: {
-		options: Option[];
+		options: Option[] | ActivityTypeOption[]; // Options for the select dropdown
 		value?: T;
 		label?: string | null;
 		id?: string;
