@@ -8,7 +8,7 @@
 
 	function handleLogin(): void {
 		console.log('Log In clicked');
-		// Dummy action: Maybe open a modal or navigate
+		window.location.href = '/login'; // Redirect to login page
 	}
 </script>
 
