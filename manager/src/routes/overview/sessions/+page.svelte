@@ -3,6 +3,7 @@
 	import Button from '$components/elements/typography/Button.svelte'; // Verify path
 	import Input from '$components/elements/typography/Input.svelte'; // Verify path
 	import SessionRow from '$components/dashboard/SessionRow.svelte'; // Reuse SessionRow
+	import CreateSessionModal from '$components/elements/CreateSessionModal.svelte';
 
 	// Define Session type (or import from global types)
 	interface Session {
@@ -13,6 +14,20 @@
 		status: 'Active' | 'Inactive' | 'Finished'; // Session status
 		participants: number; // Number of participants
 	}
+
+	let isCreateSessionModalOpen = $state(false);
+
+	interface TemplateStub {
+		id: string;
+		title: string;
+	}
+
+	let availableTemplates = $state<TemplateStub[]>([
+		{ id: 't41585', title: 'Quiz 1' },
+		{ id: 't41586', title: 'Quiz 2' },
+		{ id: 't41587', title: 'Poll - Lecture 3' },
+		{ id: 't41588', title: 'Midterm Review' }
+	]);
 
 	// --- State ---
 	let searchTerm = $state('');
@@ -66,11 +81,6 @@
 		// Implement search logic if needed beyond filtering
 		console.log('Searching sessions for:', searchTerm);
 	}
-	function createNewSession() {
-		// Logic to start a new session (might involve selecting a template first)
-		console.log('Create new session clicked');
-		// Potentially open a modal or navigate to a "new session" flow
-	}
 	function handleAction(sessionId: string) {
 		// Actions for a specific session (e.g., view details, results, delete)
 		console.log('Session action for:', sessionId);
@@ -93,6 +103,41 @@
 				session.templateCode.toLowerCase().includes(lowerSearch)
 			);
 		});
+	}
+
+	// --- Modal Handlers ---
+	function openCreateSessionModal(): void {
+		isCreateSessionModalOpen = true;
+	}
+
+	function closeCreateSessionModal(): void {
+		isCreateSessionModalOpen = false;
+	}
+
+	// This function receives data from the modal's onCreate prop
+	function handleCreateSessionSubmit(data: { templateId: string; title: string }): void {
+		console.log('Creating session (from page):', data);
+		// --- TODO: Call API to create session ---
+
+		// Example: Add to dummy session list
+		const newId = `s${Math.random().toString(16).substring(2, 8)}`;
+		const template = availableTemplates.find((t) => t.id === data.templateId);
+		sessions.push({
+			id: newId,
+			title: data.title,
+			templateCode: template ? `#${template.id.substring(1)}` : '#????',
+			created: new Date().toISOString(),
+			status: 'Inactive', // Or 'Active' if starting immediately?
+			participants: 0
+		});
+		sessions = sessions; // Trigger reactivity
+
+		// Modal closes itself via onclose binding / callback
+	}
+
+	// Connect the button handler to open the modal
+	function createNewSession(): void {
+		openCreateSessionModal();
 	}
 
 	// --- Filtering ---
@@ -149,6 +194,13 @@
 			<Button variant="outline" onclick={handleNextPage}>Next &rarr;</Button>
 		</div>
 	</footer>
+
+	<CreateSessionModal
+		bind:open={isCreateSessionModalOpen}
+		templates={availableTemplates}
+		onCreate={handleCreateSessionSubmit}
+		onclose={closeCreateSessionModal}
+	/>
 </div>
 
 <style lang="scss">
