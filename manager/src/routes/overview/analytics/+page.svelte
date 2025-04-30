@@ -2,6 +2,7 @@
 	import Select from '$components/elements/typography/Select.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import StatCard from '$components/dashboard/StatCard.svelte';
+	import ExportAnalyticsModal from '$components/elements/ExportAnalyticsModal.svelte';
 
 	// Placeholder Icons (Replace with actual Svelte components or SVG imports)
 	const IconBarChart = () => '<svg>📊</svg>'; // Placeholder
@@ -19,6 +20,8 @@
 		{ value: '90d', label: '90 days' },
 		{ value: 'all', label: 'All time' }
 	];
+
+	let isExportModalOpen = $state(false);
 
 	// Dummy stats data (replace with actual fetched data based on selectedTimeFrame)
 	let globalMetrics = $derived(() => ({
@@ -45,6 +48,31 @@
 		console.log('Exporting data for time frame:', selectedTimeFrame);
 		// Trigger export logic
 	}
+
+	// --- Modal Handlers ---
+	function openExportModal(): void {
+		isExportModalOpen = true;
+	}
+	function closeExportModal(): void {
+		isExportModalOpen = false;
+	}
+	// Handler for when modal confirms export
+	function handleExportSubmit(format: string): void {
+		console.log(
+			`Exporting statistics for time frame '${selectedTimeFrame}' in format '${format}'...`
+		);
+		// --- TODO: Implement actual export logic ---
+		alert(`Exporting ${format}... (Placeholder)`);
+		// Modal closes itself after calling this successfully
+	}
+
+	function getCurrentTimeFrameLabel(): string {
+		const option = timeFrameOptions.find((opt) => opt.value === selectedTimeFrame);
+		return option ? `the last ${option.label.toLowerCase()}` : 'the selected period';
+	}
+
+	// --- Computed label for time frame ---
+	let currentTimeFrameLabel = $derived(getCurrentTimeFrameLabel());
 </script>
 
 <svelte:head>
@@ -65,7 +93,7 @@
 			onchange={handleTimeFrameChange}
 			ariaLabel="Select time frame for analytics"
 		/>
-		<Button variant="outline" onclick={handleExport}>Export</Button>
+		<Button variant="outline" onclick={openExportModal}>Export</Button>
 	</div>
 
 	<div class="analytics-page__stats-grid">
@@ -90,6 +118,13 @@
 			>
 		</p>
 	</section>
+
+	<ExportAnalyticsModal
+		bind:open={isExportModalOpen}
+		timeFrameLabel={currentTimeFrameLabel}
+		onclose={closeExportModal}
+		onExport={handleExportSubmit}
+	/>
 </div>
 
 <style lang="scss">
