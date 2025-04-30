@@ -5,6 +5,7 @@
 
 	import ModalDialog from '$components/elements/ModalDialog.svelte';
 	import Select from '$components/elements/typography/Select.svelte'; // Assuming Select is in elements
+	import CreateTemplateModal from '$components/elements/CreateTemplateModal.svelte';
 
 	interface Template {
 		id: string;
@@ -116,6 +117,30 @@
 		closeCreateModal(); // Close modal after submission
 	}
 
+	// --- Handler for when modal confirms creation ---
+	// This function now receives data from the modal component
+	function handleCreateTemplateSubmit(data: { name: string; deriveFromId: string }): void {
+		console.log('Creating template (from page):', data);
+
+		// --- TODO: Add actual API call here ---
+
+		// Example: Add to dummy data
+		const newId = `t${Math.random().toString(16).substring(2, 8)}`;
+		templates.push({
+			id: newId,
+			title: data.name,
+			code: `#${newId.substring(1)}`,
+			dateCreated: new Date().toISOString(),
+			status: 'Inactive',
+			tags: []
+		});
+		templates = templates; // Trigger reactivity
+
+		// Modal closes itself internally after calling this,
+		// but we already set isCreateModalOpen = false via the onclose binding.
+		// No need to call closeCreateModal() here explicitly if using onclose prop.
+	}
+
 	// --- Update original createNewTemplate handler ---
 	function createNewTemplate(): void {
 		openCreateModal();
@@ -190,36 +215,12 @@
 		</div>
 	</footer>
 
-	<ModalDialog
+	<CreateTemplateModal
 		bind:open={isCreateModalOpen}
+		{templates}
+		onCreate={handleCreateTemplateSubmit}
 		onclose={closeCreateModal}
-		width="sm"
-		titleId="create-template-title"
-		descriptionId="create-template-desc"
-	>
-		<h2 id="create-template-title" class="create-template-modal__title">Create template</h2>
-		<form onsubmit={handleCreateSubmit} class="create-template-modal__form">
-			<Input
-				label="Template name"
-				id="template-name"
-				bind:value={newTemplateName}
-				required
-				placeholder="e.g., Weekly Physics Quiz"
-			/>
-
-			<Select
-				label="Derive from"
-				id="derive-from"
-				options={deriveOptions()}
-				bind:value={deriveFromTemplateId}
-			/>
-
-			<div class="create-template-modal__actions">
-				<Button type="button" variant="outline" onclick={closeCreateModal}>Cancel</Button>
-				<Button type="submit" variant="primary">Create</Button>
-			</div>
-		</form>
-	</ModalDialog>
+	/>
 </div>
 
 <style lang="scss">

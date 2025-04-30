@@ -1,13 +1,10 @@
 <script lang="ts">
-	import { onMount, onDestroy, tick } from 'svelte'; // Import tick for focus management
-	import type { Snippet } from 'svelte'; // <<<--- IMPORT ADDED
-	import { browser } from '$app/environment'; // Safe import
+	import { onMount, onDestroy, tick } from 'svelte';
+	import type { Snippet } from 'svelte';
+	import { browser } from '$app/environment';
 
-	// --- Props ---
-	type ModalWidth = 'auto' | 'sm' | 'md' | 'lg'; // Use semantic sizes
+	type ModalWidth = 'auto' | 'sm' | 'md' | 'lg';
 
-	// --- Props Definition ---
-	// Define types for $props generic
 	type ModalProps = {
 		open?: boolean;
 		onclose?: () => void;
@@ -16,11 +13,9 @@
 		closeOnOutsideClick?: boolean;
 		titleId?: string | null;
 		descriptionId?: string | null;
-		children: Snippet; // Default slot content
+		children: Snippet;
 	};
 
-	// Destructure only the props needed in the script.
-	// 'children' will be accessed directly via $props() in the template.
 	let {
 		open = $bindable(false),
 		onclose = () => {},
