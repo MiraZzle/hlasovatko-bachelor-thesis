@@ -17,10 +17,10 @@
 		error = null;
 		console.log('Attempting login with:', { email, password });
 		await new Promise((resolve) => setTimeout(resolve, 1000));
-		if (email === 'test@example.com' && password === 'password') {
+		if (email === 'test@example.com' && password === '1234') {
 			console.log('Login successful!');
 			alert('Login successful! (Redirect placeholder)');
-			// await goto('/dashboard');
+			await goto('/overview/templates');
 		} else {
 			console.error('Login failed!');
 			error = 'Invalid email or password. Please try again.';
@@ -105,129 +105,129 @@
 	@import '../../styles/variables.scss';
 
 	.login-page-wrapper {
-		// Occupies full viewport height, acts as parent for the grid
 		min-height: 100vh;
 		width: 100%;
-		display: flex; // Use flex just to make the grid child take full height easily
+		display: flex;
 	}
 
-	.login-page__grid {
-		flex-grow: 1; // Make grid take up all space from wrapper
-		display: grid;
-		grid-template-columns: 1fr; // Mobile first: single column layout
+	// Block: login-page
+	.login-page {
+		&__grid {
+			flex-grow: 1;
+			display: grid;
+			grid-template-columns: 1fr;
 
-		// Desktop: Two-column layout
-		@media (min-width: $breakpoint-md) {
-			grid-template-columns: 1fr 1fr; // Two equal columns
+			@media (min-width: $breakpoint-md) {
+				grid-template-columns: 1fr 1fr;
+			}
+		}
+
+		&__join-column {
+			// background-color: $color-background; // Uncomment if gray background desired
+			padding: $spacing-3xl $spacing-lg;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			order: 1;
+
+			@media (max-width: $breakpoint-md) {
+				padding: $spacing-2xl $spacing-lg;
+			}
+		}
+
+		&__form-column {
+			background-color: $color-surface;
+			padding: $spacing-3xl $spacing-lg;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			order: 2;
+			min-height: 400px;
+
+			@media (max-width: $breakpoint-md) {
+				padding: $spacing-2xl $spacing-lg;
+			}
+		}
+
+		&__content-wrapper {
+			width: 100%;
+			max-width: 500px;
+		}
+
+		&__section-title {
+			text-align: left;
+			font-size: $font-size-xl;
+			font-weight: $font-weight-semibold;
+			margin-bottom: $spacing-lg;
+			color: $color-text-primary;
+			width: 100%;
+		}
+
+		&__form-title {
+			text-align: left;
+			font-size: $font-size-3xl;
+			font-weight: $font-weight-bold;
+			margin-bottom: $spacing-xl;
+			color: $color-text-primary;
+			width: 100%;
+		}
+
+		// Necessary overrides for child component styles within this context
+		:global(.join-session) {
+			width: 100%;
+			max-width: none;
+			padding: 0;
+		}
+		:global(.join-session__form) {
+			max-width: none;
 		}
 	}
 
-	.login-page__join-column {
-		// Left column styling
-		// background-color: $color-background; // The desired gray background
-		padding: $spacing-3xl $spacing-lg; // Padding inside the column
-		display: flex; // Center content vertically and horizontally within the column
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		order: 1; // Ensure correct order on mobile
-
-		@media (max-width: $breakpoint-md) {
-			padding: $spacing-2xl $spacing-lg; // Adjust padding on mobile if needed
-		}
-	}
-
-	.login-page__form-column {
-		// Right column styling
-		background-color: $color-surface; // Default surface color (likely white)
-		padding: $spacing-3xl $spacing-lg; // Padding inside the column
-		display: flex; // Center content vertically and horizontally
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		order: 2; // Ensure correct order on mobile
-		min-height: 400px; // Ensure minimum height, especially on mobile
-
-		@media (max-width: $breakpoint-md) {
-			padding: $spacing-2xl $spacing-lg;
-		}
-	}
-
-	// Wrapper for content within each column to control max-width
-	.login-page__content-wrapper {
-		width: 100%;
-		max-width: 500px; // <<< ADJUSTED: Increased max-width for content blocks
-	}
-
-	// Title for "Join Activity"
-	.login-page__section-title {
-		text-align: left;
-		font-size: $font-size-xl;
-		font-weight: $font-weight-semibold;
-		margin-bottom: $spacing-lg;
-		color: $color-text-primary; // Check contrast against $color-background
-		width: 100%; // Take full width of the wrapper
-	}
-
-	// Title for "Sign In!" - Now outside the card
-	.login-page__form-title {
-		text-align: left;
-		font-size: $font-size-3xl;
-		font-weight: $font-weight-bold;
-		margin-bottom: $spacing-xl; // Space below title, above card
-		color: $color-text-primary;
-		width: 100%; // Take full width of the wrapper
-	}
-
-	// Adjust JoinSession component appearance within this context
-	:global(.join-session) {
-		width: 100%; // Make JoinSession take full width of its wrapper
-		max-width: none; // Remove any internal max-width it might have
-		padding: 0; // Remove internal padding if desired
-		background-color: transparent; // Ensure background doesn't conflict
-	}
-	:global(.join-session__form) {
-		max-width: none; // Ensure form inside can expand
-	}
-
-	// Card container for the login form
+	// Block: login-card
 	.login-card {
 		background-color: $color-surface;
 		padding: $spacing-xl;
 		border-radius: $border-radius-lg;
 		box-shadow: $box-shadow-md;
-		width: 100%; // Takes full width of its content-wrapper
-		max-width: none; // No specific max-width here, controlled by wrapper
+		width: 100%;
+		max-width: none;
 		margin: 0;
 
 		@media (min-width: $breakpoint-md) {
-			padding: $spacing-2xl; // Larger padding on desktop
+			padding: $spacing-2xl;
+		}
+
+		&__form {
+			display: flex;
+			flex-direction: column;
+			gap: $spacing-lg;
+		}
+
+		&__field {
+			// Currently no styles needed for this wrapper element
+		}
+
+		&__error-message {
+			background-color: rgba($color-error, 0.1);
+			color: $color-error;
+			border: 1px solid rgba($color-error, 0.3);
+			border-radius: $border-radius-md;
+			padding: $spacing-sm $spacing-md;
+			font-size: $font-size-sm;
+			text-align: center;
+		}
+
+		&__signup-link {
+			margin-top: $spacing-xl;
+			text-align: center;
+			font-size: $font-size-sm;
+			color: $color-text-secondary;
 		}
 	}
 
-	.login-card__form {
-		display: flex;
-		flex-direction: column;
-		gap: $spacing-lg;
-	}
-
-	.login-card__error-message {
-		background-color: rgba($color-error, 0.1);
-		color: $color-error;
-		border: 1px solid rgba($color-error, 0.3);
-		border-radius: $border-radius-md;
-		padding: $spacing-sm $spacing-md;
-		font-size: $font-size-sm;
-		text-align: center;
-	}
-
-	.login-card__signup-link {
-		margin-top: $spacing-xl;
-		text-align: center;
-		font-size: $font-size-sm;
-		color: $color-text-secondary;
-	}
-
+	// Utility/Element: link-button
 	.link-button {
 		background: none;
 		border: none;
@@ -241,6 +241,12 @@
 
 		&:hover {
 			color: $color-link-hover;
+		}
+		&:focus-visible {
+			// Added focus style
+			outline: 2px solid $color-primary-light;
+			outline-offset: 2px;
+			border-radius: $border-radius-sm;
 		}
 	}
 </style>

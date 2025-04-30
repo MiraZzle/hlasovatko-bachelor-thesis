@@ -20,7 +20,7 @@
 </script>
 
 <section class="join-session">
-	<div class="page-container join-session__container">
+	<div class="join-session__container">
 		<form class="join-session__form" onsubmit={handleJoinSession}>
 			<Input
 				name="gameCode"
@@ -37,9 +37,6 @@
 	@import '../../styles/variables.scss';
 
 	.join-session {
-		background-color: $color-surface-alt; // Slightly different background
-		padding: $spacing-2xl 0;
-
 		&__container {
 			display: flex;
 			justify-content: center; // Center the form

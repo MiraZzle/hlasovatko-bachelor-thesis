@@ -16,10 +16,21 @@
 
 <main>
 	<Hero />
-	<JoinSession />
+	<section class="join-session__container">
+		<JoinSession />
+	</section>
 	<Features />
 	<Benefits />
 	<EmailSignup />
 </main>
 
 <Footer />
+
+<style lang="scss">
+	@import '../styles/variables.scss';
+
+	.join-session__container {
+		background-color: $color-surface-alt; // Slightly different background
+		padding: $spacing-2xl 0;
+	}
+</style>
