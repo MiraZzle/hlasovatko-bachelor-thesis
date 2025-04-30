@@ -1,5 +1,5 @@
 <script lang="ts">
-	// Define Session type (or import)
+	import { goto } from '$app/navigation'; // For navigation
 	interface Session {
 		id: string;
 		title: string;
@@ -35,11 +35,22 @@
 	}
 	let formattedDate = $derived(formatDate(session.created));
 
+	// --- NEW: Row Click Handler ---
+	function handleRowClick(): void {
+		// Navigate to the analytics page for this specific session
+		goto(`/sessions/${session.id}/analytics`);
+	}
+
 	// Lowercase status for class modifier
 	const statusModifier = $derived(() => session.status.toLowerCase());
 </script>
 
-<tr class="session-row">
+<tr
+	class="session-row"
+	onclick={handleRowClick}
+	title={`View analytics for ${session.title}`}
+	aria-label={`View analytics for ${session.title}`}
+>
 	<td class="session-row__cell session-row__cell--title-code">
 		<span class="session-row__title">{session.title}</span>
 		<span class="session-row__code">({session.templateCode})</span>
@@ -96,6 +107,7 @@
 	// Block: session-row (applies to the <tr>)
 	.session-row {
 		transition: background-color $transition-duration-fast;
+		cursor: pointer;
 		&:hover {
 			background-color: $color-surface-alt;
 		}
