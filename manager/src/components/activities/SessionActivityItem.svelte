@@ -44,29 +44,63 @@
 	// --- Process Definition ---
 	// Try to parse definition if it's a string, otherwise use as is.
 	// Also attempt to get a strongly-typed known definition.
-	let parsedDefinition: KnownActivityDefinition | object | null = $derived(() => {
+	// let parsedDefinition: KnownActivityDefinition | object | null = $derived(() => {
+	// 	let def = activity.definition;
+	// 	if (typeof def === 'string') {
+	// 		try {
+	// 			def = JSON.parse(def);
+	// 		} catch (e) {
+	// 			console.error(`Failed to parse definition string for activity ${activity.id}`, e);
+	// 			return activity.definition; // Return original string on error
+	// 		}
+	// 	}
+	// 	// Ensure it's an object before further checks
+	// 	if (typeof def !== 'object' || def === null) {
+	// 		return {}; // Return empty object if not valid
+	// 	}
+	// 	// Add the 'type' property if it's missing but known from activity.type
+	// 	if (!('type' in def) && typeof activity.type === 'string') {
+	// 		(def as any).type = activity.type;
+	// 	}
+	// 	return def;
+	// });
+
+	function getParsedDefinition() {
 		let def = activity.definition;
+		// 1. Try parsing if it's a string
 		if (typeof def === 'string') {
 			try {
 				def = JSON.parse(def);
 			} catch (e) {
 				console.error(`Failed to parse definition string for activity ${activity.id}`, e);
-				return activity.definition; // Return original string on error
+				// Return an object indicating the error for RawJsonDisplay
+				return { error: 'Invalid JSON string', original: activity.definition };
 			}
 		}
-		// Ensure it's an object before further checks
+		// 2. Check if it's a valid object now
 		if (typeof def !== 'object' || def === null) {
-			return {}; // Return empty object if not valid
+			console.warn(`Activity ${activity.id} definition is not a valid object after parsing.`);
+			// Return an error object or the original non-object value
+			return { error: 'Invalid definition structure', original: activity.definition };
 		}
-		// Add the 'type' property if it's missing but known from activity.type
-		if (!('type' in def) && typeof activity.type === 'string') {
-			(def as any).type = activity.type;
+		// 3. Ensure the 'type' property exists within the definition object,
+		//    using the parent activity.type as the source of truth.
+		//    This is crucial for the type guards.
+		if (!('type' in def) || def.type !== activity.type) {
+			console.warn(
+				`Injecting/correcting type '${activity.type}' into definition for activity ${activity.id}`
+			);
+			def = { ...def, type: activity.type }; // Create new object with correct type
+			console.log('New definition:', def);
 		}
 		return def;
-	});
+	}
+
+	let parsedDefinition: KnownActivityDefinition | object | unknown =
+		$derived(getParsedDefinition());
 
 	// Get the specific known definition type, if applicable
-	let knownDefinition = $derived(getKnownDefinition({ ...activity, definition: parsedDefinition }));
+	// let knownDefinition = $derived(getKnownDefinition({ ...activity, definition: parsedDefinition }));
 
 	// Placeholder Icons
 	const IconPlay = () => '▶️';
@@ -88,13 +122,13 @@
 	</div>
 
 	<div class="session-activity-item__body">
-		{#if activity.type === 'MultipleChoice' && knownDefinition && isMultipleChoice(knownDefinition)}
-			<MultipleChoice definition={knownDefinition} />
-		{:else if activity.type === 'Poll' && knownDefinition && isPoll(knownDefinition)}
-			<Poll definition={knownDefinition} />
-		{:else if activity.type === 'ScaleRating' && knownDefinition && isScaleRating(knownDefinition)}
-			<ScaleRating definition={knownDefinition} />
-		{:else if activity.type === 'OpenEnded' && knownDefinition && isOpenEnded(knownDefinition)}
+		{#if isMultipleChoice(parsedDefinition)}
+			<MultipleChoice definition={parsedDefinition} />
+		{:else if isPoll(parsedDefinition)}
+			<Poll definition={parsedDefinition} />
+		{:else if isScaleRating(parsedDefinition)}
+			<ScaleRating definition={parsedDefinition} />
+		{:else if isOpenEnded(parsedDefinition)}
 			<OpenEnded />
 		{:else}
 			<RawJson definition={parsedDefinition} />

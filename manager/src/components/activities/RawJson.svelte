@@ -2,13 +2,15 @@
 	let { definition }: { definition: any } = $props();
 
 	// Pretty-print the JSON
-	let formattedJson = $derived(() => {
+
+	function formatJson(json: string) {
 		try {
-			return JSON.stringify(definition, null, 2); // Indent with 2 spaces
+			return JSON.stringify(JSON.parse(json), null, 2); // Pretty-print JSON
 		} catch (e) {
-			return 'Error formatting JSON definition.';
+			return 'Invalid JSON format.';
 		}
-	});
+	}
+	let formattedJson = $derived(formatJson(definition));
 </script>
 
 <div class="activity-display activity-display--raw-json">

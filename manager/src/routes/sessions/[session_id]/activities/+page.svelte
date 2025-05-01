@@ -14,6 +14,7 @@
 			type: 'Poll',
 			title: 'Which topic should we cover next?',
 			definition: {
+				type: 'Poll',
 				options: [
 					{ id: 'o1', text: 'Topic A' },
 					{ id: 'o2', text: 'Topic B' }
@@ -24,9 +25,11 @@
 		},
 		{
 			id: 'sact2',
-			type: 'MultipleChoice',
+			type: 'MultipleChoice', // Type on the main object
 			title: 'What is the powerhouse of the cell?',
+			// Add 'type' inside definition
 			definition: {
+				type: 'MultipleChoice', // <<< ADDED
 				options: [
 					{ id: 'm1', text: 'Nucleus' },
 					{ id: 'm2', text: 'Ribosome' },
@@ -41,25 +44,34 @@
 		},
 		{
 			id: 'sact3',
-			type: 'ScaleRating',
+			type: 'ScaleRating', // Type on the main object
 			title: 'Rate your understanding (1-5)',
-			definition: { min: 1, max: 5, minLabel: 'Confused', maxLabel: 'Confident' },
+			// Add 'type' inside definition
+			definition: {
+				type: 'ScaleRating',
+				min: 1,
+				max: 5,
+				minLabel: 'Confused',
+				maxLabel: 'Confident'
+			},
 			status: 'Pending',
 			order: 3
 		},
 		{
 			id: 'sact4',
-			type: 'OpenEnded',
+			type: 'OpenEnded', // Type on the main object
 			title: 'Any remaining questions?',
-			definition: {}, // Empty definition for OpenEnded
+			// Add 'type' inside definition
+			definition: { type: 'OpenEnded' },
 			status: 'Pending',
 			order: 4
 		},
 		{
 			id: 'sact5',
-			type: 'UnknownType',
+			type: 'UnknownType', // Type on the main object
 			title: 'Custom Activity Format',
-			definition: { customField: 'value', structure: { nested: true } }, // Example unknown
+			// Definition might or might not have a 'type' matching the outer one
+			definition: { customField: 'value', structure: { nested: true } },
 			status: 'Pending',
 			order: 5
 		}
