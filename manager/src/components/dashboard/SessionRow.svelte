@@ -38,7 +38,7 @@
 	// --- NEW: Row Click Handler ---
 	function handleRowClick(): void {
 		// Navigate to the analytics page for this specific session
-		goto(`/sessions/${session.id}/analytics`);
+		goto(`/sessions/${session.id}/overview`);
 	}
 
 	// Lowercase status for class modifier

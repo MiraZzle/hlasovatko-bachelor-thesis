@@ -39,8 +39,7 @@
 	const sidebarLinks = [
 		{ href: `/sessions/${session_id}/overview`, label: 'Overview', icon: IconOverview },
 		{ href: `/sessions/${session_id}/activities`, label: 'Activities', icon: IconActivities },
-		{ href: `/sessions/${session_id}/analytics`, label: 'Analytics', icon: IconAnalytics },
-		{ href: `/sessions/${session_id}/settings`, label: 'Settings', icon: IconSettings }
+		{ href: `/sessions/${session_id}/analytics`, label: 'Analytics', icon: IconAnalytics }
 	];
 
 	// --- Handlers passed to Sidebar ---
