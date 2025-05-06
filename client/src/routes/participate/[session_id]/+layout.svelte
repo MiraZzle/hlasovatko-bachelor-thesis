@@ -1,10 +1,3 @@
-<script lang="ts">
-	// Import global styles if they are not already handled by app.html or a root layout
-	// import '../../../styles/global.scss'; // Adjust path if your global.scss is elsewhere
-
-	// This layout could also fetch initial session validity or branding in a load function
-</script>
-
 <div class="participation-layout">
 	<slot />
 </div>
