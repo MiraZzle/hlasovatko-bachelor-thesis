@@ -140,7 +140,7 @@
 </div>
 
 <style lang="scss">
-	@import '../../../../styles/variables.scss'; // Adjust path depth
+	@import '../../../../../styles/variables.scss'; // Adjust path depth
 
 	// Block: session-overview-page
 	.session-overview-page {

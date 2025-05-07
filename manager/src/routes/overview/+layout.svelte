@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Sidebar from '$components/dashboard/Sidebar.svelte';
-	import UserProfileBadge from '$components/dashboard/UserProfileBadge.svelte';
+	import Sidebar from '$components/dashboard/Sidebar.svelte'; // Verify path
+	import UserProfileBadge from '$components/dashboard/UserProfileBadge.svelte'; // Verify path
 
 	// Dummy user data - replace with actual auth data later
 	let userInitials = 'MF';
@@ -11,8 +11,10 @@
 
 	<div class="dashboard-layout__main">
 		<header class="dashboard-layout__topbar">
-			<div class="dashboard-layout__topbar-spacer"></div>
-			<UserProfileBadge initials={userInitials} />
+			<slot name="topbar">
+				<div class="dashboard-layout__topbar-spacer"></div>
+				<UserProfileBadge initials={userInitials} />
+			</slot>
 		</header>
 
 		<main class="dashboard-layout__content">
@@ -22,40 +24,44 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
+	@import '../../styles/variables.scss'; // Adjust path
 
 	.dashboard-layout {
 		display: flex;
-		height: 100vh; // Full viewport height
-		background-color: $color-background; // Main background for content area
-		overflow: hidden; // Prevent body scroll if sidebar/content handles it
+		height: 100vh;
+		background-color: $color-background;
+		overflow: hidden;
 	}
 
 	.dashboard-layout__main {
-		flex-grow: 1; // Takes remaining width
+		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
-		height: 100vh; // Full height
-		overflow-y: hidden; // Prevent this container from scrolling, content area will scroll
+		height: 100vh;
+		overflow-y: hidden;
 	}
 
 	.dashboard-layout__topbar {
-		display: flex;
+		// Container for the top bar content - provided by slot
+		display: flex; // Use flex for alignment of slotted content
 		align-items: center;
-		padding: $spacing-md $spacing-lg; // Padding for top bar
-		background-color: $color-surface; // White background for top bar
+		padding: $spacing-md $spacing-lg;
+		background-color: $color-surface;
 		border-bottom: $border-width-thin solid $color-border-light;
-		height: 60px; // Fixed height for top bar (adjust as needed)
-		flex-shrink: 0; // Prevent shrinking
+		height: 60px;
+		flex-shrink: 0;
+		gap: $spacing-sm; // Add gap for slotted items
 	}
 
 	.dashboard-layout__topbar-spacer {
-		flex-grow: 1; // Pushes user badge to the right
+		// Only used in default slot content
+		flex-grow: 1;
 	}
 
 	.dashboard-layout__content {
-		flex-grow: 1; // Takes remaining vertical space
-		padding: $spacing-xl; // Padding around the main page content
-		overflow-y: auto; // Make the content area scrollable
+		flex-grow: 1;
+		padding: $spacing-xl;
+		overflow-y: auto;
+		// Removed background-color here, should be set by child page/layout or body
 	}
 </style>
