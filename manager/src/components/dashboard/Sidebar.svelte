@@ -19,12 +19,14 @@
 	const IconSessionActivities = '⚡';
 	const IconSessionAnalytics = '📈';
 	const IconProfile = '👤';
+	const IconSettings = '⚙️';
 
 	const OverViewBasePath = '/overview';
 
 	function getMainNavLinks() {
 		const params = $page.params;
 		const currentSessionId = params.session_id; // Check if we have a session_id param
+		const currentTemplateId = params.template_id; // Check if we have a template_id param
 
 		// Base links
 		const links: NavLink[] = [
@@ -38,6 +40,33 @@
 				icon: IconProfile
 			}
 		];
+
+		// register "my templates" libks
+		if (currentTemplateId && $page.url.pathname.startsWith(`${OverViewBasePath}/templates/`)) {
+			const templateLinkIndex = links.findIndex(
+				(link) => link.href === `${OverViewBasePath}/templates` // <-- CORRECTED HREF
+			);
+			console.log('Template Link Index:', templateLinkIndex); // Debugging line
+			if (templateLinkIndex !== -1) {
+				links[templateLinkIndex].subLinks = [
+					{
+						href: `${OverViewBasePath}/templates/${currentTemplateId}/overview`,
+						label: 'Overview',
+						icon: IconOverview
+					},
+					{
+						href: `${OverViewBasePath}/templates/${currentTemplateId}/sessions`,
+						label: 'Sessions',
+						icon: IconSessions
+					},
+					{
+						href: `${OverViewBasePath}/templates/${currentTemplateId}/settings`,
+						label: 'Settings',
+						icon: IconSettings
+					}
+				];
+			}
+		}
 
 		// If we are inside a specific session route, add sub-links to "My Sessions"
 		if (currentSessionId && $page.url.pathname.startsWith(`${OverViewBasePath}/sessions/`)) {

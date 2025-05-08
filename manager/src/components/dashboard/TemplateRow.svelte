@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation'; // For navigation
 	// Define Template type (or import)
 	interface Template {
 		id: string;
@@ -38,9 +39,19 @@
 
 	// Lowercase status for class modifier
 	const statusModifier = $derived(() => template.status.toLowerCase());
+
+	function handleRowClick(): void {
+		// Navigate to the analytics page for this specific session
+		goto(`/overview/templates/${template.id}/overview`);
+	}
 </script>
 
-<tr class="template-row">
+<tr
+	class="template-row"
+	onclick={handleRowClick}
+	title={`View details for ${template.title}`}
+	aria-label={`View details for ${template.title}`}
+>
 	<td class="template-row__cell template-row__cell--title-code">
 		<span class="template-row__title">{template.title}</span>
 		<span class="template-row__code">{template.code}</span>
@@ -104,6 +115,7 @@
 	.template-row {
 		// Styles for the row itself (e.g., hover, transitions)
 		transition: background-color $transition-duration-fast;
+		cursor: pointer;
 
 		&:hover {
 			background-color: $color-surface-alt; // Example hover
