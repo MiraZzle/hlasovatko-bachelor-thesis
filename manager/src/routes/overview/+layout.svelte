@@ -1,67 +1,54 @@
 <script lang="ts">
-	import Sidebar from '$components/dashboard/Sidebar.svelte'; // Verify path
-	import UserProfileBadge from '$components/dashboard/UserProfileBadge.svelte'; // Verify path
+	import { page } from '$app/stores';
+	import Sidebar from '$components/dashboard/Sidebar.svelte';
+	import DashboardLayout from '$components/dashboard/DashboardLayout.svelte'; // Use the layout component
+	import Topbar from '$components/dashboard/Topbar.svelte'; // Generic Topbar container
+	// Import BOTH possible top bar contents
+	import UserProfileBadge from '$components/dashboard/UserProfileBadge.svelte';
+	import SessionTopbar from '$components/dashboard/SessionTopbar.svelte'; // Specific session topbar content
 
-	// Dummy user data - replace with actual auth data later
+	// Dummy user data for default topbar
 	let userInitials = 'MF';
+
+	// Check if sessionDataForTopbar exists in the loaded page data
+	let sessionData = $derived($page.data.sessionDataForTopbar);
 </script>
 
-<div class="dashboard-layout">
+<div class="overview-layout-wrapper">
 	<Sidebar />
 
-	<div class="dashboard-layout__main">
-		<header class="dashboard-layout__topbar">
-			<slot name="topbar">
-				<div class="dashboard-layout__topbar-spacer"></div>
-				<UserProfileBadge initials={userInitials} />
-			</slot>
-		</header>
-
-		<main class="dashboard-layout__content">
+	<DashboardLayout>
+		<svelte:fragment slot="topbar">
+			<Topbar>
+				{#if sessionData}
+					<SessionTopbar
+						sessionId={sessionData.id}
+						sessionTitle={sessionData.title}
+						sessionStatus={sessionData.status}
+					/>
+				{:else}
+					<div class="overview-layout__topbar-spacer"></div>
+					<UserProfileBadge initials={userInitials} />
+				{/if}
+			</Topbar>
+		</svelte:fragment>
+		<svelte:fragment slot="content">
 			<slot />
-		</main>
-	</div>
+		</svelte:fragment>
+	</DashboardLayout>
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	// Styles for THIS layout file
 
-	.dashboard-layout {
+	.overview-layout-wrapper {
 		display: flex;
 		height: 100vh;
-		background-color: $color-background;
 		overflow: hidden;
 	}
 
-	.dashboard-layout__main {
+	// Style for the default topbar spacer (only used when sessionData is not present)
+	.overview-layout__topbar-spacer {
 		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-		height: 100vh;
-		overflow-y: hidden;
-	}
-
-	.dashboard-layout__topbar {
-		// Container for the top bar content - provided by slot
-		display: flex; // Use flex for alignment of slotted content
-		align-items: center;
-		padding: $spacing-md $spacing-lg;
-		background-color: $color-surface;
-		border-bottom: $border-width-thin solid $color-border-light;
-		height: 60px;
-		flex-shrink: 0;
-		gap: $spacing-sm; // Add gap for slotted items
-	}
-
-	.dashboard-layout__topbar-spacer {
-		// Only used in default slot content
-		flex-grow: 1;
-	}
-
-	.dashboard-layout__content {
-		flex-grow: 1;
-		padding: $spacing-xl;
-		overflow-y: auto;
-		// Removed background-color here, should be set by child page/layout or body
 	}
 </style>
