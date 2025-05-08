@@ -32,13 +32,15 @@
 		onStart?: (id: string) => void;
 		onStop?: (id: string) => void;
 		onViewResults?: (id: string) => void;
+		isOnlyView?: boolean; // Optional prop to indicate if it's a view-only mode
 	};
 
 	let {
 		activity,
 		onStart = (id) => console.log('Start:', id),
 		onStop = (id) => console.log('Stop:', id),
-		onViewResults = (id) => console.log('View Results:', id)
+		onViewResults = (id) => console.log('View Results:', id),
+		isOnlyView = false
 	}: Props = $props();
 
 	// --- Process Definition ---
@@ -112,7 +114,7 @@
 	<div class="session-activity-item__header">
 		<span class="session-activity-item__type">{activity.type}</span>
 		<h3 class="session-activity-item__title">{activity.title}</h3>
-		{#if activity.status}
+		{#if activity.status && !isOnlyView}
 			<span
 				class="session-activity-item__status session-activity-item__status--{activity.status.toLowerCase()}"
 			>
@@ -136,14 +138,16 @@
 	</div>
 
 	<div class="session-activity-item__footer">
-		{#if activity.status === 'Pending' || activity.status === 'Closed'}
-			<Button onclick={() => onStart(activity.id)}>Start</Button>
-		{/if}
-		{#if activity.status === 'Active'}
-			<Button onclick={() => onStop(activity.id)}>Stop</Button>
-		{/if}
-		{#if activity.status === 'Closed'}
-			<Button variant="outline" onclick={() => onViewResults(activity.id)}>Results</Button>
+		{#if !isOnlyView}
+			{#if activity.status === 'Pending' || activity.status === 'Closed'}
+				<Button onclick={() => onStart(activity.id)}>Start</Button>
+			{/if}
+			{#if activity.status === 'Active'}
+				<Button onclick={() => onStop(activity.id)}>Stop</Button>
+			{/if}
+			{#if activity.status === 'Closed'}
+				<Button variant="outline" onclick={() => onViewResults(activity.id)}>Results</Button>
+			{/if}
 		{/if}
 	</div>
 </div>
