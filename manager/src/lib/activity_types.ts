@@ -140,3 +140,76 @@ export function getKnownDefinition(activity: SessionActivity): KnownActivityDefi
 			return null; // Type is not one of the known ones
 	}
 }
+
+// src/lib/types.ts (or similar)
+
+// --- Add these alongside existing types ---
+
+// Result structure for MultipleChoice and Poll
+export interface OptionResult {
+	id: string; // Corresponds to ActivityOption id
+	text: string; // The option text
+	count: number; // Number of votes for this option
+	percentage?: number; // Optional percentage calculation
+	isCorrect?: boolean; // Optional for MultipleChoice
+}
+export type ChoiceActivityResult = OptionResult[];
+
+// Result structure for ScaleRating
+export interface RatingResult {
+	rating: number; // The rating value (e.g., 1, 2, 3, 4, 5)
+	count: number; // Number of responses for this rating
+	percentage?: number; // Optional percentage calculation
+}
+export type ScaleRatingActivityResult = RatingResult[];
+
+// Result structure for OpenEnded
+export type OpenEndedActivityResult = string[]; // Array of text responses
+
+// Add results to the main SessionActivity interface (optional, depends on how you fetch data)
+export interface SessionActivity {
+	id: string;
+	templateActivityId?: string;
+	type: KnownActivityType | string;
+	title: string;
+	definition: KnownActivityDefinition | UnknownDefinition | object;
+	status?: SessionActivityStatus;
+	order?: number;
+	// --- NEW: Add results field ---
+	results?: ChoiceActivityResult | ScaleRatingActivityResult | OpenEndedActivityResult | unknown; // Use 'any' for unknown/unprocessed results
+	participantCount?: number; // Total participants who saw this activity
+	responseCount?: number; // Total participants who responded
+}
+
+// --- Add corresponding Type Guards for Results (Optional but helpful) ---
+
+export function isChoiceResult(results: unknown): results is ChoiceActivityResult {
+	return (
+		Array.isArray(results) &&
+		results.every(
+			(r) =>
+				typeof r === 'object' &&
+				r !== null &&
+				typeof r.id === 'string' &&
+				typeof r.text === 'string' &&
+				typeof r.count === 'number'
+		)
+	);
+}
+
+export function isScaleRatingResult(results: unknown): results is ScaleRatingActivityResult {
+	return (
+		Array.isArray(results) &&
+		results.every(
+			(r) =>
+				typeof r === 'object' &&
+				r !== null &&
+				typeof r.rating === 'number' &&
+				typeof r.count === 'number'
+		)
+	);
+}
+
+export function isOpenEndedResult(results: unknown): results is OpenEndedActivityResult {
+	return Array.isArray(results) && results.every((r) => typeof r === 'string');
+}
