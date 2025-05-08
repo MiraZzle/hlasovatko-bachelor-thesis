@@ -117,6 +117,7 @@
 			color: $color-text-secondary;
 			white-space: nowrap;
 			text-align: right;
+			width: 4rem;
 		}
 		&__no-results {
 			color: $color-text-secondary;
