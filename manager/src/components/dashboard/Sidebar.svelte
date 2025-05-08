@@ -18,6 +18,7 @@
 	const IconOverview = '👀'; // Example for session overview
 	const IconSessionActivities = '⚡';
 	const IconSessionAnalytics = '📈';
+	const IconProfile = '👤';
 
 	const OverViewBasePath = '/overview';
 
@@ -30,7 +31,12 @@
 			{ href: `${OverViewBasePath}/templates`, label: 'My Templates', icon: IconTemplates },
 			{ href: `${OverViewBasePath}/sessions`, label: 'My Sessions', icon: IconSessions },
 			{ href: `${OverViewBasePath}/analytics`, label: 'Analytics', icon: IconAnalytics },
-			{ href: `${OverViewBasePath}/activity-bank`, label: 'Activity Bank', icon: IconActivityBank }
+			{ href: `${OverViewBasePath}/activity-bank`, label: 'Activity Bank', icon: IconActivityBank },
+			{
+				href: `${OverViewBasePath}/profile`,
+				label: 'Profile',
+				icon: IconProfile
+			}
 		];
 
 		// If we are inside a specific session route, add sub-links to "My Sessions"
