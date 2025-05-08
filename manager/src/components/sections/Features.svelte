@@ -2,7 +2,7 @@
 	import AccordionItem from '$components/elements/typography/utils/AccordionItem.svelte';
 </script>
 
-<section class="features-section">
+<section class="features-section" id="features">
 	<div class="page-container features-section__container">
 		<h2 class="features-section__title">Designed for Every Type of Classroom Interaction</h2>
 		<p class="features-section__description">

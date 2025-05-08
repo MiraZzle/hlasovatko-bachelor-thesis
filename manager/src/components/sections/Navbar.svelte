@@ -18,15 +18,18 @@
 
 		<nav class="app-header__nav">
 			<ul>
-				<li><a href="/activities">Activities</a></li>
-				<li><a href="/discovery">Discovery</a></li>
-				<li><a href="/developers">For Developers</a></li>
-				<li><a href="/resources">Resources</a></li>
+				<li><a href="#features">Activities</a></li>
+				<li><a href="/discovery">Usecases</a></li>
+				<li>
+					<a href="https://github.com/MiraZzle/hlasovatko-bachelor-thesis" target="_blank"
+						>For Developers</a
+					>
+				</li>
 			</ul>
 		</nav>
 
 		<div class="app-header__actions">
-			<Button variant="outline" onclick={handleSignUp}>Sign Up</Button>
+			<Button variant="outline" onclick={handleSignUp}>Request Account</Button>
 			<Button variant="primary" onclick={handleLogin}>Log In</Button>
 		</div>
 
