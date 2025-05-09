@@ -231,7 +231,7 @@
 				type="file"
 				accept=".json,application/json"
 				bind:this={fileInputRef}
-				on:change={handleFileSelect}
+				onchange={handleFileSelect}
 				hidden
 				id="template-file-input"
 			/>
