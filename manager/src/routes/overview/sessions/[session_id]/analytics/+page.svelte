@@ -133,7 +133,7 @@
 			// Add flex if putting stats next to title
 		}
 		&__title {
-			font-size: $font-size-3xl;
+			font-size: $font-size-2xl;
 			font-weight: $font-weight-bold;
 			margin-bottom: $spacing-md; // Space below title if stats are separate
 		}

@@ -1,60 +1,67 @@
 <script lang="ts">
 	// Define the props the component accepts
-	// Note: 'value' is now just a regular prop with a default.
-	// Svelte handles the binding when the parent uses bind:value={$someState}
+	type Props = {
+		type?: 'text' | 'email' | 'password' | 'number';
+		name?: string;
+		id?: string;
+		placeholder?: string;
+		value?: string; // Bindable
+		required?: boolean;
+		disabled?: boolean;
+		label?: string | null;
+		ariaLabel?: string | null;
+		oninput?: (event: Event & { currentTarget: HTMLInputElement }) => void; // Corrected event type
+		onkeydown?: (event: KeyboardEvent & { currentTarget: HTMLInputElement }) => void; // <<< ADDED: onkeydown prop
+		class?: string; // Allow passing additional classes
+	};
+
 	let {
-		type = 'text' as 'text' | 'email' | 'password' | 'number',
+		type = 'text',
 		name = '',
 		id = '',
 		placeholder = '',
 		value = $bindable(''),
 		required = false,
 		disabled = false,
-		label = null as string | null,
-		ariaLabel = null as string | null, // For accessibility when label is not visible
-		oninput = null as ((event: Event) => void) | null
-	} = $props<{
-		type?: 'text' | 'email' | 'password' | 'number';
-		name?: string;
-		id?: string;
-		placeholder?: string;
-		value?: string; // This prop can be bound by the parent
-		required?: boolean;
-		disabled?: boolean;
-		label?: string | null;
-		ariaLabel?: string | null;
-		oninput?: (event: Event) => void;
-	}>();
+		label = null,
+		ariaLabel = null,
+		oninput,
+		onkeydown, // <<< ADDED: Destructure onkeydown
+		class: customClass = ''
+	}: Props = $props();
 
-	// Generate default id if not provided
-	// Use $derived if id generation depends on reactive props, but here it's simple initialization logic.
 	const defaultId = `input-${Math.random().toString(36).substring(2, 9)}`;
-	let currentId = id || defaultId; // Use a let if id prop could change reactively, otherwise const is fine.
+	let currentId = id || defaultId;
+
+	// Combine internal and passed classes for the input element itself
+	let inputClasses = `input-wrapper__input ${customClass}`.trim();
 </script>
 
 <div class="input-wrapper">
 	{#if label}
-		<label for={id} class="input-wrapper__label">
+		<label for={currentId} class="input-wrapper__label">
 			{label}
 		</label>
 	{/if}
 	<input
-		class="input-wrapper__input"
+		class={inputClasses}
 		bind:value
 		{type}
 		{name}
-		{id}
+		id={currentId}
 		{placeholder}
 		{required}
 		{disabled}
 		aria-label={ariaLabel || label}
 		{oninput}
+		{onkeydown}
 	/>
 </div>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
+	@import '../../../styles/variables.scss'; // Adjust path if needed
 
+	// Block: input-wrapper
 	.input-wrapper {
 		width: 100%; // Make wrapper take full width by default
 
@@ -66,7 +73,9 @@
 			color: $color-text-secondary;
 		}
 
+		// Styles for the native input element
 		&__input {
+			// This is the base class applied by the component
 			width: 100%;
 			padding: $spacing-sm $spacing-md;
 			border: $border-width-thin solid $color-input-border;
@@ -93,21 +102,5 @@
 				opacity: 0.7;
 			}
 		}
-
-		// Potential style for error state
-		// &.input-wrapper--error {
-		//     .input-wrapper__input {
-		//         border-color: $color-error;
-		//         &:focus {
-		//             box-shadow: 0 0 0 2px rgba($color-error, 0.2);
-		//         }
-		//     }
-		//     .input-wrapper__error {
-		//         display: block; // Show error message
-		//         color: $color-error;
-		//         font-size: $font-size-xs;
-		//         margin-top: $spacing-xs;
-		//     }
-		// }
 	}
 </style>
