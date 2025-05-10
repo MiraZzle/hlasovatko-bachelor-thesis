@@ -1,36 +1,41 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Button from '$components/elements/typography/Button.svelte';
-	import LiveActivityQueueItem from '$components/activities/LiveActivityQueueItem.svelte';
-	import LiveResultsDisplay from '$components/activities/LiveResultsDisplay.svelte';
+	import LiveActivityQueueItem from '$components/activities/LiveActivityQueueItem.svelte'; // Verify path
+	import LiveResultsDisplay from '$components/activities/LiveResultsDisplay.svelte'; // Verify path
 	// Import display components for the teacher's view of the current activity
-	import MultipleChoice from '$components/activities/MultipleChoice.svelte';
-	import Poll from '$components/activities/Poll.svelte';
-	import ScaleRating from '$components/activities/ScaleRating.svelte';
-	import OpenEnded from '$components/activities/OpenEnded.svelte';
-	import RawJson from '$components/activities/RawJson.svelte';
-	import { onMount } from 'svelte';
+	import MultipleChoiceDisplay from '$components/activities/MultipleChoice.svelte'; // Verify path
+	import PollDisplay from '$components/activities/Poll.svelte'; // Verify path
+	import ScaleRatingDisplay from '$components/activities/ScaleRating.svelte'; // Verify path
+	import OpenEndedDisplay from '$components/activities/OpenEnded.svelte'; // Verify path
+	import RawJsonDisplay from '$components/activities/RawJson.svelte'; // Verify path
+	import SessionAnalyticsItem from '$components/analytics/SessionAnalyticsItem.svelte'; // Verify path
 
-	import type { SessionActivity, KnownActivityDefinition } from '$lib/types';
+	import type {
+		MultipleChoiceDefinition,
+		PollDefinition,
+		ScaleRatingDefinition
+	} from '$lib/activity_types'; // Adjust path
+	import type { SessionActivity, KnownActivityDefinition } from '$lib/types'; // Adjust path
 	import {
 		getKnownDefinition,
 		isMultipleChoice,
 		isPoll,
 		isScaleRating,
 		isOpenEnded
-	} from '$lib/types';
+	} from '$lib/types'; // Adjust path
+	import { onMount } from 'svelte';
+	import MultipleChoice from '$components/activities/MultipleChoice.svelte';
 
 	// --- Get Session ID ---
 	let { session_id } = $page.params;
 
 	// --- State ---
-	// In a real app, this would be fetched and updated via WebSockets
-	let participantCount = $state(Math.floor(Math.random() * 50)); // Dummy
-	let sessionCode = $state('ABCXYZ'); // Dummy
-	let sessionJoinLink = $derived(`${$page.url.origin}/join/${sessionCode}`); // Example
+	let participantCount = $state(Math.floor(Math.random() * 50));
+	let sessionCode = $state('ABCXYZ');
+	let sessionJoinLink = $derived(`${$page.url.origin}/join/${sessionCode}`);
 
 	let allActivities = $state<SessionActivity[]>([
-		// Dummy data from previous activity list example, ensure definitions have 'type'
 		{
 			id: 'sact1',
 			type: 'Poll',
@@ -43,7 +48,13 @@
 				]
 			},
 			status: 'Pending',
-			order: 1
+			order: 1,
+			participantCount: 20,
+			responseCount: 18,
+			results: [
+				{ id: 'o1', text: 'Topic A', count: 12 },
+				{ id: 'o2', text: 'Topic B', count: 6 }
+			]
 		},
 		{
 			id: 'sact2',
@@ -60,7 +71,14 @@
 				allowMultiple: false
 			},
 			status: 'Pending',
-			order: 2
+			order: 2,
+			participantCount: 20,
+			responseCount: 19,
+			results: [
+				{ id: 'm1', text: 'Nucleus', count: 2 },
+				{ id: 'm2', text: 'Ribosome', count: 1 },
+				{ id: 'm3', text: 'Mitochondrion', count: 16 }
+			]
 		},
 		{
 			id: 'sact3',
@@ -74,7 +92,16 @@
 				maxLabel: 'Confident'
 			},
 			status: 'Pending',
-			order: 3
+			order: 3,
+			participantCount: 20,
+			responseCount: 17,
+			results: [
+				{ rating: 1, count: 0 },
+				{ rating: 2, count: 1 },
+				{ rating: 3, count: 5 },
+				{ rating: 4, count: 8 },
+				{ rating: 5, count: 3 }
+			]
 		},
 		{
 			id: 'sact4',
@@ -82,66 +109,61 @@
 			title: 'Any remaining questions?',
 			definition: { type: 'OpenEnded' },
 			status: 'Pending',
-			order: 4
+			order: 4,
+			participantCount: 20,
+			responseCount: 5,
+			results: [
+				'No questions.',
+				'Explain slide 10 again.',
+				'Can we have more examples?',
+				'None',
+				'What is the deadline?'
+			]
 		}
 	]);
 
 	let currentActivityId = $state<string | null>(null);
-	let showResultsToParticipants = $state(false);
+	let showResultsToParticipants = $state(false); // Teacher sees results, this controls student visibility
 
-	// --- Derived State ---
 	// --- Derived State ---
 	let currentActivity = $derived(allActivities.find((act) => act.id === currentActivityId) ?? null);
-
-	function getCurrentActivityParsedDef() {
-		const activity = currentActivity; // Get current value of the signal
+	let currentActivityParsedDef = $derived(() => {
+		const activity = currentActivity;
 		if (!activity?.definition) return null;
-
 		let def = activity.definition;
 		if (typeof def === 'string') {
 			try {
 				def = JSON.parse(def);
 			} catch (e) {
-				console.error(`Failed to parse definition string for activity ${activity.id}:`, e);
-				return { error: 'Invalid JSON in definition string', original: activity.definition };
+				return { error: 'Invalid JSON', original: activity.definition };
 			}
 		}
-
-		if (typeof def !== 'object' || def === null) {
-			console.warn(
-				`Activity ${activity.id} definition is not a valid object after potential parsing.`
-			);
-			return { error: 'Definition is not a valid object', original: activity.definition };
-		}
-
-		// Ensure the 'type' property is correctly set in the definition object
-		// This is crucial for the type guards to work.
-		if (!('type' in def) || def.type !== activity.type) {
-			// console.warn(`Injecting/correcting type '${activity.type}' into definition for activity ${activity.id}`);
-			return { ...def, type: activity.type }; // Return a new object with the correct type
+		if (
+			typeof def === 'object' &&
+			def !== null &&
+			!('type' in def) &&
+			typeof activity.type === 'string'
+		) {
+			return { ...def, type: activity.type };
 		}
 		return def;
-	}
-
-	// currentActivityParsedDef will hold the processed definition object or null/string on error
-	let currentActivityParsedDef = $derived(getCurrentActivityParsedDef());
+	});
+	// This is not strictly needed if type guards are used on currentActivityParsedDef directly
+	// let currentActivityKnownDef = $derived(currentActivity ? getKnownDefinition({ ...currentActivity, definition: currentActivityParsedDef() }) : null);
 
 	// --- Handlers ---
 	function activateActivity(activityId: string) {
-		console.log(`Teacher activating activity: ${activityId}`);
-		// Set previous current to 'Closed' if it was active
 		if (currentActivityId) {
 			allActivities = allActivities.map((a) =>
 				a.id === currentActivityId ? { ...a, status: 'Closed' } : a
 			);
 		}
 		currentActivityId = activityId;
-		showResultsToParticipants = false; // Reset visibility
-		// Update status in the list
+		showResultsToParticipants = false;
 		allActivities = allActivities.map((a) =>
 			a.id === activityId ? { ...a, status: 'Active' } : a
 		);
-		// TODO: Send WebSocket message to clients to show this activity
+		console.log(`Teacher activating activity: ${activityId}`);
 	}
 
 	function stopCurrentActivity() {
@@ -150,62 +172,45 @@
 			allActivities = allActivities.map((a) =>
 				a.id === currentActivityId ? { ...a, status: 'Closed' } : a
 			);
-			// currentActivityId = null; // Or move to next, or wait for teacher to pick
-			// TODO: Send WebSocket message
+			// currentActivityId = null; // Decide if it clears or just sets to closed
 		}
 	}
 
 	function toggleResultsVisibility() {
 		showResultsToParticipants = !showResultsToParticipants;
 		console.log(`Results visibility for participants: ${showResultsToParticipants}`);
-		// TODO: Send WebSocket message
 	}
 
 	function advanceToNext() {
-		if (!currentActivity) {
-			// If no activity is current, start the first pending one
-			const firstPending = allActivities.find((a) => a.status === 'Pending');
-			if (firstPending) activateActivity(firstPending.id);
-			return;
-		}
-		const currentIndex = allActivities.findIndex((act) => act.id === currentActivityId);
-		// Find next pending activity
-		let nextActivity = null;
-		for (let i = currentIndex + 1; i < allActivities.length; i++) {
+		const currentIdx = currentActivity
+			? allActivities.findIndex((act) => act.id === currentActivityId)
+			: -1;
+		let nextPendingActivity = null;
+		for (let i = currentIdx + 1; i < allActivities.length; i++) {
 			if (allActivities[i].status === 'Pending') {
-				nextActivity = allActivities[i];
+				nextPendingActivity = allActivities[i];
 				break;
 			}
 		}
-		if (nextActivity) {
-			activateActivity(nextActivity.id);
+
+		if (nextPendingActivity) {
+			activateActivity(nextPendingActivity.id);
 		} else {
-			console.log('No more pending activities.');
-			// Maybe set currentActivityId to null if all are done
-			if (currentActivityId) {
-				allActivities = allActivities.map((a) =>
-					a.id === currentActivityId ? { ...a, status: 'Closed' } : a
-				);
+			// If current activity was active, close it
+			if (currentActivity && currentActivity.status === 'Active') {
+				stopCurrentActivity();
 			}
-			currentActivityId = null;
+			console.log('No more pending activities or end of queue.');
 			alert('End of activity queue!');
+			// currentActivityId = null; // Optionally clear current activity
 		}
 	}
 
 	function endSession() {
-		console.log('Ending session:', session_id);
-		alert('Session Ended (Placeholder)');
-		// TODO: API call, WebSocket messages
-		// goto('/sessions');
+		/* ... */
 	}
-
-	// Mock participant count updates
 	onMount(() => {
-		const interval = setInterval(() => {
-			participantCount = participantCount + Math.floor(Math.random() * 3) - 1;
-			if (participantCount < 0) participantCount = 0;
-		}, 5000);
-		return () => clearInterval(interval);
+		/* ... mock participant updates ... */
 	});
 </script>
 
@@ -219,7 +224,7 @@
 			<span>Code: <strong>{sessionCode}</strong></span>
 			<span>Participants: <strong>{participantCount}</strong></span>
 		</div>
-		<Button onclick={endSession}>End Session</Button>
+		<Button variant="danger" onclick={endSession}>End Session</Button>
 	</header>
 
 	<div class="live-session-page__main-grid">
@@ -236,53 +241,71 @@
 			</div>
 		</aside>
 
-		<section class="live-session-page__current-activity-panel">
-			<h2 class="live-session-page__panel-title">Current Activity</h2>
-			{#if currentActivity && currentActivityParsedDef}
-				<div class="current-activity-card">
-					<div class="current-activity-card__header">
-						<span class="current-activity-card__type">{currentActivity.type}</span>
-						<h3 class="current-activity-card__title">{currentActivity.title}</h3>
-					</div>
-					<div class="current-activity-card__body">
-						{#if isMultipleChoice(currentActivityParsedDef)}
-							<MultipleChoice definition={currentActivityParsedDef} />
-						{:else if isPoll(currentActivityParsedDef)}
-							<Poll definition={currentActivityParsedDef} />
-						{:else if isScaleRating(currentActivityParsedDef)}
-							<ScaleRating definition={currentActivityParsedDef} />
-						{:else if isOpenEnded(currentActivityParsedDef)}
-							<OpenEnded />
-						{:else}
-							<RawJson definition={currentActivityParsedDef} />
-						{/if}
-					</div>
-					<div class="current-activity-card__controls">
-						{#if currentActivity.status === 'Active'}
-							<Button onclick={stopCurrentActivity}>Stop Activity</Button>
-						{:else if currentActivity.status === 'Pending' || currentActivity.status === 'Closed'}
-							<Button onclick={() => activateActivity(currentActivity.id)}
-								>Start This Activity</Button
+		<section class="live-session-page__center-panel">
+			<div class="live-session-page__current-activity-display">
+				<h2 class="live-session-page__panel-title">Current Activity</h2>
+				{#if currentActivity && currentActivityParsedDef()}
+					<div class="current-activity-card">
+						<div class="current-activity-card__header">
+							<span class="current-activity-card__type">{currentActivity.type}</span>
+							<h3 class="current-activity-card__title">{currentActivity.title}</h3>
+						</div>
+						<div class="current-activity-card__body">
+							{#if isMultipleChoice(currentActivityParsedDef())}
+								<MultipleChoiceDisplay
+									definition={currentActivityParsedDef() as MultipleChoiceDefinition}
+								/>
+							{:else if isPoll(currentActivityParsedDef())}
+								<PollDisplay definition={currentActivityParsedDef() as PollDefinition} />
+							{:else if isScaleRating(currentActivityParsedDef())}
+								<ScaleRatingDisplay
+									definition={currentActivityParsedDef() as ScaleRatingDefinition}
+								/>
+							{:else if isOpenEnded(currentActivityParsedDef())}
+								<OpenEndedDisplay />
+							{:else}
+								<RawJsonDisplay definition={currentActivityParsedDef()} />
+							{/if}
+						</div>
+						<div class="current-activity-card__controls">
+							{#if currentActivity.status === 'Active'}
+								<Button variant="warning" size="sm" onclick={stopCurrentActivity}
+									>Stop Activity</Button
+								>
+							{:else if currentActivity.status === 'Pending' || currentActivity.status === 'Closed'}
+								<Button
+									variant="success"
+									size="sm"
+									onclick={() => activateActivity(currentActivity.id)}>Start This Activity</Button
+								>
+							{/if}
+							<Button variant="outline" size="sm" onclick={toggleResultsVisibility}>
+								{showResultsToParticipants ? 'Hide Results (Students)' : 'Show Results (Students)'}
+							</Button>
+							<Button variant="primary" size="sm" onclick={advanceToNext}
+								>Next Activity &rarr;</Button
 							>
-						{/if}
-						<Button variant="outline" onclick={toggleResultsVisibility}>
-							{showResultsToParticipants ? 'Hide Results' : 'Show Results'}
-						</Button>
-						<Button variant="primary" onclick={advanceToNext}>Next Activity &rarr;</Button>
+						</div>
 					</div>
-				</div>
-			{:else}
-				<div class="current-activity-panel__placeholder">
-					<p>No activity selected or active.</p>
-					<Button variant="primary" onclick={advanceToNext}>Start First Activity</Button>
-				</div>
-			{/if}
-		</section>
+				{:else}
+					<div class="current-activity-panel__placeholder">
+						<p>No activity selected or active.</p>
+						<Button variant="primary" onclick={advanceToNext}>Start First Activity</Button>
+					</div>
+				{/if}
+			</div>
 
-		<aside class="live-session-page__results-panel">
-			<h2 class="live-session-page__panel-title">Live Results</h2>
-			<LiveResultsDisplay activity={currentActivity} {showResultsToParticipants} />
-		</aside>
+			<div class="live-session-page__live-results-display">
+				<h2 class="live-session-page__panel-title">Live Results</h2>
+				{#if currentActivity}
+					<SessionAnalyticsItem activity={currentActivity} />
+				{:else}
+					<div class="live-results-placeholder">
+						<p>Activate an activity to see live results.</p>
+					</div>
+				{/if}
+			</div>
+		</section>
 	</div>
 </div>
 
@@ -294,6 +317,7 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%; // Fill the content slot of the parent layout
+		overflow: hidden; // Prevent overall page scroll
 
 		// Element: Top Control Bar
 		&__top-bar {
@@ -301,12 +325,10 @@
 			justify-content: space-between;
 			align-items: center;
 			padding: $spacing-sm $spacing-md;
-			background-color: darken($color-surface, 3%); // Slightly different from main content
+			background-color: darken($color-surface, 3%);
 			border-bottom: 1px solid $color-border;
 			flex-shrink: 0;
 		}
-
-		// Element: Session Info in Top Bar
 		&__session-info {
 			display: flex;
 			gap: $spacing-lg;
@@ -321,23 +343,21 @@
 		// Element: Main Content Grid
 		&__main-grid {
 			display: grid;
-			// Adjust columns for responsiveness: 1 for mobile, 3 for desktop
 			grid-template-columns: 1fr; // Mobile default
 			grid-template-rows: auto auto auto; // Stack panels on mobile
 			gap: $spacing-lg;
-			padding: $spacing-md; // Padding for the grid itself
+			padding: $spacing-md;
 			flex-grow: 1;
-			overflow: auto; // Allow grid to scroll if content overflows
+			overflow: hidden; // Grid itself should not scroll, panels will
 
 			@media (min-width: $breakpoint-lg) {
-				// Example: 1fr (queue) 2fr (main) 1.5fr (results)
-				grid-template-columns: 0.75fr 1.5fr 1fr;
-				grid-template-rows: 1fr; // Single row for desktop
+				grid-template-columns: 0.5fr 1.75fr;
+				grid-template-rows: 1fr; // Single row for desktop, all columns same height
 				padding: $spacing-lg;
 			}
 		}
 
-		// Element: Panel Title (common for queue, current, results)
+		// Element: Panel Title (common)
 		&__panel-title {
 			font-size: $font-size-md;
 			font-weight: $font-weight-semibold;
@@ -345,6 +365,7 @@
 			margin: 0 0 $spacing-sm 0;
 			text-transform: uppercase;
 			letter-spacing: 0.5px;
+			flex-shrink: 0;
 		}
 
 		// Element: Activity Queue Panel
@@ -354,8 +375,9 @@
 			padding: $spacing-md;
 			display: flex;
 			flex-direction: column;
-			overflow-y: auto; // Scrollable queue list
 			gap: $spacing-sm;
+			min-height: 0; // Needed for flex child to scroll
+			overflow-y: auto; // Scrollable queue list
 		}
 		&__queue-list {
 			display: flex;
@@ -363,12 +385,28 @@
 			gap: $spacing-sm;
 		}
 
-		// Element: Current Activity Panel
-		&__current-activity-panel {
+		// Element: Center Panel (New wrapper for Current Activity + Results)
+		&__center-panel {
 			display: flex;
 			flex-direction: column;
+			gap: $spacing-lg; // Space between current activity and results
+			min-height: 0; // Needed for flex child to scroll
+			overflow: hidden; // Prevent this panel from scrolling, children will
+		}
+
+		// Element: Current Activity Display Area (within center panel)
+		&__current-activity-display {
+			display: flex;
+			flex-direction: column;
+			flex-shrink: 1; // Allow shrinking but prioritize
+			min-height: 0; // Allow shrinking for scroll within card body
+			// background-color: $color-surface; // Moved to card
+			// border-radius: $border-radius-lg; // Moved to card
+			// padding: $spacing-lg; // Moved to card
+			// border: 1px solid $color-border; // Moved to card
+			// box-shadow: $box-shadow-md; // Moved to card
+
 			.current-activity-card {
-				// BEM block for the card itself
 				background-color: $color-surface;
 				border-radius: $border-radius-lg;
 				padding: $spacing-lg;
@@ -377,12 +415,14 @@
 				display: flex;
 				flex-direction: column;
 				gap: $spacing-md;
-				flex-grow: 1; // Take available space
+				flex-grow: 1; // Card takes available space
+				min-height: 0; // Allow card to shrink and body to scroll
 
 				&__header {
 					display: flex;
 					align-items: baseline;
 					gap: $spacing-sm;
+					flex-shrink: 0;
 				}
 				&__type {
 					background-color: $color-primary-light;
@@ -402,6 +442,7 @@
 				&__body {
 					flex-grow: 1;
 					overflow-y: auto; /* If content can be long */
+					padding-right: $spacing-xs; /* For scrollbar */
 				}
 				&__controls {
 					display: flex;
@@ -411,6 +452,7 @@
 					border-top: 1px solid $color-border-light;
 					padding-top: $spacing-md;
 					margin-top: $spacing-md;
+					flex-shrink: 0;
 				}
 			}
 			.current-activity-panel__placeholder {
@@ -431,12 +473,36 @@
 			}
 		}
 
-		// Element: Results Panel
-		&__results-panel {
+		// Element: Live Results Display Area (within center panel)
+		&__live-results-display {
 			display: flex;
 			flex-direction: column;
-			// Styles for the results panel container
-			// LiveResultsDisplay component will have its own internal styles
+			flex-shrink: 1; // Allow shrinking but prioritize
+			min-height: 0; // Allow shrinking for scroll within LiveResultsDisplay
+			// background-color: $color-surface; // Moved to LiveResultsDisplay component
+			// border-radius: $border-radius-lg; // Moved to LiveResultsDisplay component
+			// padding: $spacing-md; // Moved to LiveResultsDisplay component
+			// border: 1px solid $color-border-light; // Moved to LiveResultsDisplay component
+		}
+
+		// Element: Interaction Panel (Rightmost)
+		&__interaction-panel {
+			background-color: $color-surface-alt;
+			border-radius: $border-radius-md;
+			padding: $spacing-md;
+			display: flex;
+			flex-direction: column;
+			min-height: 0; // For scrolling
+			overflow-y: auto;
+
+			.interaction-panel__placeholder {
+				flex-grow: 1;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: $color-text-disabled;
+				font-style: italic;
+			}
 		}
 	}
 </style>

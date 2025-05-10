@@ -12,8 +12,8 @@
 	let { activity, isCurrent = false, isNextUp = false, onActivate }: Props = $props();
 
 	// Placeholder icons
-	const IconPlay = () => '▶️';
-	const IconCheck = () => '✔️';
+	const IconPlay = '▶️';
+	const IconCheck = '✔️';
 </script>
 
 <div
