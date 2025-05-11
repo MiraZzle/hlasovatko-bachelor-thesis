@@ -1,26 +1,10 @@
 <script lang="ts" generics="T extends string | number">
 	type Option = { value: T; label: string };
 
-	interface ActivityTypeOption {
-		value: T; // e.g., 'quiz', 'poll'
-		label: string; // e.g., 'Quiz', 'Poll'
-	}
-
-	let {
-		options,
-		value = $bindable(), // The bindable prop from the parent (Type T)
-		label = null as string | null,
-		id = '',
-		name = '',
-		required = false,
-		disabled = false,
-		ariaLabel = null as string | null,
-		onchange = (event: Event & { currentTarget: HTMLSelectElement }) => {
-			console.warn('onchange not provided', event.currentTarget.value);
-		}
-	}: {
-		options: Option[] | ActivityTypeOption[]; // Options for the select dropdown
-		value?: T;
+	// Define props for the component
+	type Props = {
+		options: Option[];
+		value?: T; // Bindable
 		label?: string | null;
 		id?: string;
 		name?: string;
@@ -28,21 +12,38 @@
 		disabled?: boolean;
 		ariaLabel?: string | null;
 		onchange?: (event: Event & { currentTarget: HTMLSelectElement }) => void;
-	} = $props();
+		width?: 'auto' | 'full'; // <<< ADDED: width prop with 'auto' or 'full'
+	};
+
+	let {
+		options,
+		value = $bindable(),
+		label = null,
+		id = '',
+		name = '',
+		required = false,
+		disabled = false,
+		ariaLabel = null,
+		onchange = (event) => {
+			console.warn('onchange not provided for Select', event.currentTarget.value);
+		},
+		width = 'auto' // Default width to 'auto'
+	}: Props = $props();
 
 	const defaultId = `select-${Math.random().toString(36).substring(2, 9)}`;
 	let currentId = id || defaultId;
 
-	// Derived state ONLY for setting the select's displayed value attribute (string)
+	// Derived state for the select's displayed value (always a string for native select)
 	let displayValue: string = $derived(String(value));
 
-	// Renamed handler for clarity
+	// Handler for when the native select's value changes
 	function handleChange(event: Event & { currentTarget: HTMLSelectElement }) {
 		const selectedStringValue = event.currentTarget.value;
+		// Find the original option to get the correct type (T) for the bound value
 		const selectedOption = options.find((opt) => String(opt.value) === selectedStringValue);
 
 		if (selectedOption) {
-			// *** IMPORTANT: Update the original bindable 'value' prop (Type T) ***
+			// Update the bindable 'value' prop with the original type
 			value = selectedOption.value;
 		}
 
@@ -51,13 +52,18 @@
 			onchange(event);
 		}
 	}
+
+	// --- NEW: Derived class for the container based on width prop ---
+	let containerClasses = $derived(
+		`select-wrapper__container ${width === 'full' ? 'select-wrapper__container--full' : ''}`
+	);
 </script>
 
 <div class="select-wrapper">
 	{#if label}
 		<label for={currentId} class="select-wrapper__label">{label}</label>
 	{/if}
-	<div class="select-wrapper__container">
+	<div class={containerClasses}>
 		<select
 			class="select-wrapper__select"
 			{name}
@@ -81,11 +87,17 @@
 </div>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
+	@import '../../../styles/variables.scss'; // Adjust path if needed
 
+	// Block: select-wrapper
 	.select-wrapper {
-		width: 100%; // Or inline-block depending on usage context
+		// If width is 'full', the wrapper itself should also be full width
+		// This is handled by its parent or by adding a modifier here if needed.
+		// For now, assuming parent controls the overall block width.
+		// If select-wrapper needs to be 100% when width='full', add:
+		// &.select-wrapper--full { width: 100%; }
 
+		// Element: Label
 		&__label {
 			display: block;
 			margin-bottom: $spacing-xs;
@@ -94,18 +106,27 @@
 			color: $color-text-secondary;
 		}
 
+		// Element: Container (for select and icon)
 		&__container {
-			position: relative; // For positioning the icon
-			display: inline-block; // Make container wrap the select width
-			min-width: 150px; // Example min-width
+			position: relative;
+			display: inline-block; // Default: wraps content width
+			min-width: 150px; // Default minimum width
+
+			// Modifier: Full width
+			&--full {
+				display: block; // Change display to block for full width
+				width: 100%; // Take full width of its parent
+				min-width: unset; // Remove min-width when full
+			}
 		}
 
+		// Element: Native select
 		&__select {
-			appearance: none; // Remove default browser appearance
+			appearance: none;
 			-webkit-appearance: none;
 			-moz-appearance: none;
-			width: 100%;
-			padding: $spacing-sm $spacing-xl $spacing-sm $spacing-md; // Space for icon on right
+			width: 100%; // Select always takes full width of its container
+			padding: $spacing-sm $spacing-xl $spacing-sm $spacing-md;
 			border: $border-width-thin solid $color-input-border;
 			border-radius: $border-radius-md;
 			background-color: $color-surface;
@@ -127,12 +148,13 @@
 			}
 		}
 
+		// Element: Dropdown Icon
 		&__icon {
 			position: absolute;
 			right: $spacing-md;
 			top: 50%;
 			transform: translateY(-50%);
-			pointer-events: none; // Icon shouldn't be interactive
+			pointer-events: none;
 			color: $color-text-secondary;
 		}
 	}

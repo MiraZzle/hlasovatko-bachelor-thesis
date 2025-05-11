@@ -137,6 +137,7 @@
 			bind:value={selectedActivityType}
 			required
 			disabled={isSubmitting}
+			width="full"
 		/>
 
 		<TextArea

@@ -189,7 +189,6 @@
 			position: absolute;
 			top: $spacing-md; // Position inside top-right corner
 			right: $spacing-md;
-			// Reset button styles
 			background: none;
 			border: none;
 			padding: $spacing-xs;
@@ -202,6 +201,8 @@
 			justify-content: center;
 			line-height: 0; // Prevent extra height from line-height
 			z-index: 1; // Ensure it's above content
+			height: $font-size-3xl;
+			width: $font-size-3xl;
 
 			&:hover {
 				color: $color-text-primary;

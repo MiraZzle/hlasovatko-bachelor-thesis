@@ -106,6 +106,7 @@
 			options={deriveOptions}
 			bind:value={deriveFromId}
 			disabled={isSubmitting}
+			width="full"
 		/>
 
 		<div class="create-template-modal__actions">

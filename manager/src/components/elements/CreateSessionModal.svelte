@@ -121,6 +121,7 @@
 			bind:value={selectedTemplateId}
 			required
 			disabled={isSubmitting}
+			width="full"
 		/>
 
 		<Input

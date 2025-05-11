@@ -84,6 +84,7 @@
 			bind:value={selectedFormat}
 			required
 			disabled={isSubmitting}
+			width="full"
 		/>
 
 		<div class="export-analytics-modal__actions">
