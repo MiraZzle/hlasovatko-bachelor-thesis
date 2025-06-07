@@ -67,7 +67,7 @@
 		justify-content: center;
 		border-radius: $border-radius-md;
 		font-family: $font-family-primary;
-		font-weight: $font-weight-medium;
+		font-weight: 500;
 		text-align: center;
 		text-decoration: none;
 		cursor: pointer;
@@ -163,8 +163,8 @@
 		// Outline (Primary)
 		&--outline {
 			background-color: transparent;
-			color: $color-primary;
-			border-color: $color-primary;
+			color: $color-text-secondary;
+			border-color: $color-text-secondary;
 			&:hover:not(:disabled) {
 				background-color: rgba($color-primary, 0.08);
 				opacity: 1;
