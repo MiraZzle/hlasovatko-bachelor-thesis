@@ -6,6 +6,8 @@
 	import ModalDialog from '$components/elements/ModalDialog.svelte';
 	import Select from '$components/elements/typography/Select.svelte'; // Assuming Select is in elements
 	import CreateTemplateModal from '$components/elements/CreateTemplateModal.svelte';
+	import DataTable from '$components/dashboard/DataTable.svelte';
+	import type { ColumnHeader } from '$components/dashboard/DataTable.svelte'; // Assuming ColumnHeader is exported as a type
 
 	interface Template {
 		id: string;
@@ -19,6 +21,7 @@
 	// --- State ---
 	let searchTerm = $state('');
 	let currentPage = $state(1);
+	let totalPages = $state(1);
 	let templates = $state<Template[]>([
 		// Dummy data...
 		{
@@ -54,6 +57,15 @@
 			tags: ['ndbi046', 'review']
 		}
 	]);
+
+	// --- Column Definitions for the DataTable ---
+	const columns: ColumnHeader<Template>[] = [
+		{ key: 'title', label: 'Title', sortable: true },
+		{ key: 'dateCreated', label: 'Date created', sortable: true },
+		{ key: 'status', label: 'Status', sortable: true },
+		{ key: 'tags', label: 'Tags', sortable: false }, // Tags array is not easily sortable
+		{ key: 'id', label: 'Actions', sortable: false } // 'id' is a placeholder key for the actions column
+	];
 
 	// --- NEW State for Modal ---
 	let isCreateModalOpen = $state(false);
@@ -167,6 +179,22 @@
 <svelte:head>
 	<title>My Templates - EngaGenie</title>
 </svelte:head>
+
+<DataTable
+	title="My Templates"
+	searchPlaceholder="Search Templates by title, type, code"
+	items={filteredTemplates}
+	{columns}
+	noResultsMessage="No templates found."
+	onNewClick={createNewTemplate}
+	bind:searchTerm
+	bind:currentPage
+	{totalPages}
+>
+	<svelte:fragment slot="row" let:item>
+		<TemplateRow template={item} onActionClick={handleAction} />
+	</svelte:fragment>
+</DataTable>
 
 <div class="templates-page">
 	<header class="templates-page__header">
