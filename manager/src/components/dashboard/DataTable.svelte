@@ -20,6 +20,7 @@
 		items,
 		columns,
 		title,
+		newItemLabel,
 		searchPlaceholder,
 		noResultsMessage = 'No items found.',
 		onNewClick,
@@ -30,10 +31,11 @@
 	} = $props<{
 		items: T[];
 		columns: ColumnHeader<T>[];
-		title: string;
+		title?: string;
+		newItemLabel?: string;
 		searchPlaceholder: string;
 		noResultsMessage?: string;
-		onNewClick: () => void;
+		onNewClick?: () => void;
 		searchTerm?: string;
 		currentPage?: number;
 		totalPages?: number;
@@ -106,7 +108,9 @@
 				bind:value={searchTerm}
 			/>
 		</div>
-		<Button variant="primary" onclick={onNewClick}>+ New {title.slice(3, -1)}</Button>
+		{#if onNewClick}
+			<Button variant="primary" onclick={onNewClick}>+ New {newItemLabel ?? ''}</Button>
+		{/if}
 	</header>
 
 	<div class="data-table-page__table-wrapper">

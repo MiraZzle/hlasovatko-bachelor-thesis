@@ -180,68 +180,22 @@
 	<title>My Templates - EngaGenie</title>
 </svelte:head>
 
-<DataTable
-	title="My Templates"
-	searchPlaceholder="Search Templates by title, type, code"
-	items={filteredTemplates}
-	{columns}
-	noResultsMessage="No templates found."
-	onNewClick={createNewTemplate}
-	bind:searchTerm
-	bind:currentPage
-	{totalPages}
->
-	<svelte:fragment slot="row" let:item>
-		<TemplateRow template={item} onActionClick={handleAction} />
-	</svelte:fragment>
-</DataTable>
-
 <div class="templates-page">
-	<header class="templates-page__header">
-		<h1 class="templates-page__title">My Templates</h1>
-		<div class="templates-page__search">
-			<Input
-				placeholder="Search Templates by title, type, code"
-				ariaLabel="Search Templates"
-				bind:value={searchTerm}
-				oninput={handleSearch}
-			/>
-		</div>
-		<Button variant="primary" onclick={createNewTemplate}>+ New Template</Button>
-	</header>
-
-	<div class="templates-page__table-wrapper">
-		<table class="data-table">
-			<thead>
-				<tr>
-					<th>Title</th>
-					<th>Date created</th>
-					<th>Status</th>
-					<th>Tags</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each filteredTemplates as template}
-					<TemplateRow {template} onActionClick={handleAction} />
-				{:else}
-					<tr>
-						<td colspan="5" class="data-table__no-results"> No templates found. </td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-
-	<footer class="templates-page__pagination">
-		<span>Page {currentPage}</span>
-		<div class="templates-page__pagination-controls">
-			<Button variant="outline" onclick={handlePreviousPage} disabled={currentPage <= 1}>
-				&larr; Previous
-			</Button>
-			<Button variant="outline" onclick={handleNextPage}>Next &rarr;</Button>
-		</div>
-	</footer>
+	<DataTable
+		title="My Templates"
+		searchPlaceholder="Search Templates by title, type, code"
+		items={filteredTemplates}
+		{columns}
+		noResultsMessage="No templates found."
+		onNewClick={createNewTemplate}
+		bind:searchTerm
+		bind:currentPage
+		{totalPages}
+	>
+		<svelte:fragment slot="row" let:item>
+			<TemplateRow template={item} onActionClick={handleAction} />
+		</svelte:fragment>
+	</DataTable>
 
 	<CreateTemplateModal
 		bind:open={isCreateModalOpen}

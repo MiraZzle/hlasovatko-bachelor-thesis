@@ -4,6 +4,8 @@
 	import Input from '$components/elements/typography/Input.svelte'; // Verify path
 	import SessionRow from '$components/dashboard/SessionRow.svelte'; // Reuse SessionRow
 	import CreateSessionModal from '$components/elements/CreateSessionModal.svelte';
+	import DataTable from '$components/dashboard/DataTable.svelte';
+	import type { ColumnHeader } from '$components/dashboard/DataTable.svelte';
 
 	// Define Session type (or import from global types)
 	interface Session {
@@ -32,7 +34,15 @@
 	// --- State ---
 	let searchTerm = $state('');
 	let currentPage = $state(1);
-	// Dummy data for ALL sessions (replace with actual fetch)
+
+	const columns: ColumnHeader<Session>[] = [
+		{ key: 'title', label: 'Title', sortable: true },
+		{ key: 'created', label: 'Created', sortable: true },
+		{ key: 'status', label: 'Status', sortable: true },
+		{ key: 'participants', label: 'Participants', sortable: true },
+		{ key: 'id', label: 'Actions', sortable: false } // Using 'id' as a stable key for the actions column
+	];
+
 	let sessions = $state<Session[]>([
 		{
 			id: 's1',
@@ -149,51 +159,21 @@
 </svelte:head>
 
 <div class="sessions-overview-page">
-	<header class="sessions-overview-page__header">
-		<h1 class="sessions-overview-page__title">My Sessions</h1>
-		<div class="sessions-overview-page__search">
-			<Input
-				placeholder="Search sessions by title, code..."
-				ariaLabel="Search sessions"
-				bind:value={searchTerm}
-				oninput={handleSearch}
-			/>
-		</div>
-		<Button variant="primary" onclick={createNewSession}>+ New Session</Button>
-	</header>
-
-	<div class="sessions-overview-page__table-wrapper">
-		<table class="data-table">
-			<thead>
-				<tr>
-					<th>Title</th>
-					<th>Created</th>
-					<th>Status</th>
-					<th>Participants</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each filteredSessions as session}
-					<SessionRow {session} onActionClick={handleAction} />
-				{:else}
-					<tr>
-						<td colspan="5" class="data-table__no-results"> You haven't run any sessions yet. </td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	</div>
-
-	<footer class="sessions-overview-page__pagination">
-		<span>Page {currentPage}</span>
-		<div class="sessions-overview-page__pagination-controls">
-			<Button variant="outline" onclick={handlePreviousPage} disabled={currentPage <= 1}>
-				&larr; Previous
-			</Button>
-			<Button variant="outline" onclick={handleNextPage}>Next &rarr;</Button>
-		</div>
-	</footer>
+	<DataTable
+		title="My Sessions"
+		searchPlaceholder="Search sessions by title, code..."
+		items={filteredSessions}
+		{columns}
+		noResultsMessage="You haven't run any sessions yet."
+		onNewClick={createNewSession}
+		bind:searchTerm
+		bind:currentPage
+		totalPages={Math.ceil(filteredSessions.length / 10)}
+	>
+		<svelte:fragment slot="row" let:item>
+			<SessionRow session={item} onActionClick={handleAction} />
+		</svelte:fragment>
+	</DataTable>
 
 	<CreateSessionModal
 		bind:open={isCreateSessionModalOpen}
