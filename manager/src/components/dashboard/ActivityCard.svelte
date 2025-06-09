@@ -1,10 +1,5 @@
 <script lang="ts">
-	interface Activity {
-		id: string;
-		type: string;
-		question: string;
-		tags: string[];
-	}
+	import type { ActivityDef } from '$lib/activity_types';
 
 	let {
 		activity,
@@ -12,7 +7,7 @@
 			console.log('Activity card clicked:', id);
 		}
 	}: {
-		activity: Activity;
+		activity: ActivityDef;
 		onclick?: (id: string) => void;
 	} = $props();
 </script>

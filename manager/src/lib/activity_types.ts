@@ -51,7 +51,7 @@ export interface Template {
 	title: string;
 	code: string;
 	dateCreated: string;
-	status: string; // Keep as string if statuses vary widely
+	status: string;
 	tags: string[];
 }
 
@@ -66,6 +66,13 @@ export interface SessionActivity {
 	definition: KnownActivityDefinition | UnknownDefinition | object;
 	status?: SessionActivityStatus;
 	order?: number;
+}
+
+export interface ActivityDef {
+	id: string;
+	type: string;
+	question: string;
+	tags: string[];
 }
 
 export function isMultipleChoice(def: unknown): def is MultipleChoiceDefinition {

@@ -1,32 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
+	import Button from '$components/elements/typography/Button.svelte';
+	import { startSession, stopSession } from '$lib/functions/session_actions';
+	import ShareSessionModal from '$components/elements/ShareSessionModal.svelte';
 
-	// --- Component Props ---
-	// Expects data needed for the session top bar
-	type Props = {
+	let {
+		sessionId,
+		sessionTitle,
+		sessionStatus
+	}: {
 		sessionId: string;
 		sessionTitle: string;
 		sessionStatus: 'Active' | 'Inactive' | 'Finished';
-		// Add any other needed data or handlers as props
-	};
+	} = $props();
 
-	let { sessionId, sessionTitle, sessionStatus }: Props = $props();
+	let isShareModalOpen = $state(false);
 
-	// --- Handlers (These could also be passed as props if more complex) ---
-	function stopSession() {
-		console.log(`Stopping session ${sessionId}...`);
-		// TODO: API call & update state (likely via parent)
-		alert('Stopping session (placeholder)');
-	}
-	function startSession() {
-		console.log(`Starting session ${sessionId}...`);
-		// TODO: API call & update state (likely via parent)
-		alert('Starting session (placeholder)');
-	}
 	function handleShare() {
-		console.log('Sharing session:', sessionId);
-		alert(`Sharing session ${sessionId} (placeholder)`);
+		isShareModalOpen = true;
 	}
 	function handlePresent() {
 		console.log('Presenting session:', sessionId);
@@ -44,17 +35,21 @@
 <Button variant="primary" onclick={handlePresent}>Present</Button>
 
 {#if sessionStatus === 'Active'}
-	<Button onclick={stopSession}>Stop Session</Button>
+	<Button onclick={() => stopSession(sessionId)}>Stop Session</Button>
 {:else if sessionStatus === 'Inactive'}
-	<Button onclick={startSession}>Start Session</Button>
+	<Button onclick={() => startSession(sessionId)}>Start Session</Button>
 {/if}
 
-<style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+<ShareSessionModal
+	open={isShareModalOpen}
+	url={`https://example.com/sessions/${sessionId}`}
+	code={sessionId}
+	onclose={() => (isShareModalOpen = false)}
+/>
 
-	// --- Styles for elements rendered by this component ---
-	// Use the same BEM element names as defined in the session layout's style block
-	// to ensure consistent styling within the top bar container.
+<style lang="scss">
+	@import '../../styles/variables.scss';
+
 	.session-layout__title {
 		font-size: $font-size-lg;
 		font-weight: $font-weight-semibold;
@@ -91,5 +86,4 @@
 	.session-layout__topbar-spacer {
 		flex-grow: 1;
 	}
-	// --- End of styles ---
 </style>

@@ -168,10 +168,9 @@
 		onNewClick={createNewSession}
 		bind:searchTerm
 		bind:currentPage
-		totalPages={Math.ceil(filteredSessions.length / 10)}
 	>
 		<svelte:fragment slot="row" let:item>
-			<SessionRow session={item} onActionClick={handleAction} />
+			<SessionRow session={item} />
 		</svelte:fragment>
 	</DataTable>
 

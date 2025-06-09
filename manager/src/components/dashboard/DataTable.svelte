@@ -193,8 +193,10 @@
 		}
 
 		&__search {
-			max-width: 400px;
+			max-width: 320px;
 			min-width: 250px;
+
+			width: 100%;
 			:global(.input-wrapper) {
 				width: 100%;
 			}
