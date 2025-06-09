@@ -1,66 +1,72 @@
 <script lang="ts">
-	import { page } from '$app/stores'; // To determine the active route and params
-	import type { Snippet } from 'svelte'; // Needed for icon definitions
+	import { page } from '$app/stores';
 
-	// --- Define Link Structure ---
 	interface NavLink {
 		href: string;
 		label: string;
-		icon: String; // Expect Snippet type for icons
-		subLinks?: NavLink[]; // Optional array for nested links
+		icon: string;
+		subLinks?: NavLink[];
 	}
 
-	// --- Placeholder Icons (Replace with actual components/SVGs) ---
 	const IconTemplates = '📄';
 	const IconSessions = '▶️';
 	const IconAnalytics = '📊';
 	const IconActivityBank = '🏦';
-	const IconOverview = '👀'; // Example for session overview
+	const IconOverview = '👀';
 	const IconSessionActivities = '⚡';
 	const IconSessionAnalytics = '📈';
 	const IconProfile = '👤';
 	const IconSettings = '⚙️';
 
-	const OverViewBasePath = '/overview';
+	const OVERVIEW_BASE_PATH = '/overview';
 
+	/*
+	 * Dynamically generates the main navigation links for the dashboard sidebar.
+	 * Also generates sublinks for selected pages.
+	 * Returns an array of Navlinks.
+	 */
 	function getMainNavLinks() {
 		const params = $page.params;
-		const currentSessionId = params.session_id; // Check if we have a session_id param
-		const currentTemplateId = params.template_id; // Check if we have a template_id param
+		const currentSessionId = params.session_id;
+		const currentTemplateId = params.template_id;
 
 		// Base links
 		const links: NavLink[] = [
-			{ href: `${OverViewBasePath}/templates`, label: 'My Templates', icon: IconTemplates },
-			{ href: `${OverViewBasePath}/sessions`, label: 'My Sessions', icon: IconSessions },
-			{ href: `${OverViewBasePath}/analytics`, label: 'Analytics', icon: IconAnalytics },
-			{ href: `${OverViewBasePath}/activity-bank`, label: 'Activity Bank', icon: IconActivityBank },
+			{ href: `${OVERVIEW_BASE_PATH}/templates`, label: 'My Templates', icon: IconTemplates },
+			{ href: `${OVERVIEW_BASE_PATH}/sessions`, label: 'My Sessions', icon: IconSessions },
+			{ href: `${OVERVIEW_BASE_PATH}/analytics`, label: 'Analytics', icon: IconAnalytics },
 			{
-				href: `${OverViewBasePath}/profile`,
+				href: `${OVERVIEW_BASE_PATH}/activity-bank`,
+				label: 'Activity Bank',
+				icon: IconActivityBank
+			},
+			{
+				href: `${OVERVIEW_BASE_PATH}/profile`,
 				label: 'Profile',
 				icon: IconProfile
 			}
 		];
 
-		// register "my templates" libks
-		if (currentTemplateId && $page.url.pathname.startsWith(`${OverViewBasePath}/templates/`)) {
+		// Register "my templates" sublibks
+		if (currentTemplateId && $page.url.pathname.startsWith(`${OVERVIEW_BASE_PATH}/templates/`)) {
 			const templateLinkIndex = links.findIndex(
-				(link) => link.href === `${OverViewBasePath}/templates` // <-- CORRECTED HREF
+				(link) => link.href === `${OVERVIEW_BASE_PATH}/templates`
 			);
-			console.log('Template Link Index:', templateLinkIndex); // Debugging line
 			if (templateLinkIndex !== -1) {
+				const baseTemplatePath = `${OVERVIEW_BASE_PATH}/templates/${currentTemplateId}`;
 				links[templateLinkIndex].subLinks = [
 					{
-						href: `${OverViewBasePath}/templates/${currentTemplateId}/overview`,
+						href: `${baseTemplatePath}/overview`,
 						label: 'Overview',
 						icon: IconOverview
 					},
 					{
-						href: `${OverViewBasePath}/templates/${currentTemplateId}/sessions`,
+						href: `${baseTemplatePath}/sessions`,
 						label: 'Sessions',
 						icon: IconSessions
 					},
 					{
-						href: `${OverViewBasePath}/templates/${currentTemplateId}/settings`,
+						href: `${baseTemplatePath}/settings`,
 						label: 'Settings',
 						icon: IconSettings
 					}
@@ -68,26 +74,26 @@
 			}
 		}
 
-		// If we are inside a specific session route, add sub-links to "My Sessions"
-		if (currentSessionId && $page.url.pathname.startsWith(`${OverViewBasePath}/sessions/`)) {
+		// Register "my sessions" sublinks
+		if (currentSessionId && $page.url.pathname.startsWith(`${OVERVIEW_BASE_PATH}/sessions/`)) {
 			const sessionLinkIndex = links.findIndex(
-				(link) => link.href === `${OverViewBasePath}/sessions` // <-- CORRECTED HREF
+				(link) => link.href === `${OVERVIEW_BASE_PATH}/sessions`
 			);
-			console.log('Session Link Index:', sessionLinkIndex); // Debugging line
 			if (sessionLinkIndex !== -1) {
+				const baseSessionPath = `${OVERVIEW_BASE_PATH}/sessions/${currentSessionId}`;
 				links[sessionLinkIndex].subLinks = [
 					{
-						href: `${OverViewBasePath}/sessions/${currentSessionId}/overview`,
+						href: `${baseSessionPath}/overview`,
 						label: 'Overview',
 						icon: IconOverview
 					},
 					{
-						href: `${OverViewBasePath}/sessions/${currentSessionId}/activities`,
+						href: `${baseSessionPath}/activities`,
 						label: 'Activities',
 						icon: IconSessionActivities
 					},
 					{
-						href: `${OverViewBasePath}/sessions/${currentSessionId}/analytics`,
+						href: `${baseSessionPath}/analytics`,
 						label: 'Analytics',
 						icon: IconSessionAnalytics
 					}
@@ -97,18 +103,13 @@
 		return links;
 	}
 
-	// --- Reactive Navigation Structure ---
 	let mainNavLinks = $derived(getMainNavLinks());
 
-	// --- Helper Function for Active State ---
 	function isActive(href: string, isParent = false): boolean {
 		const currentPath = $page.url.pathname;
 		if (isParent) {
-			// Parent is active if the current path STARTS with the parent href (e.g., /sessions active for /sessions/123/overview)
-			// Special case for exact match too.
 			return currentPath === href || currentPath.startsWith(href + '/');
 		} else {
-			// Exact match for sublinks or non-parent links
 			return currentPath === href;
 		}
 	}
@@ -155,9 +156,8 @@
 </aside>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
-	// Block: sidebar
 	.sidebar {
 		background-color: $color-surface;
 		border-right: $border-width-thin solid $color-border-light;
@@ -169,7 +169,6 @@
 		height: 100%;
 		flex-shrink: 0;
 
-		// Element: Logo
 		&__logo {
 			font-size: $font-size-xl;
 			font-weight: $font-weight-bold;
@@ -182,7 +181,6 @@
 			}
 		}
 
-		// Element: Main Navigation Area
 		&__nav {
 			&--main {
 				flex-grow: 1;
@@ -194,12 +192,10 @@
 			}
 		}
 
-		// Element: Top-Level List Item
 		&__item {
-			margin-bottom: $spacing-xs; // Space between top-level items
+			margin-bottom: $spacing-xs;
 		}
 
-		// Element: Top-Level Link
 		&__link {
 			display: flex;
 			align-items: center;
@@ -218,14 +214,12 @@
 				color: $color-text-primary;
 				text-decoration: none;
 			}
-			// Modifier: Active Link
 			&--active {
 				background-color: rgba($color-primary, 0.05);
 				color: $color-primary;
 				font-weight: $font-weight-semibold;
 			}
 		}
-		// Element: Link Icon
 		&__link-icon {
 			display: inline-flex;
 			width: 20px;
@@ -234,26 +228,18 @@
 			justify-content: center;
 			flex-shrink: 0;
 		}
-		// Element: Link Text
-		&__link-text {
-			/* styles */
-		}
-
-		// Element: Sub-navigation List
 		&__subnav {
 			list-style: none;
-			padding: $spacing-xs 0 0 $spacing-lg; // Indent subnav
-			margin: $spacing-xs 0 0 0; // Space above subnav
-			border-left: 2px solid $color-border-light; // Indentation line
-			margin-left: $spacing-xs + 2px; // Align with icon roughly
+			padding: $spacing-xs 0 0 $spacing-lg;
+			margin: $spacing-xs 0 0 0;
+			border-left: 2px solid $color-border-light;
+			margin-left: $spacing-xs + 2px;
 		}
 
-		// Element: Sub-navigation List Item
 		&__subitem {
 			margin-bottom: $spacing-xs * 0.5;
 		}
 
-		// Element: Sub-navigation Link
 		&__sublink {
 			display: flex;
 			align-items: center;
@@ -272,14 +258,14 @@
 				color: $color-text-primary;
 				text-decoration: none;
 			}
-			// Modifier: Active Sublink
+
 			&--active {
 				background-color: rgba($color-primary, 0.1);
 				color: $color-primary;
 				font-weight: $font-weight-medium;
 			}
 		}
-		// Element: Sublink Icon
+
 		&__sublink-icon {
 			display: inline-flex;
 			width: 16px;
@@ -289,12 +275,5 @@
 			flex-shrink: 0;
 			opacity: 0.8;
 		}
-		// Element: Sublink Text
-		&__sublink-text {
-			/* styles */
-		}
-
-		// Element: Footer (Optional)
-		// &__footer { /* styles */ }
 	}
 </style>

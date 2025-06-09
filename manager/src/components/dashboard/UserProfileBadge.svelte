@@ -1,26 +1,23 @@
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
-	import { goto } from '$app/navigation'; // For navigation
+	import { goto } from '$app/navigation';
+	import { signout } from '$lib/auth/scripts';
 
-	// --- Component Props ---
-	type Props = {
+	let {
+		initials = 'XY',
+		ariaLabel = 'User menu'
+	}: {
 		initials?: string;
 		ariaLabel?: string;
-		// Add any other props if needed, e.g., user object for more details
-	};
+	} = $props();
 
-	let { initials = '??', ariaLabel = 'User menu' }: Props = $props();
-
-	// --- State for Dropdown ---
 	let isDropdownOpen = $state(false);
-	let dropdownElement: HTMLDivElement | null = null; // Ref to the dropdown
-	let buttonElement: HTMLButtonElement | null = null; // Ref to the button
+	let dropdownElement: HTMLDivElement | null = $state(null);
+	let buttonElement: HTMLButtonElement | null = $state(null);
 
-	// --- Handlers ---
 	function toggleDropdown(): void {
 		isDropdownOpen = !isDropdownOpen;
 		if (isDropdownOpen) {
-			// Optional: focus the dropdown or first item after it opens
 			tick().then(() => dropdownElement?.focus());
 		}
 	}
@@ -29,7 +26,6 @@
 		isDropdownOpen = false;
 	}
 
-	// Close dropdown if clicked outside
 	function handleClickOutside(event: MouseEvent): void {
 		if (
 			isDropdownOpen &&
@@ -42,32 +38,25 @@
 		}
 	}
 
-	// Close dropdown on Escape key
 	function handleKeydown(event: KeyboardEvent): void {
 		if (isDropdownOpen && event.key === 'Escape') {
 			closeDropdown();
-			buttonElement?.focus(); // Return focus to the button
+			buttonElement?.focus();
 		}
 	}
 
-	// --- Menu Item Actions ---
 	function goToProfile(): void {
-		console.log('Navigate to profile');
-		goto('/overview/profile'); // Adjust route as needed
+		goto('/overview/profile');
 		closeDropdown();
 	}
 
 	function handleSignOut(): void {
-		console.log('Signing out...');
-		// TODO: Implement actual sign-out logic (clear session, API call, etc.)
-		alert('Signed out (Placeholder)');
-		goto('/login'); // Redirect to login page
+		signout();
 		closeDropdown();
 	}
 
-	// --- Lifecycle for Global Listeners ---
 	onMount(() => {
-		window.addEventListener('click', handleClickOutside, true); // Use capture phase
+		window.addEventListener('click', handleClickOutside, true);
 		window.addEventListener('keydown', handleKeydown);
 	});
 
@@ -76,7 +65,6 @@
 		window.removeEventListener('keydown', handleKeydown);
 	});
 
-	// Placeholder icons (replace with actual SVGs or components)
 	const IconUser = '👤';
 	const IconSignOut = '🚪';
 </script>
@@ -132,14 +120,12 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path if needed
+	@import '../../styles/variables.scss';
 
-	// Block: user-profile
 	.user-profile {
-		position: relative; // For positioning the dropdown
-		display: inline-block; // So it fits in the top bar
+		position: relative;
+		display: inline-block;
 
-		// Element: Badge (the clickable circle)
 		&__badge {
 			display: inline-flex;
 			align-items: center;
@@ -166,48 +152,30 @@
 				outline-offset: 2px;
 				box-shadow: 0 0 0 4px rgba($color-primary-light, 0.3);
 			}
-			// Style when dropdown is open
 			&[aria-expanded='true'] {
-				box-shadow: 0 0 0 3px rgba($color-primary-light, 0.5); // Indicate active state
+				box-shadow: 0 0 0 3px rgba($color-primary-light, 0.5);
 			}
 		}
-
-		// Element: Initials text
-		&__initials {
-			// No specific styles needed unless changing font/size from badge
-		}
-
-		// Element: Dropdown Menu
 		&__dropdown {
 			position: absolute;
-			top: calc(100% + #{$spacing-xs}); // Position below the badge
+			top: calc(100% + #{$spacing-xs});
 			right: 0;
 			background-color: $color-surface;
 			border-radius: $border-radius-md;
-			box-shadow: $box-shadow-lg; // Prominent shadow
+			box-shadow: $box-shadow-lg;
 			border: 1px solid $color-border-light;
-			min-width: 180px; // Minimum width for the dropdown
-			z-index: 1100; // Ensure it's above other topbar content
-			padding: $spacing-xs 0; // Padding for top/bottom of menu list
-			outline: none; // Remove focus outline from the div itself
-
-			// Animation (optional)
-			// animation: fadeIn 0.15s ease-out;
+			min-width: 180px;
+			z-index: 1100;
+			padding: $spacing-xs 0;
+			outline: none;
 		}
 
-		// Element: Menu List
 		&__menu-list {
 			list-style: none;
 			padding: 0;
 			margin: 0;
 		}
 
-		// Element: Menu Item (li wrapper)
-		&__menu-item {
-			// No specific styles needed for li itself
-		}
-
-		// Element: Menu Button (actual clickable item)
 		&__menu-button {
 			display: flex;
 			align-items: center;
@@ -228,30 +196,23 @@
 			}
 			&:focus-visible {
 				outline: 2px solid $color-primary-light;
-				outline-offset: -2px; // Inside padding
+				outline-offset: -2px;
 				background-color: $color-surface-alt;
 			}
 		}
 
-		// Element: Menu Icon
 		&__menu-icon {
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
-			width: 16px; // Smaller icon
+			width: 16px;
 			height: 16px;
-			color: $color-text-secondary; // Default icon color
+			color: $color-text-secondary;
 			flex-shrink: 0;
 
 			.user-profile__menu-button:hover & {
-				color: $color-primary; // Icon color on hover
+				color: $color-primary;
 			}
 		}
 	}
-
-	// Optional: Fade-in animation for dropdown
-	// @keyframes fadeIn {
-	//     from { opacity: 0; transform: translateY(-5px); }
-	//     to { opacity: 1; transform: translateY(0); }
-	// }
 </style>
