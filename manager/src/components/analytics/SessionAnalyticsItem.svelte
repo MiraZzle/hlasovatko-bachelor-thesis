@@ -3,13 +3,11 @@
 	import {
 		getKnownDefinition,
 		isMultipleChoice,
-		isPoll,
 		isScaleRating,
-		isOpenEnded,
 		isChoiceResult,
 		isScaleRatingResult,
 		isOpenEndedResult
-	} from '$lib/activity_types'; // Import result type guards too
+	} from '$lib/activity_types';
 
 	// Import result display components
 	import ChoiceResultsDisplay from '$components/analytics/ChoiceResultsDisplay.svelte';
@@ -21,7 +19,7 @@
 	};
 	let { activity }: Props = $props();
 
-	// Get typed definition for potentially passing to result components (e.g., for labels/correctness)
+	// Get the known definition for the activity
 	let knownDefinition = $derived(getKnownDefinition(activity));
 </script>
 
@@ -57,7 +55,7 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
 	.session-analytics-item {
 		background-color: $color-surface;
@@ -100,9 +98,6 @@
 			white-space: nowrap;
 			flex-shrink: 0;
 			margin-left: auto;
-		}
-		&__body {
-			/* Container for results */
 		}
 		&__no-data {
 			font-style: italic;

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { OpenEndedActivityResult } from '$lib/activity_types'; // Adjust path
+	import type { OpenEndedActivityResult } from '$lib/activity_types';
 
 	type Props = {
 		results: OpenEndedActivityResult;
@@ -21,10 +21,10 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
 	.open-ended-results-display {
-		max-height: 300px; // Limit height for long lists
+		max-height: 300px;
 		overflow-y: auto;
 		border: 1px solid $color-border-light;
 		border-radius: $border-radius-md;

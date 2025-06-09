@@ -1,22 +1,31 @@
 <script lang="ts">
-	import type { ChoiceActivityResult, MultipleChoiceDefinition } from '$lib/activity_types'; // Adjust path
+	import type { ChoiceActivityResult, MultipleChoiceDefinition } from '$lib/activity_types';
 
 	type Props = {
 		results: ChoiceActivityResult;
-		definition?: MultipleChoiceDefinition | null; // Optional definition to mark correct answer
+		definition?: MultipleChoiceDefinition | null;
 	};
 	let { results, definition = null }: Props = $props();
 
 	let totalVotes = $derived(results.reduce((sum, option) => sum + option.count, 0));
+	const CORRECT_OPTION = '✔ Correct';
+	const FALSE_OPTION = '✘';
 
-	// Calculate percentage safely
+	/*
+	 * Calculate the total number of votes across all options.
+	 */
 	function getPercentage(count: number): number {
 		return totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
 	}
 
-	// Check correctness based on optional definition
+	/*
+	 * Check if the option is correct based on the definition.
+	 * If definition is null or correctOptionId is not set, return undefined.
+	 * If correctOptionId is an array, check if optionId is included.
+	 * If correctOptionId is a single value, check for equality.
+	 */
 	function isCorrect(optionId: string): boolean | undefined {
-		if (!definition || !definition.correctOptionId) return undefined; // Not applicable or no correct answer defined
+		if (!definition || !definition.correctOptionId) return undefined;
 		if (Array.isArray(definition.correctOptionId)) {
 			return definition.correctOptionId.includes(optionId);
 		}
@@ -39,7 +48,7 @@
 						<span class="choice-results-display__label">{optionResult.text}</span>
 						{#if correctStatus !== undefined}
 							<span class="choice-results-display__correct-marker">
-								{correctStatus ? '✔ Correct' : '✘'}
+								{correctStatus ? CORRECT_OPTION : FALSE_OPTION}
 							</span>
 						{/if}
 					</div>
@@ -57,7 +66,7 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
 	.choice-results-display {
 		&__list {
@@ -111,7 +120,7 @@
 		}
 		&__item--correct &__bar {
 			background-color: $color-success;
-		} // Correct answer bar color
+		}
 		&__value {
 			font-weight: $font-weight-medium;
 			color: $color-text-secondary;

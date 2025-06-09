@@ -6,15 +6,26 @@
 		definition?: ScaleRatingDefinition | null;
 	};
 	let { results, definition = null }: Props = $props();
+
+	// Track hovered item state
 	let hoveredRating = $state<number | null>(null);
 	let hoveredCount = $state<number | null>(null);
 
+	// Scale points and calculations
 	let totalVotes = $derived(results.reduce((sum, item) => sum + item.count, 0));
-	let maxCount = $derived(Math.max(...results.map((item) => item.count), 0)); // Find max count for scaling bars
+	let maxCount = $derived(results.length > 0 ? Math.max(...results.map((r) => r.count)) : 0);
 
+	/*
+	 * Calculate the total number of votes across all ratings.
+	 */
 	function getPercentage(count: number): number {
 		return totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
 	}
+
+	/*
+	 * Calculate the height of the bar as a percentage of the maximum count.
+	 * Returns 0 if maxCount is 0 to avoid division by zero.
+	 */
 	function getBarHeightPercentage(count: number): number {
 		return maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
 	}
@@ -35,7 +46,6 @@
 		return points;
 	}
 
-	// Generate labels based on definition or just numbers
 	let scalePoints = $derived(getScalePoints());
 
 	function handleMouseEnter(rating: number, count: number) {
@@ -62,6 +72,7 @@
 		<div class="scale-results-display__chart">
 			{#each scalePoints as point (point.rating)}
 				<div
+					tabindex="0"
 					role="button"
 					aria-roledescription="Rating bar"
 					aria-label={`Rating ${point.rating}: ${point.count} (${point.percentage}%)`}
