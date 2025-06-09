@@ -6,7 +6,7 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
 	.dashboard-layout__main {
 		flex-grow: 1;
@@ -20,6 +20,5 @@
 		flex-grow: 1;
 		padding: $spacing-xl;
 		overflow-y: auto;
-		// Removed background-color here, should be set by child page/layout or body
 	}
 </style>

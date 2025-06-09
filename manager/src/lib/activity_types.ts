@@ -37,6 +37,24 @@ export interface UnknownDefinition {
 	type: string;
 }
 
+export interface Session {
+	id: string;
+	title: string;
+	templateCode: string;
+	created: string;
+	status: 'Active' | 'Inactive' | 'Finished';
+	participants: number;
+}
+
+export interface Template {
+	id: string;
+	title: string;
+	code: string;
+	dateCreated: string;
+	status: string; // Keep as string if statuses vary widely
+	tags: string[];
+}
+
 export type SessionActivityStatus = 'Pending' | 'Active' | 'Closed';
 export type KnownActivityType = KnownActivityDefinition['type'];
 

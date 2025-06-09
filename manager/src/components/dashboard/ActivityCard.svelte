@@ -1,19 +1,16 @@
 <script lang="ts">
-	// Define the expected shape of the activity data
 	interface Activity {
 		id: string;
 		type: string;
 		question: string;
 		tags: string[];
-		// Add other relevant fields if needed, like category, date, etc.
 	}
 
-	// Props: activity data and an optional click handler
 	let {
 		activity,
 		onclick = (id: string) => {
 			console.log('Activity card clicked:', id);
-		} // Default dummy handler
+		}
 	}: {
 		activity: Activity;
 		onclick?: (id: string) => void;
@@ -35,9 +32,7 @@
 <style lang="scss">
 	@import '../../styles/variables.scss';
 
-	// Block: activity-card
 	.activity-card {
-		// Reset button styles
 		background: none;
 		border: none;
 		padding: 0;
@@ -46,18 +41,16 @@
 		color: inherit;
 		cursor: pointer;
 		text-align: left;
-		width: 100%; // Take full width of grid cell
-
-		// Card appearance
+		width: 100%;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between; // Push footer down
+		justify-content: space-between;
 		background-color: $color-surface;
-		border-radius: $border-radius-md; // Slightly smaller radius than table wrapper?
+		border-radius: $border-radius-md;
 		padding: $spacing-md;
 		box-shadow: $box-shadow-sm;
 		border: $border-width-thin solid $color-border-light;
-		min-height: 150px; // Example minimum height
+		min-height: 150px;
 		transition:
 			box-shadow $transition-duration-fast,
 			transform $transition-duration-fast;
@@ -69,10 +62,9 @@
 		&:focus-visible {
 			outline: 2px solid $color-primary-light;
 			outline-offset: 2px;
-			box-shadow: $box-shadow-md; // Add shadow on focus too
+			box-shadow: $box-shadow-md;
 		}
 
-		// Element: Activity Type (e.g., "Quiz")
 		&__type {
 			font-size: $font-size-xs;
 			font-weight: $font-weight-medium;
@@ -81,43 +73,32 @@
 			margin-bottom: $spacing-sm;
 		}
 
-		// Element: Main Question/Prompt text
 		&__question {
 			font-size: $font-size-md;
 			color: $color-text-primary;
 			line-height: 1.4;
-			margin-bottom: $spacing-lg; // Space above footer
-			// Allow text to wrap
+			margin-bottom: $spacing-lg;
 			white-space: normal;
-			// Limit lines shown? (Optional)
-			// display: -webkit-box;
-			// -webkit-line-clamp: 3; // Show max 3 lines
-			// -webkit-box-orient: vertical;
-			// overflow: hidden;
-			// text-overflow: ellipsis;
 		}
 
-		// Element: Footer area containing tags/actions
 		&__footer {
 			display: flex;
-			justify-content: flex-end; // Align tags to the right by default
+			justify-content: flex-end;
 			align-items: center;
-			margin-top: auto; // Ensure footer is pushed down
+			margin-top: auto;
 		}
 
-		// Element: Container for tags
 		&__tags {
 			display: flex;
 			flex-wrap: wrap;
 			gap: $spacing-xs;
 		}
 
-		// Element: Individual tag
 		&__tag {
 			background-color: $color-surface-alt;
 			color: $color-text-secondary;
-			padding: $spacing-xs * 0.5 $spacing-sm; // Slightly smaller padding
-			border-radius: $border-radius-sm; // Smaller radius for tags
+			padding: $spacing-xs * 0.5 $spacing-sm;
+			border-radius: $border-radius-sm;
 			font-size: $font-size-xs;
 			font-weight: $font-weight-medium;
 			white-space: nowrap;

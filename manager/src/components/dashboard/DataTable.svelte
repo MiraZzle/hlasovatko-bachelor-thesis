@@ -1,11 +1,9 @@
 <script module lang="ts">
-	// Define a type for our column headers
 	export interface ColumnHeader<T> {
 		key: keyof T | (string & {}); // The key in the data object
-		label: string; // The text to display in the <th>
-		sortable?: boolean; // Can this column be sorted?
-		// Optional custom class for the header cell
-		class?: string;
+		label: string;
+		sortable?: boolean;
+		class?: string; // Optional custom class for the header cell
 	}
 </script>
 
@@ -13,8 +11,8 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 
-	// --- Component Props using Svelte 5 Runes ---
-	type T = $$Generic; // Define a generic type for our data items
+	// Generic type for items in the table
+	type T = $$Generic;
 
 	let {
 		items,
@@ -27,7 +25,7 @@
 		// Two-way binding for search term and pagination
 		searchTerm = $bindable(''),
 		currentPage = $bindable(1),
-		totalPages = 1
+		pageSize = 10
 	} = $props<{
 		items: T[];
 		columns: ColumnHeader<T>[];
@@ -38,14 +36,18 @@
 		onNewClick?: () => void;
 		searchTerm?: string;
 		currentPage?: number;
-		totalPages?: number;
+		pageSize?: number;
 	}>();
 
-	// --- State for Sorting ---
+	// Sorting state
 	let sortKey = $state<keyof T | (string & {}) | null>(null);
 	let sortDirection = $state<'asc' | 'desc'>('asc');
+	const totalPages = $derived(Math.ceil(items.length / pageSize));
 
-	// --- Handlers ---
+	/*
+	 * Handles sorting by a specific key.
+	 * Sets direction if the same key is clicked, otherwise sets to ascending.
+	 */
 	function handleSort(key: keyof T | (string & {})) {
 		if (sortKey === key) {
 			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
@@ -55,6 +57,7 @@
 		}
 	}
 
+	// Pagination handlers
 	function handlePreviousPage() {
 		if (currentPage > 1) currentPage--;
 	}
@@ -63,7 +66,16 @@
 		if (currentPage < totalPages) currentPage++;
 	}
 
-	// --- Derived State for Sorted Items ---
+	const paginatedItems = $derived.by(() => {
+		if (currentPage > totalPages && totalPages > 0) {
+			currentPage = totalPages;
+		}
+
+		const startIndex = (currentPage - 1) * pageSize;
+		return sortedItems.slice(startIndex, startIndex + pageSize);
+	});
+
+	// Dynamic sorting logic
 	const sortedItems = $derived.by(() => {
 		if (!sortKey) return [...items];
 
@@ -71,21 +83,21 @@
 			const valA = a[sortKey as keyof T];
 			const valB = b[sortKey as keyof T];
 
-			// Handle different data types for robust sorting
+			// Number comparison
 			if (typeof valA === 'number' && typeof valB === 'number') {
 				return valA - valB;
 			}
 			if (typeof valA === 'string' && typeof valB === 'string') {
-				// Check if strings are dates
+				// Date comparison
 				const dateA = new Date(valA);
 				const dateB = new Date(valB);
 				if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
 					return dateA.getTime() - dateB.getTime();
 				}
-				// Otherwise, string comparison
+				// String comparison
 				return valA.localeCompare(valB);
 			}
-			// Fallback for other types or mixed types
+			// Fallback for other types
 			if (valA < valB) return -1;
 			if (valA > valB) return 1;
 			return 0;
@@ -118,7 +130,7 @@
 			<thead>
 				<tr>
 					{#each columns as column}
-						<th class={column.class ?? ''}>
+						<th class:sortable-header-active={sortKey === column.key}>
 							{#if column.sortable}
 								<button class="sortable-header" onclick={() => handleSort(column.key)}>
 									{column.label}
@@ -134,7 +146,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each sortedItems as item (item.id)}
+				{#each paginatedItems as item, i (item.id ?? i)}
 					<slot name="row" {item} />
 				{:else}
 					<tr>
@@ -161,7 +173,6 @@
 </div>
 
 <style lang="scss">
-	// Import your global styles
 	@import '../../styles/variables.scss';
 
 	.data-table-page {
@@ -216,6 +227,11 @@
 		width: 100%;
 		border-collapse: collapse;
 
+		thead th.sortable-header-active {
+			font-weight: $font-weight-bold;
+			color: $color-text-primary;
+		}
+
 		thead th {
 			padding: $spacing-md;
 			text-align: left;
@@ -223,7 +239,6 @@
 			white-space: nowrap;
 			font-weight: $font-weight-semibold;
 			color: $color-text-secondary;
-			background-color: #f9fafb; // A slightly different background for the header
 
 			&:first-child {
 				border-top-left-radius: $border-radius-lg;
