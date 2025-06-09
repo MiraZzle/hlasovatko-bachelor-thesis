@@ -1,9 +1,16 @@
 <script lang="ts">
-	import type { MultipleChoiceDefinition } from '$lib/activity_types'; // Adjust path as needed
+	import type { MultipleChoiceDefinition } from '$lib/activity_types';
 
 	let { definition }: { definition: MultipleChoiceDefinition } = $props();
+	const CHECK_ICON = '✔';
+	const CIRCLE_ICON = '○';
 
-	// Helper to check if an option is correct
+	/**
+	 * Checks if a given option ID is correct based on the definition.
+	 *
+	 * @param optionId - The ID of the option to check.
+	 * @returns `true` if the option is correct; otherwise, `false`.
+	 */
 	function isCorrect(optionId: string): boolean {
 		if (!definition.correctOptionId) return false;
 		if (Array.isArray(definition.correctOptionId)) {
@@ -20,7 +27,9 @@
 				class="activity-display__option"
 				class:activity-display__option--correct={isCorrect(option.id)}
 			>
-				<span class="activity-display__option-marker">{isCorrect(option.id) ? '✔' : '○'}</span>
+				<span class="activity-display__option-marker"
+					>{isCorrect(option.id) ? CHECK_ICON : CIRCLE_ICON}</span
+				>
 				<span class="activity-display__option-text">{option.text}</span>
 			</li>
 		{/each}
@@ -34,7 +43,6 @@
 	@import '../../styles/variables.scss';
 
 	.activity-display {
-		// Common styles for all display components if needed
 		margin-top: $spacing-sm;
 
 		&__options-list {
@@ -61,8 +69,7 @@
 		&__option-marker {
 			font-weight: $font-weight-bold;
 			color: $color-text-secondary;
-			.activity-display__option--correct & {
-				// Style marker when correct
+			&--correct {
 				color: $color-success;
 			}
 		}

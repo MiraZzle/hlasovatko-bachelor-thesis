@@ -1,5 +1,5 @@
 <script lang="ts">
-	// No specific definition needed for props currently
+	// No specific logic needed for OpenEnded activity type
 </script>
 
 <div class="activity-display activity-display--open-ended">
@@ -7,7 +7,7 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
 	.activity-display {
 		margin-top: $spacing-sm;
