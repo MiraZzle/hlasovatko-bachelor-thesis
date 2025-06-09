@@ -1,38 +1,22 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
+	import Button from '$components/elements/typography/Button.svelte';
 
-	// Import type definitions and guards (ensure path is correct)
-	import type {
-		SessionActivity,
-		MultipleChoiceDefinition,
-		PollDefinition,
-		ScaleRatingDefinition,
-		OpenEndedDefinition,
-		KnownActivityDefinition
-	} from '$lib/activity_types';
-	import {
-		isMultipleChoice,
-		isPoll,
-		isScaleRating,
-		isOpenEnded,
-		getKnownDefinition // Use the helper to safely get typed definition
-	} from '$lib/activity_types';
+	import type { SessionActivity, KnownActivityDefinition } from '$lib/activity_types';
+	import { isMultipleChoice, isPoll, isScaleRating, isOpenEnded } from '$lib/activity_types';
 
-	// Import  components
 	import MultipleChoice from '$components/activities/MultipleChoice.svelte';
 	import Poll from '$components/activities/Poll.svelte';
 	import ScaleRating from '$components/activities/ScaleRating.svelte';
 	import OpenEnded from '$components/activities/OpenEnded.svelte';
 	import RawJson from '$components/activities/RawJson.svelte';
 
-	// --- Component Props ---
 	type Props = {
 		activity: SessionActivity;
 		onStart?: (id: string) => void;
 		onStop?: (id: string) => void;
 		onViewResults?: (id: string) => void;
-		isOnlyView?: boolean; // Optional prop to indicate if it's a view-only mode
+		isOnlyView?: boolean;
 	};
 
 	let {
@@ -43,71 +27,47 @@
 		isOnlyView = false
 	}: Props = $props();
 
-	// --- Process Definition ---
-	// Try to parse definition if it's a string, otherwise use as is.
-	// Also attempt to get a strongly-typed known definition.
-	// let parsedDefinition: KnownActivityDefinition | object | null = $derived(() => {
-	// 	let def = activity.definition;
-	// 	if (typeof def === 'string') {
-	// 		try {
-	// 			def = JSON.parse(def);
-	// 		} catch (e) {
-	// 			console.error(`Failed to parse definition string for activity ${activity.id}`, e);
-	// 			return activity.definition; // Return original string on error
-	// 		}
-	// 	}
-	// 	// Ensure it's an object before further checks
-	// 	if (typeof def !== 'object' || def === null) {
-	// 		return {}; // Return empty object if not valid
-	// 	}
-	// 	// Add the 'type' property if it's missing but known from activity.type
-	// 	if (!('type' in def) && typeof activity.type === 'string') {
-	// 		(def as any).type = activity.type;
-	// 	}
-	// 	return def;
-	// });
-
+	/*
+	 * Parses the activity definition and validates its structure.
+	 * If the type in the definition does not match the activity type,
+	 * it injects/corrects the type into the definition.
+	 *
+	 * @returns Parsed definition or an error object if parsing fails.
+	 */
 	function getParsedDefinition() {
 		let def = activity.definition;
-		// 1. Try parsing if it's a string
+
+		// If definition is a string, try to parse it as JSON
 		if (typeof def === 'string') {
 			try {
 				def = JSON.parse(def);
 			} catch (e) {
 				console.error(`Failed to parse definition string for activity ${activity.id}`, e);
-				// Return an object indicating the error for RawJsonDisplay
 				return { error: 'Invalid JSON string', original: activity.definition };
 			}
 		}
-		// 2. Check if it's a valid object now
+
+		// Check if the parsed definition is an object
 		if (typeof def !== 'object' || def === null) {
 			console.warn(`Activity ${activity.id} definition is not a valid object after parsing.`);
-			// Return an error object or the original non-object value
 			return { error: 'Invalid definition structure', original: activity.definition };
 		}
-		// 3. Ensure the 'type' property exists within the definition object,
-		//    using the parent activity.type as the source of truth.
-		//    This is crucial for the type guards.
+
+		// Ensure the definition has a type and matches the activity type
 		if (!('type' in def) || def.type !== activity.type) {
 			console.warn(
 				`Injecting/correcting type '${activity.type}' into definition for activity ${activity.id}`
 			);
-			def = { ...def, type: activity.type }; // Create new object with correct type
+
+			// Inject the type into definition if its missing or incorrect
+			def = { ...def, type: activity.type };
 			console.log('New definition:', def);
 		}
 		return def;
 	}
 
-	let parsedDefinition: KnownActivityDefinition | object | unknown =
+	let parsedDefinition: KnownActivityDefinition | { error: string; original: unknown } | object =
 		$derived(getParsedDefinition());
-
-	// Get the specific known definition type, if applicable
-	// let knownDefinition = $derived(getKnownDefinition({ ...activity, definition: parsedDefinition }));
-
-	// Placeholder Icons
-	const IconPlay = () => '▶️';
-	const IconStop = () => '⏹️';
-	const IconResults = () => '📊';
 </script>
 
 <div class="session-activity-item" transition:fade|local={{ duration: 200 }}>
@@ -153,9 +113,8 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
-	// Block: session-activity-item
 	.session-activity-item {
 		background-color: $color-surface;
 		border-radius: $border-radius-md;
@@ -216,10 +175,6 @@
 				background-color: darken($color-surface-alt, 5%);
 				color: $color-text-disabled;
 			}
-		}
-
-		&__body {
-			/* styles if needed */
 		}
 
 		&__footer {

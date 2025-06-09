@@ -1,11 +1,17 @@
 <script lang="ts">
+	//!TODO: Add type definitions for the JSON structure
 	let { definition }: { definition: any } = $props();
 
-	// Pretty-print the JSON
-
+	/*
+	 * Formats the JSON string to a more readable format with indentation.
+	 * If the JSON is invalid, it returns an error message.
+	 *
+	 * @param json - The JSON string to format.
+	 * @returns Formatted JSON string or an error message if invalid.
+	 */
 	function formatJson(json: string) {
 		try {
-			return JSON.stringify(JSON.parse(json), null, 2); // Pretty-print JSON
+			return JSON.stringify(JSON.parse(json), null, 2);
 		} catch (e) {
 			return 'Invalid JSON format.';
 		}
@@ -14,25 +20,28 @@
 </script>
 
 <div class="activity-display activity-display--raw-json">
-	<pre><code>{formattedJson}</code></pre>
+	<pre class="activity-display__pre"><code class="activity-display__code">{formattedJson}</code
+		></pre>
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
 	.activity-display {
 		margin-top: $spacing-sm;
-		pre {
+
+		&__pre {
 			background-color: $color-surface-alt;
 			padding: $spacing-md;
 			border-radius: $border-radius-md;
-			overflow-x: auto; // Allow horizontal scroll for long lines
-			max-height: 200px; // Limit height
-			code {
-				font-family: monospace;
-				font-size: $font-size-xs;
-				color: $color-text-primary;
-			}
+			overflow-x: auto;
+			max-height: 200px;
+		}
+
+		&__code {
+			font-family: monospace;
+			font-size: $font-size-xs;
+			color: $color-text-primary;
 		}
 	}
 </style>

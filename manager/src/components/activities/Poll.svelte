@@ -1,14 +1,15 @@
 <script lang="ts">
-	import type { PollDefinition } from '$lib/activity_types'; // Adjust path
+	import type { PollDefinition } from '$lib/activity_types';
 
 	let { definition }: { definition: PollDefinition } = $props();
+	const POLL_ICON = '▫';
 </script>
 
 <div class="activity-display activity-display--poll">
 	<ul class="activity-display__options-list">
 		{#each definition.options as option (option.id)}
 			<li class="activity-display__option">
-				<span class="activity-display__option-marker">▫</span>
+				<span class="activity-display__option-marker">{POLL_ICON}</span>
 				<span class="activity-display__option-text">{option.text}</span>
 			</li>
 		{/each}
@@ -16,9 +17,8 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
+	@import '../../styles/variables.scss';
 
-	// Inherit styles from MultipleChoice or define separately
 	.activity-display {
 		margin-top: $spacing-sm;
 		&__options-list {
