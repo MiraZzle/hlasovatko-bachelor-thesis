@@ -163,8 +163,8 @@
 		// Outline (Primary)
 		&--outline {
 			background-color: transparent;
-			color: $color-text-secondary;
-			border-color: $color-text-secondary;
+			color: $color-primary;
+			border-color: $color-primary;
 			&:hover:not(:disabled) {
 				background-color: rgba($color-primary, 0.08);
 				opacity: 1;
