@@ -1,32 +1,19 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	// Define all possible button variants
 	type ButtonVariant =
 		| 'primary'
 		| 'secondary'
-		| 'outline' // Default outline (uses primary color)
+		| 'outline'
 		| 'danger'
 		| 'success'
 		| 'warning'
 		| 'info'
-		| 'danger-outline' // Outline variants for statuses
+		| 'danger-outline'
 		| 'success-outline'
 		| 'warning-outline'
 		| 'info-outline'
-		| 'link'; // Link-style button
-
-	// Define props using $props()
-	type Props = {
-		variant?: ButtonVariant;
-		onclick?: (event: MouseEvent) => void;
-		href?: string | null;
-		type?: 'button' | 'submit' | 'reset';
-		disabled?: boolean;
-		fullWidth?: boolean;
-		size?: 'sm' | 'md' | 'lg'; // Optional size prop
-		children: Snippet;
-	};
+		| 'link';
 
 	let {
 		variant = 'primary',
@@ -37,11 +24,20 @@
 		type = 'button',
 		disabled = false,
 		fullWidth = false,
-		size = 'md', // Default size
+		size = 'md',
 		children
-	}: Props = $props();
+	}: {
+		variant?: ButtonVariant;
+		onclick?: (event: MouseEvent) => void;
+		href?: string | null;
+		type?: 'button' | 'submit' | 'reset';
+		disabled?: boolean;
+		fullWidth?: boolean;
+		size?: 'sm' | 'md' | 'lg';
+		children: Snippet;
+	} = $props();
 
-	// Reactive class list based on props
+	// dynamic class for button type based on props
 	let buttonClass = $derived(
 		`button button--${variant} button--size-${size} ${fullWidth ? 'button--full-width' : ''}`
 	);
@@ -58,9 +54,8 @@
 {/if}
 
 <style lang="scss">
-	@import '../../../styles/variables.scss'; // Adjust path if needed
+	@import '../../../styles/variables.scss';
 
-	// Base button styles
 	.button {
 		display: inline-flex;
 		align-items: center;
@@ -71,46 +66,41 @@
 		text-align: center;
 		text-decoration: none;
 		cursor: pointer;
-		border: $border-width-medium solid transparent; // Use thicker border for better outline visibility
+		border: $border-width-medium solid transparent;
 		transition:
 			background-color $transition-duration-fast $transition-timing-function,
 			border-color $transition-duration-fast $transition-timing-function,
 			color $transition-duration-fast $transition-timing-function,
 			opacity $transition-duration-fast $transition-timing-function,
-			box-shadow $transition-duration-fast $transition-timing-function; // Added shadow transition
+			box-shadow $transition-duration-fast $transition-timing-function;
 		white-space: nowrap;
-		user-select: none; // Prevent text selection on click
+		user-select: none;
 
 		&:hover:not(:disabled) {
-			opacity: 0.9; // Default hover effect (can be overridden by variants)
-			// Example: Add subtle lift effect
-			// transform: translateY(-1px);
-			// box-shadow: $box-shadow-md;
+			opacity: 0.9;
 		}
 
 		&:focus-visible {
-			outline: 2px solid $color-primary-light; // Keep default focus outline
+			outline: 2px solid $color-primary-light;
 			outline-offset: 2px;
 		}
 
 		&:disabled {
 			cursor: not-allowed;
 			opacity: 0.6;
-			// Reset hover effects
 			transform: none;
 			box-shadow: none;
 		}
 
-		// --- Size Modifiers ---
 		&--size-sm {
 			padding: $spacing-xs $spacing-md;
 			font-size: $font-size-sm;
-			border-width: 1px; // Thinner border for smaller button
+			border-width: 1px;
 		}
 		&--size-md {
 			padding: $spacing-sm $spacing-lg;
 			font-size: $font-size-md;
-			border-width: $border-width-medium; // Default border width
+			border-width: $border-width-medium;
 		}
 		&--size-lg {
 			padding: $spacing-md $spacing-xl;
@@ -118,9 +108,6 @@
 			border-width: $border-width-medium;
 		}
 
-		// --- Variant Modifiers ---
-
-		// Primary (Default)
 		&--primary {
 			background-color: $color-primary;
 			color: $color-text-on-primary;
@@ -137,10 +124,9 @@
 			}
 			&:focus-visible {
 				outline-color: $color-primary-light;
-			} // Specific focus color
+			}
 		}
 
-		// Secondary
 		&--secondary {
 			background-color: $color-secondary;
 			color: $color-text-on-secondary;
@@ -160,7 +146,6 @@
 			}
 		}
 
-		// Outline (Primary)
 		&--outline {
 			background-color: transparent;
 			color: $color-primary;
@@ -168,7 +153,7 @@
 			&:hover:not(:disabled) {
 				background-color: rgba($color-primary, 0.08);
 				opacity: 1;
-			} // Subtle background on hover
+			}
 			&:disabled {
 				border-color: $color-button-disabled-bg;
 				color: $color-text-disabled;
@@ -179,9 +164,6 @@
 			}
 		}
 
-		// --- Status Variants ---
-
-		// Danger
 		&--danger {
 			background-color: $color-error;
 			color: $color-text-on-primary;
@@ -217,8 +199,6 @@
 				outline-color: lighten($color-error, 20%);
 			}
 		}
-
-		// Success
 		&--success {
 			background-color: $color-success;
 			color: $color-text-on-primary;
@@ -255,11 +235,10 @@
 			}
 		}
 
-		// Warning
 		&--warning {
 			background-color: $color-warning;
 			color: $color-text-primary;
-			border-color: $color-warning; // Often dark text on yellow
+			border-color: $color-warning;
 			&:hover:not(:disabled) {
 				background-color: darken($color-warning, 10%);
 				border-color: darken($color-warning, 10%);
@@ -277,7 +256,7 @@
 		&--warning-outline {
 			background-color: transparent;
 			color: darken($color-warning, 10%);
-			border-color: $color-warning; // Darker text for better contrast
+			border-color: $color-warning;
 			&:hover:not(:disabled) {
 				background-color: rgba($color-warning, 0.08);
 				opacity: 1;
@@ -292,7 +271,6 @@
 			}
 		}
 
-		// Info
 		&--info {
 			background-color: $color-info;
 			color: $color-text-on-primary;
@@ -329,21 +307,20 @@
 			}
 		}
 
-		// Link style
 		&--link {
 			background: none;
 			border: none;
 			color: $color-link;
 			text-decoration: underline;
-			padding: 0; // Remove padding for link style
-			height: auto; // Reset height
-			font-weight: $font-weight-regular; // Normal weight
-			border-width: 0; // Ensure no border width
+			padding: 0;
+			height: auto;
+			font-weight: $font-weight-regular;
+			border-width: 0;
 
 			&:hover:not(:disabled) {
 				color: $color-link-hover;
 				opacity: 1;
-				text-decoration: underline; // Keep underline on hover
+				text-decoration: underline;
 			}
 			&:disabled {
 				color: $color-text-disabled;
@@ -351,17 +328,15 @@
 				opacity: 0.6;
 			}
 			&:focus-visible {
-				// Adjust focus for link style
 				outline: none;
 				text-decoration: underline;
-				box-shadow: 0 1px $color-primary-light; // Underline focus style
+				box-shadow: 0 1px $color-primary-light;
 			}
 		}
 
-		// Modifier for full width
 		&--full-width {
 			width: 100%;
-			display: flex; // Ensure flex properties apply
+			display: flex;
 		}
 	}
 </style>
