@@ -33,6 +33,17 @@ export type KnownActivityDefinition =
 	| ScaleRatingDefinition
 	| OpenEndedDefinition;
 
+export interface ActivityWithType {
+	type: string;
+}
+
+export interface NewActivity<T extends ActivityWithType = KnownActivityDefinition> {
+	title: string;
+	type: T['type'];
+	definition: string;
+	categories: string[];
+}
+
 export interface UnknownDefinition {
 	type: string;
 }

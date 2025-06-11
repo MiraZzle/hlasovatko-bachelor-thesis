@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ModalDialog from '$components/elements/ModalDialog.svelte';
+	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import { onMount } from 'svelte';
 	import QRCode from 'qrcode';
@@ -111,7 +111,7 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
+	@import '../../../styles/variables.scss';
 
 	.share-modal {
 		&__title {

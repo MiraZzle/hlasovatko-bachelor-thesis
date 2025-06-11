@@ -3,9 +3,9 @@
 	import Input from '$components/elements/typography/Input.svelte';
 	import TemplateRow from '$components/dashboard/TemplateRow.svelte';
 
-	import ModalDialog from '$components/elements/ModalDialog.svelte';
+	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Select from '$components/elements/typography/Select.svelte'; // Assuming Select is in elements
-	import CreateTemplateModal from '$components/elements/CreateTemplateModal.svelte';
+	import CreateTemplateModal from '$components/elements/modals/CreateTemplateModal.svelte';
 	import DataTable from '$components/dashboard/DataTable.svelte';
 	import type { ColumnHeader } from '$components/dashboard/DataTable.svelte'; // Assuming ColumnHeader is exported as a type
 
@@ -190,10 +190,9 @@
 		onNewClick={createNewTemplate}
 		bind:searchTerm
 		bind:currentPage
-		{totalPages}
 	>
 		<svelte:fragment slot="row" let:item>
-			<TemplateRow template={item} onActionClick={handleAction} />
+			<TemplateRow template={item} />
 		</svelte:fragment>
 	</DataTable>
 

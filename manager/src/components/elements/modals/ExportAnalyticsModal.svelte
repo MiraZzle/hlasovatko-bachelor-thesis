@@ -1,21 +1,20 @@
 <script lang="ts">
-	import ModalDialog from '$components/elements/ModalDialog.svelte';
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
-	import Select from '$components/elements/typography/Select.svelte'; // Verify path
+	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
+	import Button from '$components/elements/typography/Button.svelte';
+	import Select from '$components/elements/typography/Select.svelte';
 
-	type ExportFormat = 'csv' | 'xlsx' | 'json'; // Example formats
+	type ExportFormat = 'csv' | 'xlsx' | 'json';
 
-	// --- Component Props ---
 	type Props = {
 		open?: boolean;
-		timeFrameLabel?: string; // e.g., "the last week", "the last 30 days"
+		timeFrameLabel?: string;
 		onclose?: () => void;
 		onExport?: (format: ExportFormat) => void | Promise<void>;
 	};
 
 	let {
 		open = $bindable(false),
-		timeFrameLabel = 'the selected period', // Default description
+		timeFrameLabel = 'the selected period',
 		onclose = () => {
 			open = false;
 		},
@@ -24,32 +23,28 @@
 		}
 	}: Props = $props();
 
-	// --- Internal State ---
-	let selectedFormat = $state<ExportFormat>('csv'); // Default format
+	let selectedFormat = $state<ExportFormat>('csv');
 	let isSubmitting = $state(false);
 
-	// --- Format Options ---
 	const formatOptions: { value: ExportFormat; label: string }[] = [
 		{ value: 'csv', label: 'CSV' },
 		{ value: 'xlsx', label: 'Excel (XLSX)' },
 		{ value: 'json', label: 'JSON' }
 	];
 
-	// --- Reset form when modal opens ---
 	$effect(() => {
 		if (open) {
-			selectedFormat = 'csv'; // Reset to default
+			selectedFormat = 'csv';
 			isSubmitting = false;
 		}
 	});
 
-	// --- Form Submit Handler ---
 	async function handleSubmit() {
 		if (isSubmitting) return;
 		isSubmitting = true;
 		try {
 			await onExport(selectedFormat);
-			requestClose(); // Close on success
+			requestClose();
 		} catch (err) {
 			console.error('Error during export:', err);
 			alert(`Failed to export statistics: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -58,14 +53,12 @@
 		}
 	}
 
-	// --- Request Close Handler ---
 	function requestClose() {
 		if (onclose) {
 			onclose();
 		}
 	}
 
-	// Define unique IDs for accessibility
 	const titleId = 'export-analytics-title';
 	const descriptionId = 'export-analytics-desc';
 </script>
@@ -99,15 +92,14 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path if needed
+	@import '../../../styles/variables.scss';
 
-	// BEM block for this modal's content
 	.export-analytics-modal {
 		&__title {
 			font-size: $font-size-xl;
 			font-weight: $font-weight-semibold;
 			text-align: center;
-			margin-bottom: $spacing-xs; // Less space below title
+			margin-bottom: $spacing-xs;
 			padding-top: $spacing-sm;
 		}
 
@@ -115,23 +107,20 @@
 			font-size: $font-size-md;
 			color: $color-text-secondary;
 			text-align: center;
-			margin-bottom: $spacing-lg; // Space below description
+			margin-bottom: $spacing-lg;
 		}
 
 		&__form {
 			display: flex;
 			flex-direction: column;
-			gap: $spacing-lg; // Space between select and actions
+			gap: $spacing-lg;
 		}
 
 		&__actions {
 			display: flex;
 			justify-content: flex-end;
 			gap: $spacing-sm;
-			margin-top: $spacing-md; // Reduced space above buttons
-			// Optional border if needed:
-			// border-top: 1px solid $color-border-light;
-			// padding-top: $spacing-lg;
+			margin-top: $spacing-md;
 		}
 	}
 </style>

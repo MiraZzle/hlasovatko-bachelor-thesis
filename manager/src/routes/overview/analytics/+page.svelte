@@ -2,7 +2,7 @@
 	import Select from '$components/elements/typography/Select.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import StatCard from '$components/dashboard/StatCard.svelte';
-	import ExportAnalyticsModal from '$components/elements/ExportAnalyticsModal.svelte';
+	import ExportAnalyticsModal from '$components/elements/modals/ExportAnalyticsModal.svelte';
 
 	// Placeholder Icons (Replace with actual Svelte components or SVG imports)
 	const IconBarChart = () => '<svg>📊</svg>'; // Placeholder

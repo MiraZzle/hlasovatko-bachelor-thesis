@@ -3,7 +3,7 @@
 	import Button from '$components/elements/typography/Button.svelte'; // Verify path
 	import Input from '$components/elements/typography/Input.svelte'; // Verify path
 	import SessionRow from '$components/dashboard/SessionRow.svelte'; // Reuse SessionRow
-	import CreateSessionModal from '$components/elements/CreateSessionModal.svelte';
+	import CreateSessionModal from '$components/elements/modals/CreateSessionModal.svelte';
 	import DataTable from '$components/dashboard/DataTable.svelte';
 	import type { ColumnHeader } from '$components/dashboard/DataTable.svelte';
 

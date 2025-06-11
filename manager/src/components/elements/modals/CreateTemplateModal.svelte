@@ -1,39 +1,33 @@
 <script lang="ts">
-	import ModalDialog from '$components/elements/ModalDialog.svelte';
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
-	import Input from '$components/elements/typography/Input.svelte'; // Verify path
-	import Select from '$components/elements/typography/Select.svelte'; // Verify path
+	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
+	import Button from '$components/elements/typography/Button.svelte';
+	import Input from '$components/elements/typography/Input.svelte';
+	import Select from '$components/elements/typography/Select.svelte';
 
-	// Define expected type for existing templates (for derive options)
 	interface TemplateStub {
 		id: string;
 		title: string;
 	}
-
-	// --- Component Props ---
-	type Props = {
-		open?: boolean; // Bindable visibility state
-		templates?: TemplateStub[]; // List of existing templates for "Derive from"
-		onclose?: () => void; // Callback when modal requests close (Cancel, X, Esc, Overlay)
-		// Callback when primary action (Create) is confirmed
-		onCreate?: (data: { name: string; deriveFromId: string }) => void | Promise<void>;
-	};
 
 	let {
 		open = $bindable(false),
 		templates = [],
 		onclose = () => {
 			open = false;
-		}, // Default close action if only bind:open is used
+		},
 		onCreate = async (data) => {
 			console.warn('onCreate handler not provided', data);
 		}
-	}: Props = $props();
+	}: {
+		open?: boolean;
+		templates?: TemplateStub[];
+		onclose?: () => void;
+		onCreate?: (data: { name: string; deriveFromId: string }) => void | Promise<void>;
+	} = $props();
 
-	// --- Internal State for the Form ---
 	let name = $state('');
-	let deriveFromId = $state('none'); // Default to 'none'
-	let isSubmitting = $state(false); // Prevent double-clicks
+	let deriveFromId = $state('none');
+	let isSubmitting = $state(false);
 
 	function getOptions() {
 		const options = [{ value: 'none', label: 'None' }];
@@ -41,10 +35,8 @@
 		return options;
 	}
 
-	// --- Generate Select Options ---
 	const deriveOptions = $derived(getOptions());
 
-	// --- Reset form when modal opens ---
 	$effect(() => {
 		if (open) {
 			name = '';
@@ -53,37 +45,31 @@
 		}
 	});
 
-	// --- Form Submit Handler ---
 	async function handleSubmit() {
 		if (!name.trim()) {
-			alert('Please enter a template name.'); // Basic validation
+			alert('Please enter a template name.');
 			return;
 		}
-		if (isSubmitting) return; // Prevent double submission
+		if (isSubmitting) return;
 
 		isSubmitting = true;
 		try {
-			// Call the parent's onCreate function
 			await onCreate({ name: name.trim(), deriveFromId: deriveFromId });
-			// If onCreate succeeds without error, request close
 			requestClose();
 		} catch (err) {
 			console.error('Error during template creation:', err);
 			alert(`Failed to create template: ${err instanceof Error ? err.message : 'Unknown error'}`);
-			// Optionally keep modal open on error? Or handle specific errors?
 		} finally {
 			isSubmitting = false;
 		}
 	}
 
-	// --- Request Close Handler (used by Cancel button) ---
 	function requestClose() {
 		if (onclose) {
 			onclose();
 		}
 	}
 
-	// Define unique IDs for accessibility
 	const titleId = 'create-template-title';
 </script>
 
@@ -121,16 +107,14 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path if needed
+	@import '../../../styles/variables.scss';
 
-	// BEM block for this specific modal's content
 	.create-template-modal {
 		&__title {
 			font-size: $font-size-xl;
 			font-weight: $font-weight-semibold;
 			text-align: center;
 			margin-bottom: $spacing-lg;
-			// Adjust top padding if needed due to absolute close button
 			padding-top: $spacing-sm;
 		}
 

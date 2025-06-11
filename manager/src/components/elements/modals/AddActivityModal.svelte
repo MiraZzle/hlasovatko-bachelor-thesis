@@ -1,30 +1,22 @@
 <script lang="ts">
-	import ModalDialog from '$components/elements/ModalDialog.svelte';
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
-	import Select from '$components/elements/typography/Select.svelte'; // Verify path
-	import Input from '$components/elements/typography/Input.svelte'; // Verify path
-	import TextArea from '$components/elements/typography/utils/TextArea.svelte'; // Verify path
+	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
+	import Button from '$components/elements/typography/Button.svelte';
+	import Select from '$components/elements/typography/Select.svelte';
+	import Input from '$components/elements/typography/Input.svelte';
+	import TextArea from '$components/elements/typography/utils/TextArea.svelte';
+	import type { NewActivity, KnownActivityDefinition } from '$lib/activity_types';
 
-	// --- Component Props ---
-	// Type for activity type options
 	interface ActivityTypeOption {
-		value: string; // e.g., 'quiz', 'poll'
-		label: string; // e.g., 'Quiz', 'Poll'
+		value: string;
+		label: string;
 	}
-	// Type for data emitted on creation
+
 	interface NewActivityData {
 		title: string;
 		type: string;
-		definition: string; // Assuming JSON string for now
-		categories: string[]; // Parsed array
+		definition: string;
+		categories: string[];
 	}
-
-	type Props = {
-		open?: boolean;
-		activityTypes?: ActivityTypeOption[]; // Options for the dropdown
-		onclose?: () => void;
-		onAdd?: (data: NewActivityData) => void | Promise<void>;
-	};
 
 	let {
 		open = $bindable(false),
@@ -35,23 +27,25 @@
 		onAdd = async (data) => {
 			console.warn('onAdd handler not provided', data);
 		}
-	}: Props = $props();
+	}: {
+		open?: boolean;
+		activityTypes?: ActivityTypeOption[];
+		onclose?: () => void;
+		onAdd?: (data: NewActivityData) => void | Promise<void>;
+	} = $props();
 
-	// --- Internal State ---
 	let title = $state('');
-	let selectedActivityType = $state<string>(''); // Store the value (e.g., 'quiz')
-	let activityDefinition = $state(''); // JSON content as string
-	let categoriesString = $state(''); // Comma-separated string
+	let selectedActivityType = $state<string>('');
+	let activityDefinition = $state('');
+	let categoriesString = $state('');
 	let isSubmitting = $state(false);
 
 	function getActivityTypeOptions() {
 		return [{ value: '', label: 'Select activity type...' }, ...activityTypes];
 	}
 
-	// --- Select Options ---
 	const activityTypeOptions = $derived(getActivityTypeOptions());
 
-	// --- Reset form when modal opens ---
 	$effect(() => {
 		if (open) {
 			title = '';
@@ -62,13 +56,11 @@
 		}
 	});
 
-	// --- Form Submit Handler ---
 	async function handleSubmit() {
 		if (!title.trim() || !selectedActivityType) {
 			alert('Please provide a title and select an activity type.');
 			return;
 		}
-		// Basic JSON validation example (optional)
 		if (activityDefinition.trim()) {
 			try {
 				JSON.parse(activityDefinition);
@@ -81,11 +73,10 @@
 		if (isSubmitting) return;
 		isSubmitting = true;
 		try {
-			// Parse categories string into array, trimming whitespace
 			const categories = categoriesString
 				.split(',')
 				.map((cat) => cat.trim())
-				.filter((cat) => cat.length > 0); // Remove empty entries
+				.filter((cat) => cat.length > 0);
 
 			await onAdd({
 				title: title.trim(),
@@ -93,7 +84,7 @@
 				definition: activityDefinition.trim(),
 				categories: categories
 			});
-			requestClose(); // Close on success
+			requestClose();
 		} catch (err) {
 			console.error('Error adding activity:', err);
 			alert(`Failed to add activity: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -102,14 +93,12 @@
 		}
 	}
 
-	// --- Request Close Handler ---
 	function requestClose() {
 		if (onclose) {
 			onclose();
 		}
 	}
 
-	// Define unique IDs for accessibility
 	const titleId = 'add-activity-title';
 	const descriptionId = 'add-activity-desc';
 </script>
@@ -173,14 +162,12 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path if needed
+	@import '../../../styles/variables.scss';
 
-	// BEM block for this modal's content
 	.add-activity-modal {
 		&__title {
 			font-size: $font-size-xl;
 			font-weight: $font-weight-semibold;
-			// text-align: center; // Align left looks better here
 			margin-bottom: $spacing-xs;
 			padding-top: $spacing-sm;
 		}
@@ -194,14 +181,14 @@
 		&__form {
 			display: flex;
 			flex-direction: column;
-			gap: $spacing-lg; // Consistent gap
+			gap: $spacing-lg;
 		}
 
 		&__actions {
 			display: flex;
 			justify-content: flex-end;
 			gap: $spacing-sm;
-			margin-top: $spacing-md; // Slightly less space above actions
+			margin-top: $spacing-md;
 			border-top: 1px solid $color-border-light;
 			padding-top: $spacing-lg;
 		}

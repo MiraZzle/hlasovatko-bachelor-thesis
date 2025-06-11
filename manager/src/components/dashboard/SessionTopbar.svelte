@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import { startSession, stopSession } from '$lib/functions/session_actions';
-	import ShareSessionModal from '$components/elements/ShareSessionModal.svelte';
+	import ShareSessionModal from '$components/elements/modals/ShareSessionModal.svelte';
 
 	let {
 		sessionId,

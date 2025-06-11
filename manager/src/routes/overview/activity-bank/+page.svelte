@@ -2,7 +2,7 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
 	import ActivityCard from '$components/dashboard/ActivityCard.svelte';
-	import AddActivityModal from '$components/elements/AddActivityModal.svelte';
+	import AddActivityModal from '$components/elements/modals/AddActivityModal.svelte';
 	import { get } from 'svelte/store';
 
 	// Define type locally or import

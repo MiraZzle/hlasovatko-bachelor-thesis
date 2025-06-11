@@ -1,24 +1,14 @@
 <script lang="ts">
-	import ModalDialog from '$components/elements/ModalDialog.svelte';
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
-	import Select from '$components/elements/typography/Select.svelte'; // Verify path
-	import Input from '$components/elements/typography/Input.svelte'; // Verify path
+	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
+	import Button from '$components/elements/typography/Button.svelte';
+	import Select from '$components/elements/typography/Select.svelte';
+	import Input from '$components/elements/typography/Input.svelte';
 	import { tick } from 'svelte';
 
-	// --- Component Props ---
-	// Define expected type for available templates
 	interface TemplateStub {
 		id: string;
 		title: string;
 	}
-
-	type Props = {
-		open?: boolean;
-		templates?: TemplateStub[]; // List of templates to choose from
-		onclose?: () => void;
-		// Callback with selected template and custom title
-		onCreate?: (data: { templateId: string; title: string }) => void | Promise<void>;
-	};
 
 	let {
 		open = $bindable(false),
@@ -29,68 +19,61 @@
 		onCreate = async (data) => {
 			console.warn('onCreate handler not provided', data);
 		}
-	}: Props = $props();
+	}: {
+		open?: boolean;
+		templates?: TemplateStub[];
+		onclose?: () => void;
+		onCreate?: (data: { templateId: string; title: string }) => void | Promise<void>;
+	} = $props();
 
-	// --- Internal State ---
-	let selectedTemplateId = $state<string>(''); // Store the ID of the selected template
-	let sessionTitle = $state(''); // Optional custom title for the session
+	let selectedTemplateId = $state<string>('');
+	let sessionTitle = $state('');
 	let isSubmitting = $state(false);
 
 	function getOptions() {
 		const options = [{ value: '', label: 'Select a template...' }];
 		templates.forEach((t) =>
 			options.push({ value: t.id, label: `${t.title} (#${t.id.substring(1)})` })
-		); // Show title and code
+		);
 		return options;
 	}
 
-	// --- Generate Select Options ---
-	// Add a placeholder/disabled option at the start
 	const templateOptions = $derived(getOptions());
 
-	// --- Default Session Title ---
-	// When a template is selected, default the session title input to the template title
 	$effect(() => {
 		if (selectedTemplateId && selectedTemplateId !== '') {
 			const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
 			if (selectedTemplate && sessionTitle === '') {
-				// Only default if title is empty
 				sessionTitle = selectedTemplate.title;
 			}
 		} else {
 			// If 'Select a template...' is chosen, clear the title maybe? Or keep previous?
-			// sessionTitle = ''; // Optional: clear title if no template selected
 		}
 	});
 
-	// --- Reset form when modal opens ---
 	$effect(() => {
 		if (open) {
-			selectedTemplateId = ''; // Reset selection
-			sessionTitle = ''; // Reset title
+			selectedTemplateId = '';
+			sessionTitle = '';
 			isSubmitting = false;
-			// Focus first element? (optional)
-			// tick().then(() => { /* focus select or input */ });
 		}
 	});
 
-	// --- Form Submit Handler ---
 	async function handleSubmit() {
 		if (!selectedTemplateId) {
-			alert('Please select a template.'); // Validation
+			alert('Please select a template.');
 			return;
 		}
 		if (isSubmitting) return;
 
 		isSubmitting = true;
 		try {
-			// Use provided sessionTitle, or default to selected template title if empty
 			const finalTitle =
 				sessionTitle.trim() ||
 				templates.find((t) => t.id === selectedTemplateId)?.title ||
 				'Session';
 			await onCreate({ templateId: selectedTemplateId, title: finalTitle });
-			requestClose(); // Close on success
+			requestClose();
 		} catch (err) {
 			console.error('Error during session creation:', err);
 			alert(`Failed to start session: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -99,14 +82,12 @@
 		}
 	}
 
-	// --- Request Close Handler ---
 	function requestClose() {
 		if (onclose) {
 			onclose();
 		}
 	}
 
-	// Define unique IDs for accessibility
 	const titleId = 'create-session-title';
 </script>
 
@@ -144,9 +125,8 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path if needed
+	@import '../../../styles/variables.scss';
 
-	// BEM block for this modal's content
 	.create-session-modal {
 		&__title {
 			font-size: $font-size-xl;
