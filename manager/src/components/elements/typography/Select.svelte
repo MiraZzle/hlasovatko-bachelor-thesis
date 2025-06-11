@@ -1,20 +1,6 @@
 <script lang="ts" generics="T extends string | number">
 	type Option = { value: T; label: string };
 
-	// Define props for the component
-	type Props = {
-		options: Option[];
-		value?: T; // Bindable
-		label?: string | null;
-		id?: string;
-		name?: string;
-		required?: boolean;
-		disabled?: boolean;
-		ariaLabel?: string | null;
-		onchange?: (event: Event & { currentTarget: HTMLSelectElement }) => void;
-		width?: 'auto' | 'full'; // <<< ADDED: width prop with 'auto' or 'full'
-	};
-
 	let {
 		options,
 		value = $bindable(),
@@ -25,35 +11,42 @@
 		disabled = false,
 		ariaLabel = null,
 		onchange = (event) => {
-			console.warn('onchange not provided for Select', event.currentTarget.value);
+			console.warn('onchange not provided', event.currentTarget.value);
 		},
-		width = 'auto' // Default width to 'auto'
-	}: Props = $props();
+		width = 'auto'
+	}: {
+		options: Option[];
+		value?: T;
+		label?: string | null;
+		id?: string;
+		name?: string;
+		required?: boolean;
+		disabled?: boolean;
+		ariaLabel?: string | null;
+		onchange?: (event: Event & { currentTarget: HTMLSelectElement }) => void;
+		width?: 'auto' | 'full';
+	} = $props();
 
 	const defaultId = `select-${Math.random().toString(36).substring(2, 9)}`;
 	let currentId = id || defaultId;
 
-	// Derived state for the select's displayed value (always a string for native select)
 	let displayValue: string = $derived(String(value));
 
-	// Handler for when the native select's value changes
-	function handleChange(event: Event & { currentTarget: HTMLSelectElement }) {
+	// custom handler for onchange event
+	function handleChange(event: Event & { currentTarget: HTMLSelectElement }): void {
 		const selectedStringValue = event.currentTarget.value;
-		// Find the original option to get the correct type (T) for the bound value
 		const selectedOption = options.find((opt) => String(opt.value) === selectedStringValue);
 
 		if (selectedOption) {
-			// Update the bindable 'value' prop with the original type
 			value = selectedOption.value;
 		}
 
-		// Call the optional onchange callback prop if provided
 		if (onchange) {
 			onchange(event);
 		}
 	}
 
-	// --- NEW: Derived class for the container based on width prop ---
+	// dynamic class based on props
 	let containerClasses = $derived(
 		`select-wrapper__container ${width === 'full' ? 'select-wrapper__container--full' : ''}`
 	);
@@ -72,7 +65,7 @@
 			{disabled}
 			aria-label={ariaLabel || label}
 			value={displayValue}
-			on:change={handleChange}
+			onchange={handleChange}
 		>
 			{#each options as option (option.value)}
 				<option value={String(option.value)}>{option.label}</option>
@@ -87,17 +80,9 @@
 </div>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss'; // Adjust path if needed
+	@import '../../../styles/variables.scss';
 
-	// Block: select-wrapper
 	.select-wrapper {
-		// If width is 'full', the wrapper itself should also be full width
-		// This is handled by its parent or by adding a modifier here if needed.
-		// For now, assuming parent controls the overall block width.
-		// If select-wrapper needs to be 100% when width='full', add:
-		// &.select-wrapper--full { width: 100%; }
-
-		// Element: Label
 		&__label {
 			display: block;
 			margin-bottom: $spacing-xs;
@@ -106,26 +91,23 @@
 			color: $color-text-secondary;
 		}
 
-		// Element: Container (for select and icon)
 		&__container {
 			position: relative;
-			display: inline-block; // Default: wraps content width
-			min-width: 150px; // Default minimum width
+			display: inline-block;
+			min-width: 150px;
 
-			// Modifier: Full width
 			&--full {
-				display: block; // Change display to block for full width
-				width: 100%; // Take full width of its parent
-				min-width: unset; // Remove min-width when full
+				display: block;
+				width: 100%;
+				min-width: unset;
 			}
 		}
 
-		// Element: Native select
 		&__select {
 			appearance: none;
 			-webkit-appearance: none;
 			-moz-appearance: none;
-			width: 100%; // Select always takes full width of its container
+			width: 100%;
 			padding: $spacing-sm $spacing-xl $spacing-sm $spacing-md;
 			border: $border-width-thin solid $color-input-border;
 			border-radius: $border-radius-md;
@@ -148,7 +130,6 @@
 			}
 		}
 
-		// Element: Dropdown Icon
 		&__icon {
 			position: absolute;
 			right: $spacing-md;
