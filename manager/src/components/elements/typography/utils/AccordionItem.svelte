@@ -8,7 +8,6 @@
 		isOpen = !isOpen;
 	}
 
-	// Generate a unique ID for accessibility
 	const uniqueId = `accordion-content-${Math.random().toString(36).substring(2, 9)}`;
 </script>
 
