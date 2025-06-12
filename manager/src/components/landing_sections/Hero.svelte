@@ -1,13 +1,12 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 
 	function handleGetStarted(): void {
-		console.log('Get Started clicked');
-		// Dummy action
+		goto('/about');
 	}
-	function handleSignUp(): void {
-		console.log('Sign Up clicked');
-		// Dummy action
+	function handleCreateSessions(): void {
+		goto('/overview/sessions');
 	}
 </script>
 
@@ -21,7 +20,7 @@
 		</p>
 		<div class="hero-section__actions">
 			<Button variant="secondary" onclick={handleGetStarted}>Get Started</Button>
-			<Button variant="primary" onclick={handleSignUp}>Sign Up</Button>
+			<Button variant="primary" onclick={handleCreateSessions}>Create Session</Button>
 		</div>
 	</div>
 </section>
@@ -30,8 +29,8 @@
 	@import '../../styles/variables.scss';
 
 	.hero-section {
-		background-color: $color-surface; // Or a light gradient/image
-		padding: $spacing-3xl 0; // Generous vertical padding
+		background-color: $color-surface;
+		padding: $spacing-3xl 0;
 		text-align: center;
 
 		&__container {
@@ -41,15 +40,15 @@
 		}
 
 		&__title {
-			font-size: $font-size-5xl; // Large title
+			font-size: $font-size-5xl;
 			font-weight: $font-weight-bold;
 			color: $color-text-primary;
 			margin-bottom: $spacing-md;
-			max-width: 800px; // Limit width of title for better readability
+			max-width: 800px;
 			line-height: 1.1;
 
 			@media (max-width: $breakpoint-sm) {
-				font-size: $font-size-4xl; // Smaller title on mobile
+				font-size: $font-size-4xl;
 			}
 		}
 
@@ -57,16 +56,16 @@
 			font-size: $font-size-xl;
 			color: $color-text-secondary;
 			margin-bottom: $spacing-xl;
-			max-width: 600px; // Limit width of subtitle
+			max-width: 600px;
 
 			@media (max-width: $breakpoint-sm) {
-				font-size: $font-size-lg; // Smaller subtitle on mobile
+				font-size: $font-size-lg;
 			}
 		}
 
 		&__actions {
 			display: flex;
-			gap: $spacing-md; // Space between buttons
+			gap: $spacing-md;
 		}
 	}
 </style>

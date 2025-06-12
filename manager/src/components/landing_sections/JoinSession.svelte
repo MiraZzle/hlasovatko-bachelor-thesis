@@ -5,17 +5,14 @@
 	let gameCode = $state('');
 
 	function handleJoinSession(event: SubmitEvent): void {
-		event.preventDefault(); // Prevent default form submission
+		event.preventDefault();
 		if (!gameCode.trim()) {
 			console.warn('Game code is empty');
-			// Add user feedback (e.g., input border error state)
 			return;
 		}
 		console.log('Joining session with code:', gameCode);
-		// Dummy action: Navigate to session page or send request
-		// Example navigation (requires SvelteKit's goto):
-		// import { goto } from '$app/navigation';
-		// goto(`/session/${gameCode}`);
+		// TODO: redirect to manager with game code
+		// goto(`${MANAGE_URL}/manager/sessions/${gameCode}`);
 	}
 </script>
 
@@ -39,24 +36,22 @@
 	.join-session {
 		&__container {
 			display: flex;
-			justify-content: center; // Center the form
+			justify-content: center;
 		}
 
 		&__form {
 			display: flex;
 			gap: $spacing-sm;
 			width: 100%;
-			max-width: 500px; // Limit form width
-			align-items: stretch; // Make input and button same height if needed
+			max-width: 500px;
+			align-items: stretch;
 
-			// Target Input component wrapper for flex sizing
 			:global(.input-wrapper) {
-				flex-grow: 1; // Allow input to take available space
+				flex-grow: 1;
 			}
 
-			// Target Button component directly
 			:global(.button) {
-				flex-shrink: 0; // Prevent button from shrinking
+				flex-shrink: 0;
 			}
 		}
 	}

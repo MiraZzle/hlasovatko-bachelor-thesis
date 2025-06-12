@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
-	import JoinSession from '$components/sections/JoinSession.svelte';
+	import JoinSession from '$components/landing_sections/JoinSession.svelte';
 
 	// --- State for Login Form ---
 	let email = $state('');

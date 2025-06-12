@@ -65,7 +65,7 @@
 		&__container {
 			display: flex;
 			flex-direction: column;
-			align-items: center; // Center title/description
+			align-items: center;
 		}
 
 		&__title {
@@ -84,8 +84,8 @@
 
 		&__accordion-group {
 			width: 100%;
-			max-width: 800px; // Limit width of the accordion section
-			border-top: $border-width-thin solid $color-border-light; // Add top border
+			max-width: 800px;
+			border-top: $border-width-thin solid $color-border-light;
 		}
 	}
 </style>
