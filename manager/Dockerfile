@@ -9,9 +9,11 @@ RUN pnpm install --frozen-lockfile
 
 # Copy source and build
 COPY . .
-RUN pnpm build && pnpm prune --prod
+RUN pnpm build
 
-ENV PORT=3000
-EXPOSE 3000
+ENV PORT=3001
+EXPOSE 3001
 
 CMD ["sh", "-c", "pnpm preview --host --port $PORT"]
+
+RUN echo "ENV: $VITE_BACKEND_URL"
