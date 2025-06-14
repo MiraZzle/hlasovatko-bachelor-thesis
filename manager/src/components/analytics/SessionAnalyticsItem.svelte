@@ -14,10 +14,11 @@
 	import ScaleRatingResultsDisplay from '$components/analytics/ScaleRatingResultsDisplay.svelte';
 	import OpenEndedResultsDisplay from '$components/analytics/OpenEndedResultsDisplay.svelte';
 
-	type Props = {
+	let {
+		activity
+	}: {
 		activity: SessionActivity;
-	};
-	let { activity }: Props = $props();
+	} = $props();
 
 	// Get the known definition for the activity
 	let knownDefinition = $derived(getKnownDefinition(activity));
@@ -55,8 +56,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.session-analytics-item {
 		background-color: $color-surface;
 		border-radius: $border-radius-lg;

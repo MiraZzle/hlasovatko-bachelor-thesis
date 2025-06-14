@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { OpenEndedActivityResult } from '$lib/activity_types';
 
-	type Props = {
+	let {
+		results
+	}: {
 		results: OpenEndedActivityResult;
-	};
-	let { results }: Props = $props();
+	} = $props();
 </script>
 
 <div class="open-ended-results-display">
@@ -21,8 +22,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.open-ended-results-display {
 		max-height: 300px;
 		overflow-y: auto;

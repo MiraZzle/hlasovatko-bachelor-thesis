@@ -1,11 +1,13 @@
 <script lang="ts">
 	import type { ChoiceActivityResult, MultipleChoiceDefinition } from '$lib/activity_types';
 
-	type Props = {
+	let {
+		results,
+		definition = null
+	}: {
 		results: ChoiceActivityResult;
 		definition?: MultipleChoiceDefinition | null;
-	};
-	let { results, definition = null }: Props = $props();
+	} = $props();
 
 	let totalVotes = $derived(results.reduce((sum, option) => sum + option.count, 0));
 	const CORRECT_OPTION = '✔ Correct';
@@ -66,8 +68,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.choice-results-display {
 		&__list {
 			list-style: none;

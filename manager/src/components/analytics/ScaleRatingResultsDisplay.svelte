@@ -1,11 +1,13 @@
 <script lang="ts">
 	import type { ScaleRatingActivityResult, ScaleRatingDefinition } from '$lib/activity_types';
 
-	type Props = {
+	let {
+		results,
+		definition = null
+	}: {
 		results: ScaleRatingActivityResult;
 		definition?: ScaleRatingDefinition | null;
-	};
-	let { results, definition = null }: Props = $props();
+	} = $props();
 
 	// Track hovered item state
 	let hoveredRating = $state<number | null>(null);
@@ -30,7 +32,12 @@
 		return maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
 	}
 
-	function getScalePoints() {
+	function getScalePoints(): {
+		rating: number;
+		count: number;
+		percentage: number;
+		barHeight: number;
+	}[] {
 		if (!definition || totalVotes === 0) return [];
 		const points = [];
 		for (let i = definition.min; i <= definition.max; i++) {
@@ -48,11 +55,11 @@
 
 	let scalePoints = $derived(getScalePoints());
 
-	function handleMouseEnter(rating: number, count: number) {
+	function handleMouseEnter(rating: number, count: number): void {
 		hoveredRating = rating;
 		hoveredCount = count;
 	}
-	function handleMouseLeave() {
+	function handleMouseLeave(): void {
 		hoveredRating = null;
 		hoveredCount = null;
 	}
@@ -106,8 +113,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.scale-results-display {
 		&__hover-info {
 			min-height: 1.5em;
