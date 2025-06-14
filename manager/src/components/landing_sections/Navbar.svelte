@@ -15,6 +15,7 @@
 
 	function handleSignUp(): void {
 		console.log('Sign Up clicked');
+		console.log('Client url:', import.meta.env.VITE_CLIENT_URL);
 	}
 
 	function handleLogin(): void {
@@ -72,8 +73,6 @@
 </header>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.navbar {
 		padding: $spacing-md 0;
 		background-color: $color-surface;
@@ -182,9 +181,6 @@
 				flex-direction: row;
 				gap: $spacing-xl;
 			}
-		}
-
-		&__item {
 		}
 
 		&__link {

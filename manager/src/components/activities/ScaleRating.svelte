@@ -26,8 +26,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.activity-display {
 		margin-top: $spacing-sm;
 

@@ -11,21 +11,19 @@
 	import OpenEnded from '$components/activities/OpenEnded.svelte';
 	import RawJson from '$components/activities/RawJson.svelte';
 
-	type Props = {
-		activity: SessionActivity;
-		onStart?: (id: string) => void;
-		onStop?: (id: string) => void;
-		onViewResults?: (id: string) => void;
-		isOnlyView?: boolean;
-	};
-
 	let {
 		activity,
 		onStart = (id) => console.log('Start:', id),
 		onStop = (id) => console.log('Stop:', id),
 		onViewResults = (id) => console.log('View Results:', id),
 		isOnlyView = false
-	}: Props = $props();
+	}: {
+		activity: SessionActivity;
+		onStart?: (id: string) => void;
+		onStop?: (id: string) => void;
+		onViewResults?: (id: string) => void;
+		isOnlyView?: boolean;
+	} = $props();
 
 	/*
 	 * Parses the activity definition and validates its structure.
@@ -34,7 +32,7 @@
 	 *
 	 * @returns Parsed definition or an error object if parsing fails.
 	 */
-	function getParsedDefinition() {
+	function getParsedDefinition(): JSON | { error: string; original: unknown } | object {
 		let def = activity.definition;
 
 		// If definition is a string, try to parse it as JSON
@@ -113,8 +111,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.session-activity-item {
 		background-color: $color-surface;
 		border-radius: $border-radius-md;

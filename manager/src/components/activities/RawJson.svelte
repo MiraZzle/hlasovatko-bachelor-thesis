@@ -9,7 +9,7 @@
 	 * @param json - The JSON string to format.
 	 * @returns Formatted JSON string or an error message if invalid.
 	 */
-	function formatJson(json: string) {
+	function formatJson(json: string): string {
 		try {
 			return JSON.stringify(JSON.parse(json), null, 2);
 		} catch (e) {
@@ -25,8 +25,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.activity-display {
 		margin-top: $spacing-sm;
 

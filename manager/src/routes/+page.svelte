@@ -21,8 +21,6 @@
 <Footer />
 
 <style lang="scss">
-	@import '../styles/variables.scss';
-
 	.join-session__container {
 		background-color: $color-surface-alt;
 		padding: $spacing-2xl 0;
