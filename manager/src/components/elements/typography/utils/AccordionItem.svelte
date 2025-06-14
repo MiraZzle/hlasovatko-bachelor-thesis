@@ -39,8 +39,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../../../styles/variables.scss';
-
 	.accordion-item {
 		width: 100%;
 		border-bottom: $border-width-thin solid $color-border-light;

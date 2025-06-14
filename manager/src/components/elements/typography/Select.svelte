@@ -80,8 +80,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.select-wrapper {
 		&__label {
 			display: block;

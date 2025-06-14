@@ -57,8 +57,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.input-wrapper {
 		width: 100%;
 

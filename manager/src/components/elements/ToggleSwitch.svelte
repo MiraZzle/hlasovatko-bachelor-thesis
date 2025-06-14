@@ -1,5 +1,4 @@
 <script lang="ts">
-	// Props: checked (bindable), disabled, label (optional for accessibility)
 	type Props = {
 		checked?: boolean;
 		disabled?: boolean;
@@ -17,19 +16,16 @@
 	// Internal toggle function
 	function toggle(): void {
 		if (!disabled) {
-			// Update the bound state directly
 			checked = !checked;
-			// Call the onchange callback if provided
 			if (onchange) {
 				onchange({ checked });
 			}
 		}
 	}
 
-	// Handle keyboard interaction (Enter/Space)
 	function handleKeydown(event: KeyboardEvent): void {
 		if (!disabled && (event.key === 'Enter' || event.key === ' ')) {
-			event.preventDefault(); // Prevent space scrolling
+			event.preventDefault();
 			toggle();
 		}
 	}
@@ -52,47 +48,39 @@
 </button>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path if needed
-
-	// Block: toggle-switch
 	.toggle-switch {
 		position: relative;
-		display: inline-block; // Allows placement next to text
-		width: 44px; // Slightly wider
+		display: inline-block;
+		width: 44px;
 		height: 24px;
-		background-color: $color-border; // Default off background
-		border-radius: $border-radius-pill; // Fully rounded
+		background-color: $color-border;
+		border-radius: $border-radius-pill;
 		cursor: pointer;
 		transition: background-color $transition-duration-fast;
-		vertical-align: middle; // Align nicely with text
-		border: none; // Remove default button border
-		padding: 0; // Remove default button padding
+		vertical-align: middle;
+		border: none;
+		padding: 0;
 
-		// Element: Knob (the circle)
 		&__knob {
 			position: absolute;
 			content: '';
-			width: 20px; // Knob size
+			width: 20px;
 			height: 20px;
-			background-color: $color-surface; // White knob
+			background-color: $color-surface;
 			border-radius: 50%;
-			top: 2px; // Position within the track
+			top: 2px;
 			left: 2px;
 			transition: transform $transition-duration-fast ease-in-out;
-			box-shadow: $box-shadow-sm; // Subtle shadow on knob
+			box-shadow: $box-shadow-sm;
 		}
 
-		// Modifier: Checked state
 		&--checked {
-			background-color: $color-primary; // Use primary color for on state
+			background-color: $color-primary;
 
-			// Move knob to the right when checked
 			.toggle-switch__knob {
-				transform: translateX(20px); // Move knob (width - knob_width - 2*offset)
+				transform: translateX(20px);
 			}
 		}
-
-		// Modifier: Disabled state
 		&--disabled {
 			background-color: $color-button-disabled-bg;
 			cursor: not-allowed;
@@ -102,8 +90,6 @@
 				background-color: darken($color-surface, 10%);
 			}
 		}
-
-		// Focus state
 		&:focus-visible {
 			outline: 2px solid $color-primary-light;
 			outline-offset: 2px;

@@ -48,8 +48,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../../../styles/variables.scss';
-
 	.textarea-wrapper {
 		width: 100%;
 

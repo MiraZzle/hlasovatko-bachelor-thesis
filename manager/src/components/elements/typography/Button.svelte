@@ -54,8 +54,6 @@
 {/if}
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.button {
 		display: inline-flex;
 		align-items: center;

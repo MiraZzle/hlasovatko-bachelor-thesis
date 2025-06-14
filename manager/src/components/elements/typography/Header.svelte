@@ -8,8 +8,6 @@
 </svelte:element>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.header {
 		margin: 0;
 		&--1 {
