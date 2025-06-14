@@ -56,7 +56,7 @@
 		}
 	});
 
-	async function handleSubmit() {
+	async function handleSubmit(): Promise<void> {
 		if (!title.trim() || !selectedActivityType) {
 			alert('Please provide a title and select an activity type.');
 			return;
@@ -93,7 +93,7 @@
 		}
 	}
 
-	function requestClose() {
+	function requestClose(): void {
 		if (onclose) {
 			onclose();
 		}
@@ -162,8 +162,6 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.add-activity-modal {
 		&__title {
 			font-size: $font-size-xl;

@@ -39,7 +39,7 @@
 		}
 	});
 
-	async function handleSubmit() {
+	async function handleSubmit(): Promise<void> {
 		if (isSubmitting) return;
 		isSubmitting = true;
 		try {
@@ -53,7 +53,7 @@
 		}
 	}
 
-	function requestClose() {
+	function requestClose(): void {
 		if (onclose) {
 			onclose();
 		}
@@ -92,8 +92,6 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.export-analytics-modal {
 		&__title {
 			font-size: $font-size-xl;

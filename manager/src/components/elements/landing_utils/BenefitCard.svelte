@@ -19,8 +19,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.benefit-card {
 		background-color: $color-surface;
 		padding: $spacing-xl;

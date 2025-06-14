@@ -4,13 +4,6 @@
 	import { onMount } from 'svelte';
 	import QRCode from 'qrcode';
 
-	type Props = {
-		open?: boolean;
-		url: string;
-		code: string;
-		onclose?: () => void;
-	};
-
 	let {
 		open = $bindable(false),
 		url = $bindable(''),
@@ -18,11 +11,17 @@
 		onclose = () => {
 			open = false;
 		}
-	}: Props = $props();
+	}: {
+		open?: boolean;
+		url: string;
+		code: string;
+		onclose?: () => void;
+	} = $props();
 
 	let qrCanvas: HTMLCanvasElement;
 	let copyButtonText = $state('Copy');
 
+	// Ensure the URL is valid when the component mounts
 	const joinUrlWithCode = $derived(() => {
 		try {
 			const urlObject = new URL(url);
@@ -34,6 +33,7 @@
 		}
 	});
 
+	// Generate QR code when the modal opens or when the URL/code changes
 	$effect(() => {
 		if (open && qrCanvas && joinUrlWithCode) {
 			QRCode.toCanvas(
@@ -54,13 +54,14 @@
 		}
 	});
 
+	// Reset copy button text when the modal opens
 	$effect(() => {
 		if (open) {
 			copyButtonText = 'Copy';
 		}
 	});
 
-	async function copyCodeToClipboard() {
+	async function copyCodeToClipboard(): Promise<void> {
 		if (!navigator.clipboard) {
 			alert('Clipboard access is not available in your browser.');
 			return;
@@ -111,8 +112,6 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.share-modal {
 		&__title {
 			font-size: $font-size-xl;

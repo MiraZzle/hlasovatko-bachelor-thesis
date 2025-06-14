@@ -30,7 +30,7 @@
 	let sessionTitle = $state('');
 	let isSubmitting = $state(false);
 
-	function getOptions() {
+	function getOptions(): { value: string; label: string }[] {
 		const options = [{ value: '', label: 'Select a template...' }];
 		templates.forEach((t) =>
 			options.push({ value: t.id, label: `${t.title} (#${t.id.substring(1)})` })
@@ -46,8 +46,6 @@
 			if (selectedTemplate && sessionTitle === '') {
 				sessionTitle = selectedTemplate.title;
 			}
-		} else {
-			// If 'Select a template...' is chosen, clear the title maybe? Or keep previous?
 		}
 	});
 
@@ -59,7 +57,7 @@
 		}
 	});
 
-	async function handleSubmit() {
+	async function handleSubmit(): Promise<void> {
 		if (!selectedTemplateId) {
 			alert('Please select a template.');
 			return;
@@ -82,7 +80,7 @@
 		}
 	}
 
-	function requestClose() {
+	function requestClose(): void {
 		if (onclose) {
 			onclose();
 		}
@@ -125,8 +123,6 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.create-session-modal {
 		&__title {
 			font-size: $font-size-xl;

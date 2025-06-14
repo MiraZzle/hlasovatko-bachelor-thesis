@@ -29,7 +29,7 @@
 	let deriveFromId = $state('none');
 	let isSubmitting = $state(false);
 
-	function getOptions() {
+	function getOptions(): { value: string; label: string }[] {
 		const options = [{ value: 'none', label: 'None' }];
 		templates.forEach((t) => options.push({ value: t.id, label: t.title }));
 		return options;
@@ -45,7 +45,7 @@
 		}
 	});
 
-	async function handleSubmit() {
+	async function handleSubmit(): Promise<void> {
 		if (!name.trim()) {
 			alert('Please enter a template name.');
 			return;
@@ -64,7 +64,7 @@
 		}
 	}
 
-	function requestClose() {
+	function requestClose(): void {
 		if (onclose) {
 			onclose();
 		}
@@ -107,8 +107,6 @@
 </ModalDialog>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.create-template-modal {
 		&__title {
 			font-size: $font-size-xl;

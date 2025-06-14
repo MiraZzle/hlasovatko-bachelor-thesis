@@ -5,17 +5,6 @@
 
 	type ModalWidth = 'auto' | 'sm' | 'md' | 'lg';
 
-	type ModalProps = {
-		open?: boolean;
-		onclose?: () => void;
-		width?: ModalWidth;
-		closeOnEscape?: boolean;
-		closeOnOutsideClick?: boolean;
-		titleId?: string | null;
-		descriptionId?: string | null;
-		children: Snippet;
-	};
-
 	let {
 		open = $bindable(false),
 		onclose = () => {},
@@ -25,9 +14,18 @@
 		titleId = null,
 		descriptionId = null,
 		children
-	}: ModalProps = $props();
+	}: {
+		open?: boolean;
+		onclose?: () => void;
+		width?: ModalWidth;
+		closeOnEscape?: boolean;
+		closeOnOutsideClick?: boolean;
+		titleId?: string | null;
+		descriptionId?: string | null;
+		children: Snippet;
+	} = $props();
 
-	let dialogElement: HTMLDivElement | null = null;
+	let dialogElement: HTMLDivElement | null = $state(null);
 
 	function requestClose(): void {
 		if (onclose) {
@@ -113,8 +111,6 @@
 {/if}
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.modal-dialog {
 		&__overlay {
 			position: fixed;
@@ -185,11 +181,6 @@
 				outline: 2px solid $color-primary-light;
 				outline-offset: 1px;
 				background-color: $color-surface-alt;
-			}
-
-			svg {
-				width: 20px;
-				height: 20px;
 			}
 		}
 
