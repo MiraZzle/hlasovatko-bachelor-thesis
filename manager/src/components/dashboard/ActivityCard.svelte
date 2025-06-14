@@ -25,8 +25,6 @@
 </button>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.activity-card {
 		background: none;
 		border: none;

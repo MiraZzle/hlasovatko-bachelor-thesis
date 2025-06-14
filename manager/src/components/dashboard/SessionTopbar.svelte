@@ -16,10 +16,10 @@
 
 	let isShareModalOpen = $state(false);
 
-	function handleShare() {
+	function handleShare(): void {
 		isShareModalOpen = true;
 	}
-	function handlePresent() {
+	function handlePresent(): void {
 		console.log('Presenting session:', sessionId);
 		goto(`/sessions/${sessionId}/present`);
 	}
@@ -48,8 +48,6 @@
 />
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.session-layout__title {
 		font-size: $font-size-lg;
 		font-weight: $font-weight-semibold;

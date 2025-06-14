@@ -16,8 +16,6 @@
 </header>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.topbar {
 		display: flex;
 		align-items: center;

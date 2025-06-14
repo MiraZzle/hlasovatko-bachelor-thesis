@@ -27,8 +27,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.stat-card {
 		background-color: $color-surface;
 		border-radius: $border-radius-lg;

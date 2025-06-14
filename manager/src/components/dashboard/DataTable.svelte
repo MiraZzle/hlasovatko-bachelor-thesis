@@ -1,9 +1,9 @@
 <script module lang="ts">
 	export interface ColumnHeader<T> {
-		key: keyof T | (string & {}); // The key in the data object
+		key: keyof T | (string & {});
 		label: string;
 		sortable?: boolean;
-		class?: string; // Optional custom class for the header cell
+		class?: string;
 	}
 </script>
 
@@ -22,7 +22,6 @@
 		searchPlaceholder,
 		noResultsMessage = 'No items found.',
 		onNewClick,
-		// Two-way binding for search term and pagination
 		searchTerm = $bindable(''),
 		currentPage = $bindable(1),
 		pageSize = 10
@@ -39,7 +38,6 @@
 		pageSize?: number;
 	}>();
 
-	// Sorting state
 	let sortKey = $state<keyof T | (string & {}) | null>(null);
 	let sortDirection = $state<'asc' | 'desc'>('asc');
 	const totalPages = $derived(Math.ceil(items.length / pageSize));
@@ -48,7 +46,7 @@
 	 * Handles sorting by a specific key.
 	 * Sets direction if the same key is clicked, otherwise sets to ascending.
 	 */
-	function handleSort(key: keyof T | (string & {})) {
+	function handleSort(key: keyof T | (string & {})): void {
 		if (sortKey === key) {
 			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
 		} else {
@@ -58,11 +56,11 @@
 	}
 
 	// Pagination handlers
-	function handlePreviousPage() {
+	function handlePreviousPage(): void {
 		if (currentPage > 1) currentPage--;
 	}
 
-	function handleNextPage() {
+	function handleNextPage(): void {
 		if (currentPage < totalPages) currentPage++;
 	}
 
@@ -173,8 +171,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.data-table-page {
 		&__header {
 			display: flex;

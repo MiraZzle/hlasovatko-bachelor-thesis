@@ -26,21 +26,21 @@
 	}
 
 	// Handler for the "See Details" menu item
-	function handleSeeDetails(event: MouseEvent) {
+	function handleSeeDetails(event: MouseEvent): void {
 		event.stopPropagation();
 		navigateToDetails();
 		isMenuOpen = false;
 	}
 
 	// Handler for the delte item
-	function handleDelete(event: MouseEvent) {
+	function handleDelete(event: MouseEvent): void {
 		event.stopPropagation();
 		onDelete(template.id);
 		isMenuOpen = false;
 	}
 
 	// Toggles the actions menu visibility
-	async function toggleMenu(event: MouseEvent) {
+	async function toggleMenu(event: MouseEvent): Promise<void> {
 		event.stopPropagation();
 		isMenuOpen = !isMenuOpen;
 
@@ -51,7 +51,7 @@
 	}
 
 	// Closes the menu when a click occurs outside of it
-	function closeMenuOnClickOutside() {
+	function closeMenuOnClickOutside(): void {
 		isMenuOpen = false;
 	}
 </script>
@@ -102,8 +102,6 @@
 </tr>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.template-row {
 		transition: background-color $transition-duration-fast;
 

@@ -25,7 +25,7 @@
 	 * Also generates sublinks for selected pages.
 	 * Returns an array of Navlinks.
 	 */
-	function getMainNavLinks() {
+	function getMainNavLinks(): NavLink[] {
 		const params = $page.params;
 		const currentSessionId = params.session_id;
 		const currentTemplateId = params.template_id;
@@ -156,8 +156,6 @@
 </aside>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.sidebar {
 		background-color: $color-surface;
 		border-right: $border-width-thin solid $color-border-light;

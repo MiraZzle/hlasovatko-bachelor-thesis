@@ -120,8 +120,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.user-profile {
 		position: relative;
 		display: inline-block;

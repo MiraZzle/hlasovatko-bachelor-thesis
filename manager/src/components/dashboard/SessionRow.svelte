@@ -24,14 +24,14 @@
 	}
 
 	// Handler for see action menu
-	function handleSeeDetails(event: MouseEvent) {
+	function handleSeeDetails(event: MouseEvent): void {
 		event.stopPropagation();
 		navigateToDetails();
 		isMenuOpen = false;
 	}
 
 	// Toggle the actions menu
-	async function toggleMenu(event: MouseEvent) {
+	async function toggleMenu(event: MouseEvent): Promise<void> {
 		event.stopPropagation();
 		isMenuOpen = !isMenuOpen;
 
@@ -41,12 +41,12 @@
 		}
 	}
 
-	function closeMenuOnClickOutside() {
+	function closeMenuOnClickOutside(): void {
 		isMenuOpen = false;
 	}
 
 	// Handler for delete action in the actions menu
-	function handleDelete(event: MouseEvent) {
+	function handleDelete(event: MouseEvent): void {
 		event.stopPropagation();
 		onDelete(session.id);
 		isMenuOpen = false;
@@ -99,8 +99,6 @@
 </tr>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.session-row {
 		transition: background-color $transition-duration-fast;
 

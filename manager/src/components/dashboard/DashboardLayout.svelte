@@ -6,8 +6,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.dashboard-layout__main {
 		flex-grow: 1;
 		display: flex;
