@@ -3,32 +3,38 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import JoinSession from '$components/landing_sections/JoinSession.svelte';
+	import { login } from '$lib/auth/auth';
 
-	// --- State for Login Form ---
+	// form state management
 	let email = $state('');
 	let password = $state('');
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
 
-	// --- Dummy Login Handler ---
+	/*
+	 * Handles the login form submission.
+	 * Validates input, calls the login function, and navigates on success.
+	 */
 	async function handleLogin(event: SubmitEvent): Promise<void> {
 		event.preventDefault();
 		isLoading = true;
 		error = null;
-		console.log('Attempting login with:', { email, password });
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-		if (email === 'test@example.com' && password === '1234') {
-			console.log('Login successful!');
-			alert('Login successful! (Redirect placeholder)');
-			await goto('/overview/templates');
-		} else {
-			console.error('Login failed!');
-			error = 'Invalid email or password. Please try again.';
+
+		try {
+			const success = await login(email, password);
+
+			if (success) {
+				await goto('/overview/templates');
+			} else {
+				error = 'Invalid email or password. Please try again.';
+			}
+		} catch (err) {
+			error = 'An unexpected error occurred. Please try again.';
+		} finally {
+			isLoading = false;
 		}
-		isLoading = false;
 	}
 
-	// --- Optional: Add link handler ---
 	function goToSignUp(): void {
 		goto('/signup');
 	}
@@ -112,7 +118,6 @@
 		display: flex;
 	}
 
-	// Block: login-page
 	.login-page {
 		&__grid {
 			flex-grow: 1;
@@ -125,7 +130,6 @@
 		}
 
 		&__join-column {
-			// background-color: $color-background; // Uncomment if gray background desired
 			padding: $spacing-3xl $spacing-lg;
 			display: flex;
 			flex-direction: column;
@@ -176,7 +180,6 @@
 			width: 100%;
 		}
 
-		// Necessary overrides for child component styles within this context
 		:global(.join-session) {
 			width: 100%;
 			max-width: none;
@@ -187,7 +190,6 @@
 		}
 	}
 
-	// Block: login-card
 	.login-card {
 		background-color: $color-surface;
 		padding: $spacing-xl;
@@ -205,10 +207,6 @@
 			display: flex;
 			flex-direction: column;
 			gap: $spacing-lg;
-		}
-
-		&__field {
-			// Currently no styles needed for this wrapper element
 		}
 
 		&__error-message {
@@ -229,7 +227,6 @@
 		}
 	}
 
-	// Utility/Element: link-button
 	.link-button {
 		background: none;
 		border: none;
@@ -245,7 +242,6 @@
 			color: $color-link-hover;
 		}
 		&:focus-visible {
-			// Added focus style
 			outline: 2px solid $color-primary-light;
 			outline-offset: 2px;
 			border-radius: $border-radius-sm;
