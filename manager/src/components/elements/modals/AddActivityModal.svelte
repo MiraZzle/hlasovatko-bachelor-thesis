@@ -5,11 +5,7 @@
 	import Input from '$components/elements/typography/Input.svelte';
 	import TextArea from '$components/elements/typography/utils/TextArea.svelte';
 	import type { NewActivity, KnownActivityDefinition } from '$lib/activity_types';
-
-	interface ActivityTypeOption {
-		value: string;
-		label: string;
-	}
+	import type { SelectOption } from '$lib/shared_types';
 
 	interface NewActivityData {
 		title: string;
@@ -29,7 +25,7 @@
 		}
 	}: {
 		open?: boolean;
-		activityTypes?: ActivityTypeOption[];
+		activityTypes?: SelectOption[];
 		onclose?: () => void;
 		onAdd?: (data: NewActivityData) => void | Promise<void>;
 	} = $props();

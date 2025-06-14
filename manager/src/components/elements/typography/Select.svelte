@@ -1,5 +1,5 @@
-<script lang="ts" generics="T extends string | number">
-	type Option = { value: T; label: string };
+<script lang="ts">
+	import type { SelectOption } from '$lib/shared_types';
 
 	let {
 		options,
@@ -15,8 +15,8 @@
 		},
 		width = 'auto'
 	}: {
-		options: Option[];
-		value?: T;
+		options: SelectOption[];
+		value?: string;
 		label?: string | null;
 		id?: string;
 		name?: string;
@@ -38,7 +38,7 @@
 		const selectedOption = options.find((opt) => String(opt.value) === selectedStringValue);
 
 		if (selectedOption) {
-			value = selectedOption.value;
+			value = selectedOption.value.toString();
 		}
 
 		if (onchange) {
