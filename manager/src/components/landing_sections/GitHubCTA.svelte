@@ -18,8 +18,6 @@
 </section>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.github-cta {
 		background-color: $color-surface;
 		padding: $spacing-3xl 0;

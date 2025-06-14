@@ -31,8 +31,6 @@
 </section>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.join-session {
 		&__container {
 			display: flex;

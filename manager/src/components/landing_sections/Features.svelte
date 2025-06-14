@@ -6,49 +6,58 @@
 	<div class="page-container features-section__container">
 		<h2 class="features-section__title">Designed for Every Type of Classroom Interaction</h2>
 		<p class="features-section__description">
-			Hlasovátko provides multiple interactive formats to engage students and enhance learning
+			EngaGenie provides multiple interactive formats to engage students and enhance learning
 			outcomes.
 		</p>
 
 		<div class="features-section__accordion-group">
 			<AccordionItem isOpen={true}>
-				<span slot="question">Quizzes</span>
+				<span slot="question">Multiple Choice</span>
 				<div slot="answer">
 					<p>
-						Signing up is simple: just visit our homepage and click on the 'Sign Up' button. Fill in
-						the required information, and you'll be ready to start using Hlasovátko.
+						Ask single- or multiple-answer questions to check understanding in real-time. Ideal for
+						concept checks, quick assessments, or sparking discussion.
 					</p>
 				</div>
 			</AccordionItem>
 
 			<AccordionItem>
-				<span slot="question">Polls & Surveys</span>
-				<div slot="answer">
-					<p>Engage your audience with quick polls or gather detailed feedback through surveys.</p>
-				</div>
-			</AccordionItem>
-
-			<AccordionItem>
-				<span slot="question">Live Q&A</span>
+				<span slot="question">Polls and Opinions</span>
 				<div slot="answer">
 					<p>
-						Allow students to ask questions anonymously or identified, vote on questions, and manage
-						discussions effectively.
+						Quickly collect opinions or check understanding using simple polls. Choose from
+						predefined options or allow open-ended voting.
 					</p>
 				</div>
 			</AccordionItem>
 
 			<AccordionItem>
-				<span slot="question">Timed Challenges</span>
+				<span slot="question">Live Rating Scales</span>
 				<div slot="answer">
-					<p>Add excitement with time-limited quizzes and activities to test quick thinking.</p>
+					<p>
+						Let students rate topics, confidence, or preferences on a numeric or Likert scale. Ideal
+						for feedback or gauging topic difficulty.
+					</p>
 				</div>
 			</AccordionItem>
 
 			<AccordionItem>
-				<span slot="question">Pre-Lecture Questions</span>
+				<span slot="question">Open-ended Reflections</span>
 				<div slot="answer">
-					<p>Gauge prior knowledge or set the stage for a topic before the lecture begins.</p>
+					<p>
+						Collect qualitative feedback or critical thinking responses from students. Support
+						pre-lecture prompts or follow-up reflections.
+					</p>
+				</div>
+			</AccordionItem>
+
+			<AccordionItem>
+				<span slot="question">Session-based Control for Teachers</span>
+				<div slot="answer">
+					<p>
+						Manage a sequence of activities in real-time. Control pacing, activate or skip
+						questions, and monitor participation live without needing to log in again.
+					</p>
 				</div>
 			</AccordionItem>
 		</div>
@@ -56,8 +65,6 @@
 </section>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.features-section {
 		background-color: $color-surface;
 		padding: $spacing-3xl 0;

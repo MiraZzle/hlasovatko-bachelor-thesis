@@ -27,8 +27,6 @@
 </section>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.benefits-section {
 		background-color: $color-surface-alt;
 		padding: $spacing-3xl 0;
