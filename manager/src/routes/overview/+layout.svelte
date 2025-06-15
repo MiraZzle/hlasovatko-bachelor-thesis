@@ -1,17 +1,27 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Sidebar from '$components/dashboard/Sidebar.svelte';
-	import DashboardLayout from '$components/dashboard/DashboardLayout.svelte'; // Use the layout component
-	import Topbar from '$components/dashboard/Topbar.svelte'; // Generic Topbar container
-	// Import BOTH possible top bar contents
+	import DashboardLayout from '$components/dashboard/DashboardLayout.svelte';
+	import Topbar from '$components/dashboard/Topbar.svelte';
 	import UserProfileBadge from '$components/dashboard/UserProfileBadge.svelte';
-	import SessionTopbar from '$components/dashboard/SessionTopbar.svelte'; // Specific session topbar content
+	import SessionTopbar from '$components/dashboard/SessionTopbar.svelte';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { getInitials } from '$lib/functions/utils';
 
-	// Dummy user data for default topbar
-	let userInitials = 'MF';
-
-	// Check if sessionDataForTopbar exists in the loaded page data
+	let userInitials = $state('XY');
 	let sessionData = $derived($page.data.sessionDataForTopbar);
+
+	onMount(async () => {
+		const raw = localStorage.getItem('user');
+		if (!raw) {
+			console.warn('User not found in localStorage');
+			goto('/login');
+			return;
+		}
+		const user = JSON.parse(raw);
+		userInitials = getInitials(user.name);
+	});
 </script>
 
 <div class="overview-layout-wrapper">
@@ -39,15 +49,12 @@
 </div>
 
 <style lang="scss">
-	// Styles for THIS layout file
-
 	.overview-layout-wrapper {
 		display: flex;
 		height: 100vh;
 		overflow: hidden;
 	}
 
-	// Style for the default topbar spacer (only used when sessionData is not present)
 	.overview-layout__topbar-spacer {
 		flex-grow: 1;
 	}

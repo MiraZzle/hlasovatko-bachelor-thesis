@@ -10,6 +10,7 @@
 	} from '$lib/analytics/analytics_utils';
 	import type { TimeFrame } from '$lib/analytics/types';
 
+	let isExportModalOpen = $state(false);
 	let selectedTimeFrame = $state<TimeFrame>('7d');
 	const timeFrameOptions: { value: TimeFrame; label: string }[] = [
 		{ value: '7d', label: '7 days' },
@@ -18,8 +19,11 @@
 		{ value: 'all', label: 'All time' }
 	];
 
-	let isExportModalOpen = $state(false);
-
+	/*
+	 * This function calculates global metrics based on the selected time frame.
+	 * It retrieves the total number of sessions, the most popular activity type,
+	 * and the total number of responses for the given time frame.
+	 */
 	function getGlobalMetrics() {
 		return {
 			sessions: getTotalNumberOfSessions(selectedTimeFrame),
@@ -28,8 +32,6 @@
 		};
 	}
 
-	let globalMetrics = $derived(getGlobalMetrics());
-
 	function handleTimeFrameChange(event: Event & { currentTarget: HTMLSelectElement }) {
 		console.log('Time frame changed to:', selectedTimeFrame);
 	}
@@ -37,9 +39,11 @@
 	function openExportModal(): void {
 		isExportModalOpen = true;
 	}
+
 	function closeExportModal(): void {
 		isExportModalOpen = false;
 	}
+
 	function handleExportSubmit(format: string): void {
 		console.log(
 			`Exporting statistics for time frame '${selectedTimeFrame}' in format '${format}'...`
@@ -53,6 +57,7 @@
 	}
 
 	let currentTimeFrameLabel = $derived(getCurrentTimeFrameLabel());
+	let globalMetrics = $derived(getGlobalMetrics());
 </script>
 
 <svelte:head>
@@ -173,15 +178,5 @@
 				}
 			}
 		}
-	}
-
-	.timeline-placeholder {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100%;
-		min-height: 100px;
-		color: $color-text-disabled;
-		font-style: italic;
 	}
 </style>

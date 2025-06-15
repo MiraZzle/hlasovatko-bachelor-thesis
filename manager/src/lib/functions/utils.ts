@@ -14,3 +14,16 @@ export function formatDate(dateString: string): string {
 		return 'Invalid Date';
 	}
 }
+
+/**
+ * Generates initials from a given name.
+ * Takes the first two parts of the name and returns their uppercase initials.
+ * If the name is empty or has no parts, returns an empty string.
+ */
+export function getInitials(name: string): string {
+	const parts = name.trim().split(' ');
+	return parts
+		.slice(0, 2)
+		.map((p) => p[0].toUpperCase())
+		.join('');
+}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { signout } from '$lib/auth/auth';
+	import { logout } from '$lib/auth/auth';
 
 	let {
 		initials = 'XY',
@@ -51,7 +51,7 @@
 	}
 
 	function handleSignOut(): void {
-		signout();
+		logout();
 		closeDropdown();
 		goto('/');
 	}

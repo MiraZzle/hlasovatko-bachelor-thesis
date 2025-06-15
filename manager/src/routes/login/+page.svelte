@@ -110,8 +110,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.login-page-wrapper {
 		min-height: 100vh;
 		width: 100%;
@@ -178,15 +176,6 @@
 			margin-bottom: $spacing-xl;
 			color: $color-text-primary;
 			width: 100%;
-		}
-
-		:global(.join-session) {
-			width: 100%;
-			max-width: none;
-			padding: 0;
-		}
-		:global(.join-session__form) {
-			max-width: none;
 		}
 	}
 

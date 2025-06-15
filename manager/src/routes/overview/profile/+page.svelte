@@ -1,50 +1,79 @@
 <script lang="ts">
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
-	import Input from '$components/elements/typography/Input.svelte'; // Verify path
+	import Button from '$components/elements/typography/Button.svelte';
+	import Input from '$components/elements/typography/Input.svelte';
 	import { goto } from '$app/navigation';
-	import { tick } from 'svelte'; // Import tick for clipboard success message
+	import { tick } from 'svelte';
+	import { logout, changePassword, getPartialApiKey, regenerateApiKey } from '$lib/auth/auth';
+	import { onMount } from 'svelte';
+	import { getInitials } from '$lib/functions/utils';
+	import type { User } from '$lib/auth/types';
 
-	// --- Dummy User Data (Replace with actual fetched/store data) ---
-	let currentUser = $state({
-		name: 'Matěj Foukal', // Example Name
-		email: 'matej.foukal@example.com', // Example Email
-		initials: 'MF', // Used by parent layout's topbar
-		// --- Dummy API Key ---
-		apiKey: 'sk_live_abcdefghijklmnopqrstuvwxyz1234567890' // Example key
+	type CurrentUser = User & {
+		initials: string;
+		apiKey: string;
+		partialApiKey: string;
+	};
+
+	let currentUser = $state<CurrentUser>({
+		id: '',
+		name: '',
+		email: '',
+		token: '',
+		initials: '',
+		apiKey: '',
+		partialApiKey: ''
 	});
 
-	// --- State for Forms ---
-	let updateName = $state(currentUser.name);
+	// State variables for password change
 	let currentPassword = $state('');
 	let newPassword = $state('');
 	let confirmPassword = $state('');
-	let isUpdatingProfile = $state(false);
 	let isUpdatingPassword = $state(false);
-	let profileUpdateError = $state<string | null>(null);
 	let passwordUpdateError = $state<string | null>(null);
 	let passwordUpdateSuccess = $state<string | null>(null);
-
-	// --- State for API Key ---
 	let isApiKeyVisible = $state(false);
 	let isRegeneratingKey = $state(false);
 	let apiKeyError = $state<string | null>(null);
 	let copySuccessMessage = $state<string | null>(null);
 
-	// --- Handlers ---
-	async function handleUpdateProfile(event: SubmitEvent) {
-		event.preventDefault();
-		if (updateName.trim() === currentUser.name) return;
+	/*
+	 * Get the current user from localStorage and initialize the component.
+	 * If user data is not found, redirect to login.
+	 */
+	onMount(async () => {
+		const raw = localStorage.getItem('user');
+		if (!raw) {
+			console.warn('User not found in localStorage');
+			goto('/login');
+			return;
+		}
 
-		isUpdatingProfile = true;
-		profileUpdateError = null;
-		console.log('Updating profile name to:', updateName.trim());
+		try {
+			const user: User = JSON.parse(raw);
+			const partial = await getPartialApiKey();
 
-		// --- TODO: API Call to update profile ---
-		await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate network
-		currentUser.name = updateName.trim(); // Simulate success
-		isUpdatingProfile = false;
+			currentUser = {
+				...user,
+				apiKey: '',
+				partialApiKey: partial,
+				initials: getInitials(user.name)
+			};
+		} catch (err) {
+			console.error('Failed to initialize user:', err);
+			apiKeyError = 'Unable to load user info.';
+		}
+	});
+
+	function resetPasswordFields() {
+		currentPassword = '';
+		newPassword = '';
+		confirmPassword = '';
 	}
 
+	/*
+	 * Handles the password change form submission.
+	 * Validates input, calls the changePassword function, and updates UI state accordingly.
+	 */
 	async function handleChangePassword(event: SubmitEvent) {
 		event.preventDefault();
 		passwordUpdateError = null;
@@ -58,38 +87,45 @@
 			passwordUpdateError = 'New passwords do not match.';
 			return;
 		}
-		if (newPassword.length < 8) {
-			passwordUpdateError = 'New password must be at least 8 characters long.';
+
+		isUpdatingPassword = true;
+
+		try {
+			let success = await changePassword(currentPassword, newPassword);
+			if (!success) {
+				passwordUpdateError = 'Current password is incorrect.';
+				isUpdatingPassword = false;
+				return;
+			} else {
+				passwordUpdateSuccess = 'Password updated successfully!';
+			}
+		} catch (error) {
+			console.error('Password change failed:', error);
+			passwordUpdateError = 'Failed to update password. Please try again.';
+			isUpdatingPassword = false;
 			return;
 		}
 
-		isUpdatingPassword = true;
-		console.log('Attempting password change...');
-
-		// --- TODO: API Call to change password ---
-		await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network
-
-		passwordUpdateSuccess = 'Password updated successfully!'; // Simulate success
-		currentPassword = '';
-		newPassword = '';
-		confirmPassword = '';
+		resetPasswordFields();
 		isUpdatingPassword = false;
 	}
 
 	function handleLogout() {
-		console.log('Logging out...');
-		// --- TODO: Implement actual logout logic ---
-		alert('Logged out (Placeholder)');
-		goto('/login');
+		logout();
+		goto('/');
 	}
 
-	// --- API Key Handlers ---
-	function toggleApiKeyVisibility(): void {
-		isApiKeyVisible = !isApiKeyVisible;
-		copySuccessMessage = null; // Clear copy message
-	}
-
+	/**
+	 * Copies the API key to the clipboard.
+	 * Displays a success message forsome  time.
+	 * Alerts if the API key is not available or if clipboard API is not supported.
+	 */
 	async function copyApiKey(): Promise<void> {
+		if (!currentUser.apiKey) {
+			alert('Full API key is not available. Please regenerate it first.');
+			return;
+		}
+
 		copySuccessMessage = null;
 		if (!navigator.clipboard) {
 			alert('Clipboard API not available in this browser.');
@@ -98,42 +134,35 @@
 		try {
 			await navigator.clipboard.writeText(currentUser.apiKey);
 			copySuccessMessage = 'API Key copied!';
-			await tick(); // Ensure DOM updates
+			await tick();
 			setTimeout(() => {
 				copySuccessMessage = null;
-			}, 2500); // Hide after 2.5s
+			}, 2500);
 		} catch (err) {
 			console.error('Failed to copy API Key:', err);
 			alert('Failed to copy API Key to clipboard.');
 		}
 	}
 
-	async function regenerateApiKey(): Promise<void> {
-		if (
-			!confirm(
-				'Are you sure you want to regenerate your API key? Your current key will stop working immediately.'
-			)
-		) {
-			return;
-		}
+	async function regenerateApiKeyHandler(): Promise<void> {
+		if (!confirm('Are you sure you want to regenerate your API key?')) return;
 
 		isRegeneratingKey = true;
 		apiKeyError = null;
-		copySuccessMessage = null; // Clear copy message
-		console.log('Regenerating API key...');
+		copySuccessMessage = null;
 
-		// --- TODO: API Call to regenerate key ---
-		await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network
+		try {
+			const newKey = await regenerateApiKey();
+			currentUser.apiKey = newKey;
+			currentUser.partialApiKey = await getPartialApiKey();
+			isApiKeyVisible = true;
 
-		// Example success: Update the key
-		const newKey = `sk_live_${Math.random().toString(36).substring(2)}${Date.now().toString(36)}`;
-		currentUser.apiKey = newKey;
-		isApiKeyVisible = false; // Hide the new key
-		alert('API Key regenerated successfully! Please copy the new key.');
-		// Example error:
-		// apiKeyError = 'Failed to regenerate API key. Please try again.';
-
-		isRegeneratingKey = false;
+			alert('API Key regenerated successfully! Copy it now – it will not be shown again.');
+		} catch (e) {
+			apiKeyError = 'API key regeneration failed. Please try again.';
+		} finally {
+			isRegeneratingKey = false;
+		}
 	}
 </script>
 
@@ -156,35 +185,6 @@
 				<span class="profile-card__value">{currentUser.email}</span>
 			</div>
 		</div>
-	</section>
-
-	<section class="profile-page__section profile-card">
-		<h2 class="profile-card__title">Update Profile</h2>
-		<form class="profile-card__form" onsubmit={handleUpdateProfile}>
-			{#if profileUpdateError}
-				<p class="profile-card__message profile-card__message--error">{profileUpdateError}</p>
-			{/if}
-			<Input
-				label="Full Name"
-				id="profile-name"
-				bind:value={updateName}
-				required
-				disabled={isUpdatingProfile}
-			/>
-			<div class="profile-card__actions">
-				<Button
-					type="submit"
-					variant="primary"
-					disabled={isUpdatingProfile || updateName.trim() === currentUser.name}
-				>
-					{#if isUpdatingProfile}
-						Saving...
-					{:else}
-						Save Name
-					{/if}
-				</Button>
-			</div>
-		</form>
 	</section>
 
 	<section class="profile-page__section profile-card">
@@ -244,15 +244,14 @@
 		<div class="api-key-display">
 			<span class="api-key-display__label">Your Key:</span>
 			{#if isApiKeyVisible}
-				<code class="api-key-display__value">{currentUser.apiKey}</code>
+				<code class="api-key-display__value">
+					{currentUser.apiKey || currentUser.partialApiKey}
+				</code>
 			{:else}
-				<code class="api-key-display__value api-key-display__value--obscured"
-					>sk_live_****************************************</code
-				>
+				<code class="api-key-display__value api-key-display__value--obscured">
+					{currentUser.partialApiKey || 'No API Key Available'}
+				</code>
 			{/if}
-			<Button variant="outline" size="sm" onclick={toggleApiKeyVisibility}>
-				{isApiKeyVisible ? 'Hide' : 'Show'}
-			</Button>
 			<Button variant="secondary" size="sm" onclick={copyApiKey} disabled={!currentUser.apiKey}>
 				Copy
 			</Button>
@@ -264,7 +263,11 @@
 		{/if}
 
 		<div class="profile-card__actions api-key-actions">
-			<Button variant="danger-outline" onclick={regenerateApiKey} disabled={isRegeneratingKey}>
+			<Button
+				variant="danger-outline"
+				onclick={regenerateApiKeyHandler}
+				disabled={isRegeneratingKey}
+			>
 				{#if isRegeneratingKey}
 					Regenerating...
 				{:else}
@@ -280,9 +283,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss'; // Adjust path
-
-	// Block: profile-page
 	.profile-page {
 		display: flex;
 		flex-direction: column;
@@ -308,7 +308,6 @@
 		}
 	}
 
-	// Block: profile-card
 	.profile-card {
 		background-color: $color-surface;
 		border-radius: $border-radius-lg;
@@ -386,7 +385,6 @@
 		}
 	}
 
-	// Styles for API Key Section
 	.api-key-display {
 		display: flex;
 		align-items: center;
@@ -417,11 +415,6 @@
 				color: $color-text-secondary;
 				font-style: italic;
 			}
-		}
-
-		&__toggle,
-		&__copy {
-			flex-shrink: 0;
 		}
 
 		&__copy-success {

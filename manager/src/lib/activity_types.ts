@@ -44,6 +44,17 @@ export interface NewActivity<T extends ActivityWithType = KnownActivityDefinitio
 	categories: string[];
 }
 
+export interface Activity {
+	type: string;
+	title: string;
+	definition: string;
+}
+
+export interface PredefinedActivity {
+	definition: Activity;
+	categories: string[];
+}
+
 export interface UnknownDefinition {
 	type: string;
 }
