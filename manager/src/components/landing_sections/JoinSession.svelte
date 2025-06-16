@@ -20,9 +20,9 @@
 	<div class="join-session__container">
 		<form class="join-session__form" onsubmit={handleJoinSession}>
 			<Input
-				name="gameCode"
-				placeholder="Enter game code"
-				ariaLabel="Enter game code to join session"
+				name="sessionCode"
+				placeholder="Enter Session code"
+				ariaLabel="Enter Session code to join Session"
 				bind:value={gameCode}
 			/>
 			<Button type="submit" variant="primary">Join Session</Button>

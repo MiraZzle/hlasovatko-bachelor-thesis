@@ -366,9 +366,7 @@
 			} // Make label clickable for toggle
 		}
 
-		// Element: Content Display Area
 		&__content {
-			// Styles for the container of JSON or visual list
 			background-color: $color-surface;
 			border-radius: $border-radius-md;
 			padding: $spacing-lg;
@@ -376,14 +374,12 @@
 			min-height: 300px; // Ensure some height
 		}
 
-		// Element: Activity List (for Visual Mode)
 		&__activity-list {
 			display: flex;
 			flex-direction: column;
 			gap: $spacing-lg;
 		}
 
-		// Element: Message styles
 		&__message {
 			&--error {
 				color: $color-error;

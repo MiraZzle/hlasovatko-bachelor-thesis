@@ -166,7 +166,8 @@
 		width: 240px;
 		height: 100%;
 		flex-shrink: 0;
-
+		max-width: 80vw;
+		overflow-y: auto;
 		&__logo {
 			font-size: $font-size-xl;
 			font-weight: $font-weight-bold;

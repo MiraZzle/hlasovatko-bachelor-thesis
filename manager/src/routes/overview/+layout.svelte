@@ -8,10 +8,26 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { getInitials } from '$lib/functions/utils';
+	import Desktop from '$components/utils/Desktop.svelte';
+	import Mobile from '$components/utils/Mobile.svelte';
+	import Button from '$components/elements/typography/Button.svelte';
 
 	let userInitials = $state('XY');
 	let sessionData = $derived($page.data.sessionDataForTopbar);
+	let isSidebarOpen = $state(false);
 
+	function toggleSidebar(): void {
+		isSidebarOpen = !isSidebarOpen;
+	}
+
+	function closeSidebar(): void {
+		isSidebarOpen = false;
+	}
+
+	/*
+	 * Called on mount to retrieve user data from localStorage.
+	 * If user data is not found, redirects to the login page.
+	 */
 	onMount(async () => {
 		const raw = localStorage.getItem('user');
 		if (!raw) {
@@ -25,11 +41,29 @@
 </script>
 
 <div class="overview-layout-wrapper">
-	<Sidebar />
+	<Desktop>
+		<Sidebar />
+	</Desktop>
+
+	{#if isSidebarOpen}
+		<button
+			class="sidebar-mobile-overlay"
+			onclick={closeSidebar}
+			tabindex="-1"
+			aria-label="Close menu"
+		></button>
+
+		<div class="sidebar-mobile-container">
+			<Sidebar />
+		</div>
+	{/if}
 
 	<DashboardLayout>
 		<svelte:fragment slot="topbar">
 			<Topbar>
+				<Mobile>
+					<Button variant={'primary'} onclick={toggleSidebar}>☰</Button>
+				</Mobile>
 				{#if sessionData}
 					<SessionTopbar
 						sessionId={sessionData.id}
@@ -57,5 +91,39 @@
 
 	.overview-layout__topbar-spacer {
 		flex-grow: 1;
+	}
+
+	.sidebar-mobile-overlay {
+		position: fixed;
+		inset: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 100;
+		animation: fadeInSidebar 0.3s ease;
+	}
+
+	.sidebar-mobile-container {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		z-index: 101;
+		animation: slideInSidebar 0.3s ease-out;
+	}
+
+	@keyframes fadeInSidebar {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+	@keyframes slideInSidebar {
+		from {
+			transform: translateX(-100%);
+		}
+		to {
+			transform: translateX(0);
+		}
 	}
 </style>
