@@ -4,6 +4,7 @@
 	import Select from '$components/elements/typography/Select.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import { tick } from 'svelte';
+	import ToggleSwitch from '../ToggleSwitch.svelte';
 
 	interface TemplateStub {
 		id: string;
@@ -29,6 +30,9 @@
 	let selectedTemplateId = $state<string>('');
 	let sessionTitle = $state('');
 	let isSubmitting = $state(false);
+	let activationDate = $state<string>(''); // For YYYY-MM-DD format from <input type="date">
+	let sessionMode = $state<'student-paced' | 'teacher-paced'>('teacher-paced');
+	let planSession = $state(false);
 
 	function getOptions(): { value: string; label: string }[] {
 		const options = [{ value: '', label: 'Select a template...' }];
@@ -40,6 +44,14 @@
 
 	const templateOptions = $derived(getOptions());
 
+	const modeOptions = [
+		{ value: 'teacher-paced', label: 'Teacher Paced' },
+		{ value: 'student-paced', label: 'Student Paced' }
+	];
+
+	const todayString = new Date().toISOString().split('T')[0];
+
+	// Auto-fill session title based on selected template
 	$effect(() => {
 		if (selectedTemplateId && selectedTemplateId !== '') {
 			const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
@@ -54,6 +66,17 @@
 			selectedTemplateId = '';
 			sessionTitle = '';
 			isSubmitting = false;
+			activationDate = todayString;
+			sessionMode = 'teacher-paced';
+		}
+	});
+
+	// When a date is picked, default mode to student-paced
+	$effect(() => {
+		if (activationDate) {
+			sessionMode = 'student-paced';
+		} else {
+			sessionMode = 'teacher-paced';
 		}
 	});
 
@@ -111,6 +134,30 @@
 			disabled={isSubmitting}
 		/>
 
+		<Select
+			label="Session Mode"
+			id="session-mode-select-modal"
+			options={modeOptions}
+			bind:value={sessionMode}
+			disabled={isSubmitting}
+			width="full"
+		/>
+
+		<div class="create-session-modal__activation-date">
+			<label for="plan-toggle">Plan Session</label>
+			<ToggleSwitch label="Plan Session" bind:checked={planSession} disabled={isSubmitting} />
+		</div>
+
+		{#if planSession}
+			<Input
+				label="Activation Date *"
+				id="activation-date-modal"
+				bind:value={activationDate}
+				required
+				disabled={isSubmitting}
+			/>
+		{/if}
+
 		<div class="create-session-modal__actions">
 			<Button type="button" variant="outline" onclick={requestClose} disabled={isSubmitting}
 				>Cancel</Button
@@ -145,6 +192,18 @@
 			margin-top: $spacing-xl;
 			border-top: 1px solid $color-border-light;
 			padding-top: $spacing-lg;
+		}
+
+		&__activation-date {
+			display: flex;
+			align-items: center;
+			gap: $spacing-sm;
+			font-size: $font-size-sm;
+			color: $color-text-secondary;
+			justify-content: space-between;
+			label {
+				cursor: pointer;
+			}
 		}
 	}
 </style>

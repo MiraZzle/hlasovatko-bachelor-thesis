@@ -6,13 +6,7 @@
 	import TextArea from '$components/elements/typography/utils/TextArea.svelte';
 	import type { NewActivity, KnownActivityDefinition } from '$lib/activity_types';
 	import type { SelectOption } from '$lib/shared_types';
-
-	interface NewActivityData {
-		title: string;
-		type: string;
-		definition: string;
-		categories: string[];
-	}
+	import type { NewActivityData } from '$lib/activities/types';
 
 	let {
 		open = $bindable(false),
@@ -77,7 +71,7 @@
 			await onAdd({
 				title: title.trim(),
 				type: selectedActivityType,
-				definition: activityDefinition.trim(),
+				definition: JSON.parse(activityDefinition),
 				categories: categories
 			});
 			requestClose();
