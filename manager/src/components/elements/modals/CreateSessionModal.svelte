@@ -3,13 +3,9 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
-	import { tick } from 'svelte';
 	import ToggleSwitch from '../ToggleSwitch.svelte';
-
-	interface TemplateStub {
-		id: string;
-		title: string;
-	}
+	import type { SessionMode } from '$lib/shared_types';
+	import type { TemplateStub } from '$lib/templates/types';
 
 	let {
 		open = $bindable(false),
@@ -17,21 +13,31 @@
 		onclose = () => {
 			open = false;
 		},
-		onCreate = async (data) => {
-			console.warn('onCreate handler not provided', data);
+		onCreate = async (
+			templateId: string,
+			title: string,
+			activationDate?: string,
+			setSessionMode?: SessionMode
+		) => {
+			console.warn('onCreate handler not provided');
 		}
 	}: {
 		open?: boolean;
 		templates?: TemplateStub[];
 		onclose?: () => void;
-		onCreate?: (data: { templateId: string; title: string }) => void | Promise<void>;
+		onCreate?: (
+			templateId: string,
+			title: string,
+			activationDate?: string,
+			setSessionMode?: SessionMode
+		) => void | Promise<void>;
 	} = $props();
 
 	let selectedTemplateId = $state<string>('');
 	let sessionTitle = $state('');
 	let isSubmitting = $state(false);
 	let activationDate = $state<string>(''); // For YYYY-MM-DD format from <input type="date">
-	let sessionMode = $state<'student-paced' | 'teacher-paced'>('teacher-paced');
+	let sessionMode = $state<SessionMode>('teacher-paced');
 	let planSession = $state(false);
 
 	function getOptions(): { value: string; label: string }[] {
@@ -93,7 +99,12 @@
 				sessionTitle.trim() ||
 				templates.find((t) => t.id === selectedTemplateId)?.title ||
 				'Session';
-			await onCreate({ templateId: selectedTemplateId, title: finalTitle });
+			await onCreate(
+				selectedTemplateId,
+				finalTitle,
+				planSession ? activationDate : undefined,
+				sessionMode
+			);
 			requestClose();
 		} catch (err) {
 			console.error('Error during session creation:', err);

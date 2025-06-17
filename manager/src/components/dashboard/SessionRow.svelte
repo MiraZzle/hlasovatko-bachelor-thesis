@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { Session } from '$lib/activity_types';
+	import type { Session } from '$lib/sessions/types';
 	import { tick } from 'svelte';
 	import { onDestroy } from 'svelte';
 	import { formatDate } from '$lib/functions/utils';
@@ -62,7 +62,7 @@
 <tr class="session-row">
 	<td class="session-row__cell session-row__cell--title-code">
 		<span class="session-row__title">{session.title}</span>
-		<span class="session-row__code">({session.templateCode})</span>
+		<span class="session-row__code">({session.templateID})</span>
 	</td>
 
 	<td class="session-row__cell session-row__cell--date">{formattedDate}</td>
