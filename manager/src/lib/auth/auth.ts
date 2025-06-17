@@ -13,6 +13,10 @@ export function logout(): void {
 	*/
 }
 
+export function getToken(): string | null {
+	return localStorage.getItem('token');
+}
+
 export function isAuthenticated(): boolean {
 	const token = localStorage.getItem('token');
 	return token !== null && token !== '';

@@ -1,4 +1,4 @@
-import type { PredefinedActivity, NewActivityData, ActivityType } from './types.ts';
+import type { PredefinedActivity, NewActivityData, ActivityType, Activity } from './types.ts';
 
 export function getDefinedActivityTypes(): ActivityType[] {
 	return [{ name: 'Quiz' }, { name: 'Rating' }, { name: 'Word Cloud' }, { name: 'Poll' }];
@@ -29,7 +29,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 				id: 'ab1',
 				type: 'Quiz',
 				title: 'Physics Brainstorm',
-				definition: '{}'
+				definition: {}
 			},
 			categories: ['Physics', 'Event']
 		},
@@ -39,7 +39,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 				id: 'ab2',
 				type: 'Rating',
 				title: 'Lecture Feedback',
-				definition: '{}'
+				definition: {}
 			},
 			categories: ['Event', 'Feedback']
 		},
@@ -49,7 +49,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 				id: 'ab4',
 				type: 'Quiz',
 				title: 'Thermodynamics Concept',
-				definition: '{}'
+				definition: {}
 			},
 			categories: ['Physics', 'Definitions']
 		},
@@ -59,7 +59,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 				id: 'ab5',
 				type: 'Word Cloud',
 				title: 'Entropy Description',
-				definition: '{}'
+				definition: {}
 			},
 			categories: ['Physics', 'Concept']
 		},
@@ -69,7 +69,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 				id: 'ab6',
 				type: 'Poll',
 				title: 'Lecture Planning',
-				definition: '{}'
+				definition: {}
 			},
 			categories: ['Planning']
 		},
@@ -79,7 +79,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 				id: 'ab7',
 				type: 'Quiz',
 				title: 'Chemistry Basics',
-				definition: '{}'
+				definition: {}
 			},
 			categories: ['Chemistry', 'Definitions']
 		}
@@ -98,8 +98,65 @@ export function createActivity(data: NewActivityData): void {
 		categories: data.categories
 	};
 
-	// Update the store, which will trigger reactivity in the component.
-
 	console.log('Successfully added activity:', newActivity);
 	// TODO: Add an API call here to persist the change to your backend.
+}
+
+export function getActivitiesFromSession(sessionId: string): Activity[] {
+	console.log(`Fetching activities for session ${sessionId}`);
+
+	return [
+		{
+			id: 'sact1',
+			type: 'Poll',
+			title: 'Which topic should we cover next?',
+			definition: {
+				type: 'Poll',
+				options: [
+					{ id: 'o1', text: 'Topic A' },
+					{ id: 'o2', text: 'Topic B' }
+				]
+			}
+		},
+		{
+			id: 'sact2',
+			type: 'MultipleChoice',
+			title: 'What is the powerhouse of the cell?',
+			definition: {
+				type: 'MultipleChoice',
+				options: [
+					{ id: 'm1', text: 'Nucleus' },
+					{ id: 'm2', text: 'Ribosome' },
+					{ id: 'm3', text: 'Mitochondrion' },
+					{ id: 'm4', text: 'Chloroplast' }
+				],
+				correctOptionId: 'm3',
+				allowMultiple: false
+			}
+		},
+		{
+			id: 'sact3',
+			type: 'ScaleRating',
+			title: 'Rate your understanding (1-5)',
+			definition: {
+				type: 'ScaleRating',
+				min: 1,
+				max: 5,
+				minLabel: 'Confused',
+				maxLabel: 'Confident'
+			}
+		},
+		{
+			id: 'sact4',
+			type: 'OpenEnded',
+			title: 'Any remaining questions?',
+			definition: { type: 'OpenEnded' }
+		},
+		{
+			id: 'sact5',
+			type: 'UnknownType',
+			title: 'Custom Activity Format',
+			definition: { customField: 'value', structure: { nested: true } }
+		}
+	];
 }
