@@ -1,3 +1,5 @@
+import type { SessionMode } from '$lib/shared_types';
+
 export interface Session {
 	id: string;
 	title: string;
@@ -7,6 +9,8 @@ export interface Session {
 	created: string;
 	joinCode?: string;
 	participants?: number;
+	activationDate?: string;
+	mode?: SessionMode;
 }
 
 export interface SessionMetrics {
