@@ -59,16 +59,10 @@
 <tr class="template-row">
 	<td class="template-row__cell template-row__cell--title-code">
 		<span class="template-row__title">{template.title}</span>
-		<span class="template-row__code">{template.code}</span>
+		<span class="template-row__code">(#{template.id})</span>
 	</td>
 
 	<td class="template-row__cell template-row__cell--date">{formattedDate}</td>
-
-	<td class="template-row__cell template-row__cell--status">
-		<span class="template-row__status template-row__status--{statusModifier}">
-			{template.status}
-		</span>
-	</td>
 
 	<td class="template-row__cell template-row__cell--tags">
 		<div class="template-row__tags">

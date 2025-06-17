@@ -6,8 +6,9 @@ export interface TemplateStub {
 export interface Template {
 	id: string;
 	title: string;
-	code: string;
-	dateCreated: string;
-	status: string;
-	tags: string[];
+	definition: object;
+	ownerId: string;
+	version: number;
+	tags?: string[];
+	dateCreated?: string;
 }
