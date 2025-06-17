@@ -1,9 +1,4 @@
-// src/styles/global.scss
-
-// Import variables first
 @import './variables.scss';
-
-// --- Reset/Base Styles ---
 
 *,
 *::before,
@@ -14,7 +9,7 @@
 }
 
 html {
-	font-size: $font-size-base; // Use base font size from variables
+	font-size: $font-size-base;
 	scroll-behavior: smooth;
 	height: 100%;
 }
@@ -35,10 +30,10 @@ h3,
 h4,
 h5,
 h6 {
-	font-family: $font-family-secondary; // Use secondary font for headings
+	font-family: $font-family-secondary;
 	font-weight: $font-weight-bold;
 	line-height: $line-height-heading;
-	margin-bottom: $spacing-md; // Add some default spacing below headings
+	margin-bottom: $spacing-md;
 }
 
 h1 {
@@ -79,7 +74,7 @@ ul,
 ol {
 	list-style-position: inside;
 	margin-bottom: $spacing-md;
-	padding-left: $spacing-md; // Indent lists slightly
+	padding-left: $spacing-md;
 }
 
 img,
@@ -87,15 +82,15 @@ video,
 svg {
 	max-width: 100%;
 	height: auto;
-	display: block; // Remove extra space below inline images
+	display: block;
 }
 
 button {
-	font-family: inherit; // Inherit font from body
+	font-family: inherit;
 	cursor: pointer;
 	border: none;
 	background: none;
-	padding: 0; // Remove default padding
+	padding: 0;
 	color: inherit;
 }
 
@@ -103,21 +98,16 @@ input,
 textarea,
 select,
 button {
-	font-size: inherit; // Ensure form elements inherit font size
+	font-size: inherit;
 	font-family: inherit;
 }
 
-// --- Utility Classes (Optional but often helpful) ---
-
-// --- Utility Classes ---
-
-// Utility for centering content with max-width
 .page-container {
 	width: 100%;
-	max-width: $content-max-width; // Use the new variable
+	max-width: $content-max-width;
 	margin-left: auto;
 	margin-right: auto;
-	padding-left: $spacing-lg; // Add some padding (e.g., 24px)
+	padding-left: $spacing-lg;
 	padding-right: $spacing-lg;
 }
 
@@ -142,32 +132,12 @@ button {
 	}
 }
 
-// Add more utility classes as needed (e.g., for text alignment, margins, paddings)
-
-// --- App Specific Global Styles ---
-
 #svelte {
-	// Target the default SvelteKit mounting point
-	min-height: 100vh; // Ensure app takes full viewport height
+	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 }
 
 main {
-	flex-grow: 1; // Allow main content to fill available space
+	flex-grow: 1;
 }
-
-// Example: Style scrollbars (optional)
-// ::-webkit-scrollbar {
-//   width: 8px;
-// }
-// ::-webkit-scrollbar-track {
-//   background: $color-surface-alt;
-// }
-// ::-webkit-scrollbar-thumb {
-//   background: $color-border;
-//   border-radius: $border-radius-pill;
-// }
-// ::-webkit-scrollbar-thumb:hover {
-//   background: $color-text-secondary;
-// }

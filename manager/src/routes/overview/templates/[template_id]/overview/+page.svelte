@@ -1,16 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
-	import ToggleSwitch from '$components/elements/ToggleSwitch.svelte'; // Import toggle
-	// Import activity display components (assuming they are needed for visual mode)
-	import SessionActivityItem from '$components/activities/SessionActivityItem.svelte'; // Reuse this? Or a simpler version?
-	import RawJsonDisplay from '$components/activities/RawJson.svelte'; // For JSON view
-	import type { SessionActivity } from '$lib/activity_types'; // Adjust path
-	import { onMount } from 'svelte'; // For lifecycle hooks
+	import Button from '$components/elements/typography/Button.svelte';
+	import ToggleSwitch from '$components/elements/ToggleSwitch.svelte';
+	import SessionActivityItem from '$components/activities/SessionActivityItem.svelte';
+	import RawJsonDisplay from '$components/activities/RawJson.svelte';
+	import type { SessionActivity } from '$lib/activity_types';
+	import { onMount } from 'svelte';
 	import TextArea from '$components/elements/typography/utils/TextArea.svelte';
-	import { tick } from 'svelte'; // For reactivity
+	import { tick } from 'svelte';
 
-	// --- Get Template ID ---
 	let { template_id } = $page.params;
 
 	// --- State ---
@@ -321,15 +319,11 @@
 </div>
 
 <style lang="scss">
-	@import '../../../../../styles/variables.scss'; // Adjust path depth
-
-	// Block: template-overview-page
 	.template-overview-page {
 		display: flex;
 		flex-direction: column;
 		gap: $spacing-lg;
 
-		// Element: Header
 		&__header {
 			display: flex;
 			justify-content: space-between;
@@ -338,14 +332,12 @@
 			gap: $spacing-md;
 		}
 
-		// Element: File Loader Section
 		&__file-loader {
 			display: flex;
 			align-items: center;
 			gap: $spacing-sm;
 		}
 
-		// Element: File Name Display
 		&__file-name {
 			font-size: $font-size-sm;
 			color: $color-text-secondary;
@@ -354,7 +346,6 @@
 			}
 		}
 
-		// Element: View Toggle Section
 		&__view-toggle {
 			display: flex;
 			align-items: center;
@@ -363,7 +354,7 @@
 			color: $color-text-secondary;
 			label {
 				cursor: pointer;
-			} // Make label clickable for toggle
+			}
 		}
 
 		&__content {
@@ -371,7 +362,7 @@
 			border-radius: $border-radius-md;
 			padding: $spacing-lg;
 			border: 1px solid $color-border-light;
-			min-height: 300px; // Ensure some height
+			min-height: 300px;
 		}
 
 		&__activity-list {
