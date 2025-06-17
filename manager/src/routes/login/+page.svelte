@@ -97,12 +97,6 @@
 							{/if}
 						</Button>
 					</form>
-					<p class="login-card__signup-link">
-						Don't have an account?
-						<button type="button" class="link-button" onclick={goToSignUp}>
-							Request Account
-						</button>
-					</p>
 				</div>
 			</div>
 		</section>
