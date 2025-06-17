@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { SessionActivity, KnownActivityDefinition } from '$lib/activity_types';
+	import type { ActivityResult } from '$lib/activities/types';
 	import {
 		getKnownDefinition,
 		isMultipleChoice,
@@ -17,35 +18,30 @@
 	let {
 		activity
 	}: {
-		activity: SessionActivity;
+		activity: ActivityResult;
 	} = $props();
 
 	// Get the known definition for the activity
-	let knownDefinition = $derived(getKnownDefinition(activity));
+	let knownDefinition = $derived(getKnownDefinition(activity.activityRef));
 </script>
 
 <div class="session-analytics-item">
 	<div class="session-analytics-item__header">
-		<span class="session-analytics-item__type">{activity.type}</span>
-		<h3 class="session-analytics-item__title">{activity.title}</h3>
-		{#if activity.responseCount !== undefined}
-			<span class="session-analytics-item__response-count">
-				{activity.responseCount} / {activity.participantCount ?? '?'} Responses
-			</span>
-		{/if}
+		<span class="session-analytics-item__type">{activity.activityRef.type}</span>
+		<h3 class="session-analytics-item__title">{activity.activityRef.title}</h3>
 	</div>
 	<div class="session-analytics-item__body">
-		{#if (activity.type === 'MultipleChoice' || activity.type === 'Poll') && isChoiceResult(activity.results)}
+		{#if (activity.activityRef.type === 'MultipleChoice' || activity.activityRef.type === 'Poll') && isChoiceResult(activity.results)}
 			<ChoiceResultsDisplay
 				results={activity.results}
 				definition={isMultipleChoice(knownDefinition) ? knownDefinition : null}
 			/>
-		{:else if activity.type === 'ScaleRating' && isScaleRatingResult(activity.results)}
+		{:else if activity.activityRef.type === 'ScaleRating' && isScaleRatingResult(activity.results)}
 			<ScaleRatingResultsDisplay
 				results={activity.results}
 				definition={isScaleRating(knownDefinition) ? knownDefinition : null}
 			/>
-		{:else if activity.type === 'OpenEnded' && isOpenEndedResult(activity.results)}
+		{:else if activity.activityRef.type === 'OpenEnded' && isOpenEndedResult(activity.results)}
 			<OpenEndedResultsDisplay results={activity.results} />
 		{:else}
 			<p class="session-analytics-item__no-data">
