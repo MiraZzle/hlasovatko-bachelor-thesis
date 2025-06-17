@@ -13,11 +13,6 @@
 		}
 	}
 
-	function handleSignUp(): void {
-		console.log('Sign Up clicked');
-		console.log('Client url:', import.meta.env.VITE_CLIENT_URL);
-	}
-
 	function handleLogin(): void {
 		console.log('Log In clicked');
 		window.location.href = '/login';
@@ -65,7 +60,6 @@
 			</nav>
 
 			<div class="navbar__actions">
-				<Button variant="outline" onclick={handleSignUp}>Request Account</Button>
 				<Button variant="primary" onclick={handleLogin}>Log In</Button>
 			</div>
 		</div>
