@@ -10,7 +10,7 @@
 </script>
 
 <svelte:head>
-	<title>Activities for Session {session_id} - EngaGenie</title>
+	<title>EngaGenie | Session {session_id} - Activities</title>
 </svelte:head>
 
 <div class="session-activities-page">

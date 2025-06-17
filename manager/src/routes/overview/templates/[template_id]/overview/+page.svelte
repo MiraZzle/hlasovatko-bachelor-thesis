@@ -219,7 +219,7 @@
 </script>
 
 <svelte:head>
-	<title>Template Overview {template_id} - EngaGenie</title>
+	<title>EngaGenie | Template {template_id} - Overview</title>
 </svelte:head>
 
 <div class="template-overview-page">

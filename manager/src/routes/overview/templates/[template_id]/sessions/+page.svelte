@@ -158,7 +158,7 @@
 </script>
 
 <svelte:head>
-	<title>My Sessions - EngaGenie</title>
+	<title>EngaGenie | Template {templateId} - Sessions</title>
 </svelte:head>
 
 <div class="sessions-overview-page">
@@ -178,20 +178,14 @@
 </div>
 
 <style lang="scss">
-	@import '../../../../../styles/variables.scss'; // Adjust path if needed
-
-	// Block: sessions-overview-page
 	.sessions-overview-page {
 		&__title {
-			// Added Title style
 			font-size: $font-size-3xl;
 			font-weight: $font-weight-bold;
-			margin: 0; // Remove default margin
-			// Ensure it doesn't cause wrapping issues with search/button
-			flex-grow: 1; // Allow title to take space if header is flex
+			margin: 0;
+			flex-grow: 1;
 		}
 
-		// Element: Header Section
 		&__header {
 			display: flex;
 			justify-content: space-between; // Keep space-between
@@ -266,22 +260,10 @@
 			}
 		}
 
-		tbody {
-			/* No direct td styling needed */
-		}
-
-		// Element: Row shown when no results
 		&__no-results {
 			text-align: center;
 			padding: $spacing-xl;
 			color: $color-text-secondary;
 		}
-
-		// --- Styles for row internal elements have been REMOVED ---
 	}
-
-	// Reuse data-table styles (ensure they are globally available or copy here)
-	// --- PASTE .data-table SCSS block here if not globally available ---
-	// .data-table { ... all nested styles ... }
-	// Ensure SessionRow status styles (e.g., .data-table__status--finished) are included
 </style>

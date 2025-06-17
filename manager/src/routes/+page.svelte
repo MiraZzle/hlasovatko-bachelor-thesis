@@ -8,6 +8,10 @@
 	import GitHubCta from '$components/landing_sections/GitHubCTA.svelte';
 </script>
 
+<svelte:head>
+	<title>EngaGenie | Home</title>
+</svelte:head>
+
 <Navbar />
 <main>
 	<Hero />

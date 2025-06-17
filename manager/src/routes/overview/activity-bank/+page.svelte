@@ -128,7 +128,7 @@
 </script>
 
 <svelte:head>
-	<title>Activity Bank - EngaGenie</title>
+	<title>EngaGenie | Activity Bank</title>
 </svelte:head>
 
 <div class="activity-bank-page">

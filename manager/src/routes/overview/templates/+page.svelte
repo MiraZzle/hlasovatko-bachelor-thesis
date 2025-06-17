@@ -177,7 +177,7 @@
 </script>
 
 <svelte:head>
-	<title>My Templates - EngaGenie</title>
+	<title>EngaGenie | My Templates</title>
 </svelte:head>
 
 <div class="templates-page">

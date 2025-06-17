@@ -34,7 +34,7 @@
 
 	// Copy join code to clipboard
 	function copyJoinCode() {
-		if (!sessionDetails) {
+		if (!sessionDetails || !sessionDetails.joinCode) {
 			return;
 		}
 		navigator.clipboard
@@ -56,7 +56,7 @@
 </script>
 
 <svelte:head>
-	<title>Overview: {sessionDetails?.title ?? 'Loading...'} - EngaGenie</title>
+	<title>EngaGenie | Session {session_id} - Overview</title>
 </svelte:head>
 
 {#if sessionDetails}

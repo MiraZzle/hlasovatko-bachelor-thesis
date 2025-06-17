@@ -65,7 +65,7 @@
 </script>
 
 <svelte:head>
-	<title>My Sessions - EngaGenie</title>
+	<title>EngaGenie | My Sessions</title>
 </svelte:head>
 
 <div class="sessions-overview-page">

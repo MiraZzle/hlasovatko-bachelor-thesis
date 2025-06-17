@@ -41,8 +41,7 @@
 </script>
 
 <svelte:head>
-	<title>Sign In - EngaGenie</title>
-	<meta name="description" content="Sign in to your EngaGenie account or join an activity." />
+	<title>EngaGenie | Sign In</title>
 </svelte:head>
 
 <div class="login-page-wrapper">

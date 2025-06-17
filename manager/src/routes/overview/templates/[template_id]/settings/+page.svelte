@@ -98,7 +98,7 @@
 </script>
 
 <svelte:head>
-	<title>Settings for Template {template_id} - EngaGenie</title>
+	<title>EngaGenie | Template {template_id} - Settings</title>
 </svelte:head>
 
 <div class="template-settings-page">

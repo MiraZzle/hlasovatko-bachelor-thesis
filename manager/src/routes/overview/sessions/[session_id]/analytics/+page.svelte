@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-	<title>Analytics for Session {session_id} - EngaGenie</title>
+	<title>EngaGenie | Session {session_id} - Analytics</title>
 </svelte:head>
 
 <div class="session-analytics-page">

@@ -167,7 +167,7 @@
 </script>
 
 <svelte:head>
-	<title>My Profile - EngaGenie</title>
+	<title>EngaGenie | My Profile</title>
 </svelte:head>
 
 <div class="profile-page">

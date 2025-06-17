@@ -61,7 +61,7 @@
 </script>
 
 <svelte:head>
-	<title>Analytics Overview - EngaGenie</title>
+	<title>EngaGenie | Analytics</title>
 </svelte:head>
 
 <div class="analytics-page">
