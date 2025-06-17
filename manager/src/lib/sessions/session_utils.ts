@@ -79,8 +79,51 @@ export function getAllSessions(): Session[] {
 	];
 }
 
-export function getSessionsByTemplate(templateID: string) {
+export function getSessionsByTemplate(templateID: string): Session[] {
 	console.log(`Fetching sessions for template ID: ${templateID}`);
+
+	return [
+		{
+			id: 's1',
+			title: 'Quiz 1 - NDBI046 Spring',
+			templateID: `#t41585`,
+			created: '2025-04-01T10:00:00Z',
+			status: 'Finished',
+			participants: 12
+		},
+		{
+			id: 's2',
+			title: 'Quiz 1 - NDBI046 Fall',
+			templateID: `#t41585`,
+			created: '2024-10-15T11:00:00Z',
+			status: 'Finished',
+			participants: 15
+		},
+		{
+			id: 's3',
+			title: 'Poll - Lecture 3 Feedback',
+			templateID: `#t41587`,
+			created: '2025-04-03T14:30:00Z',
+			status: 'Active',
+			participants: 28
+		},
+		{
+			id: 's4',
+			title: 'Midterm Review Session',
+			templateID: `#t41588`,
+			created: '2025-04-10T09:00:00Z',
+			status: 'Inactive',
+			participants: 0
+		},
+		{
+			id: 's5',
+			title: 'Quiz 2 - NDBI046 Spring',
+			templateID: `#t41586`,
+			created: '2025-04-08T10:00:00Z',
+			status: 'Finished',
+			participants: 11
+		}
+	];
 }
 // src/lib/api/sessions.ts
 export async function createNewSession(
