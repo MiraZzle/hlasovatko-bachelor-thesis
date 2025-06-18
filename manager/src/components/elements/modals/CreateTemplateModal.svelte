@@ -3,11 +3,7 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
-
-	interface TemplateStub {
-		id: string;
-		title: string;
-	}
+	import type { Template } from '$lib/templates/types';
 
 	let {
 		open = $bindable(false),
@@ -20,7 +16,7 @@
 		}
 	}: {
 		open?: boolean;
-		templates?: TemplateStub[];
+		templates?: Template[];
 		onclose?: () => void;
 		onCreate?: (data: { name: string; deriveFromId: string }) => void | Promise<void>;
 	} = $props();
@@ -31,7 +27,7 @@
 
 	function getOptions(): { value: string; label: string }[] {
 		const options = [{ value: 'none', label: 'None' }];
-		templates.forEach((t) => options.push({ value: t.id, label: t.title }));
+		templates.forEach((t) => options.push({ value: t.id, label: t.settings!.title }));
 		return options;
 	}
 

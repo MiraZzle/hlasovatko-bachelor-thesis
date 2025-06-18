@@ -1,4 +1,5 @@
 import type { SessionMode } from '$lib/shared_types';
+import type { Activity } from '$lib/activities/types';
 
 export interface TemplateStub {
 	id: string;
@@ -7,14 +8,11 @@ export interface TemplateStub {
 
 export interface Template {
 	id: string;
-	title: string;
-	definition: object;
+	definition: Activity[];
 	ownerId: string;
 	version: number;
-	tags?: string[];
 	dateCreated?: string;
-	defaultPace?: SessionMode;
-	resultsVisible?: boolean;
+	settings?: TemplateSettingsDTO;
 }
 
 export interface TemplateSettingsDTO {

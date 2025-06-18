@@ -1,6 +1,5 @@
 <script lang="ts">
 	import TemplateRow from '$components/dashboard/TemplateRow.svelte';
-
 	import CreateTemplateModal from '$components/elements/modals/CreateTemplateModal.svelte';
 	import DataTable from '$components/dashboard/DataTable.svelte';
 	import type { ColumnHeader } from '$components/dashboard/DataTable.svelte';
@@ -14,9 +13,9 @@
 
 	// define columns for datatable
 	const columns: ColumnHeader<Template>[] = [
-		{ key: 'title', label: 'Title', sortable: true },
+		{ key: 'settings.title', label: 'Title', sortable: true },
 		{ key: 'dateCreated', label: 'Date created', sortable: true },
-		{ key: 'tags', label: 'Tags', sortable: false },
+		{ key: 'settings.tags', label: 'Tags', sortable: false },
 		{ key: 'id', label: 'Actions', sortable: false }
 	];
 
@@ -38,13 +37,17 @@
 		console.log('Creating template (from page):', data);
 		const newId = `t${Math.random().toString(16).substring(2, 8)}`;
 		const newTemplate: Template = {
-			id: newId,
-			title: data.name,
-			definition: {},
-			ownerId: 'user_alpha_123',
-			dateCreated: new Date().toISOString(),
-			tags: [],
-			version: 1
+			id: 't41589',
+			definition: [],
+			ownerId: 'user_beta_456',
+			version: 1.0,
+			dateCreated: '2025-06-01T16:45:00Z',
+			settings: {
+				title: 'New Template',
+				tags: ['ux', 'feedback', 'research'],
+				sessionPacing: 'teacher-paced',
+				resultsVisibleDefault: true
+			}
 		};
 		templates.push(newTemplate);
 		templates = templates;
@@ -61,9 +64,9 @@
 		const lowerSearch = searchTerm.toLowerCase();
 		return templates.filter(
 			(t) =>
-				t.title.toLowerCase().includes(lowerSearch) ||
+				t.settings!.title.toLowerCase().includes(lowerSearch) ||
 				t.id.toLowerCase().includes(lowerSearch) ||
-				t.tags?.some((tag) => tag.toLowerCase().includes(lowerSearch))
+				t.settings!.tags?.some((tag) => tag.toLowerCase().includes(lowerSearch))
 		);
 	}
 

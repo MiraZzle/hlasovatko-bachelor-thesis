@@ -8,70 +8,30 @@
 	import { onMount } from 'svelte';
 	import TextArea from '$components/elements/typography/utils/TextArea.svelte';
 	import { tick } from 'svelte';
+	import { getTemplateById } from '$lib/templates/template_utils';
+	import type { Template } from '$lib/templates/types';
 
 	let { template_id } = $page.params;
 
-	// --- State ---
-	let viewMode = $state<'json' | 'visual'>('json'); // Default to JSON view
-	let templateDefinition = $state<any>(null); // Holds the parsed template JSON
-	let isLoading = $state(true); // Loading state
+	// state
+	let viewMode = $state<'json' | 'visual'>('json');
+	let templateDefinition = $state<Template>();
+	let isLoading = $state(true);
 	let error = $state<string | null>(null);
-	let fileName = $state<string | null>(null); // Name of the loaded file
-	let fileInputRef: HTMLInputElement | null = null; // Ref for file input
+	let fileName = $state<string | null>(null);
+	let fileInputRef: HTMLInputElement | null = null;
 
-	// --- NEW: State for Editable JSON ---
-	let templateJsonString = $state(''); // Holds the editable JSON string
-	let jsonParseError = $state<string | null>(null); // Holds parsing errors
-	let isSavingJson = $state(false); // Loading state for saving
+	// json state
+	let templateJsonString = $state('');
+	let jsonParseError = $state<string | null>(null);
+	let isSavingJson = $state(false);
 	let saveSuccessMessage = $state<string | null>(null);
 
 	// --- Dummy Data / Fetching ---
 	// In real app, fetch template JSON based on template_id in a load function or onMount
-	let dummyJson = {
-		id: `template_${template_id}`,
-		name: `Template ${template_id} Name`,
-		description: 'An example template definition.',
-		createdAt: new Date().toISOString(),
-		tags: ['Example', 'Demo'],
-		activities: [
-			{
-				id: 'act1',
-				type: 'Poll',
-				title: 'Which topic?',
-				definition: {
-					type: 'Poll',
-					options: [
-						{ id: 'o1', text: 'A' },
-						{ id: 'o2', text: 'B' }
-					]
-				}
-			},
-			{
-				id: 'act2',
-				type: 'MultipleChoice',
-				title: 'Which planet?',
-				definition: {
-					type: 'MultipleChoice',
-					options: [
-						{ id: 'm1', text: 'Mars' },
-						{ id: 'm3', text: 'Jupiter' }
-					],
-					correctOptionId: 'm3'
-				}
-			},
-			{
-				id: 'act3',
-				type: 'ScaleRating',
-				title: 'Rate it',
-				definition: { type: 'ScaleRating', min: 1, max: 5 }
-			},
-			{ id: 'act4', type: 'OpenEnded', title: 'Your thoughts?', definition: { type: 'OpenEnded' } },
-			{ id: 'act5', type: 'SomeCustomType', title: 'Custom', definition: { info: 'details' } }
-		]
-	};
+	let dummyJson = getTemplateById(template_id);
 
 	onMount(() => {
-		// Simulate loading
 		setTimeout(() => {
 			templateDefinition = dummyJson;
 			isLoading = false;
@@ -93,7 +53,6 @@
 		}
 	});
 
-	// --- Handlers ---
 	function triggerFileInput(): void {
 		fileInputRef?.click();
 	}
@@ -103,7 +62,6 @@
 		const files = target.files;
 		error = null;
 		fileName = null;
-		templateDefinition = null;
 		isLoading = true;
 
 		if (files && files.length > 0) {
@@ -123,7 +81,6 @@
 					const content = e.target?.result as string;
 					const jsonData = JSON.parse(content);
 					console.log('Imported JSON content:', jsonData);
-					// TODO: Validate JSON structure against your template schema
 					templateDefinition = jsonData;
 				} catch (err) {
 					console.error('Error reading/parsing file:', err);
@@ -140,9 +97,8 @@
 			reader.readAsText(file);
 		} else {
 			console.log('No file selected.');
-			isLoading = false; // No file chosen, stop loading
+			isLoading = false;
 		}
-		// Reset file input value to allow re-selecting same file
 		if (target) target.value = '';
 	}
 
@@ -150,8 +106,6 @@
 		viewMode = event.checked ? 'visual' : 'json';
 	}
 
-	// Helper to prepare activity data for SessionActivityItem
-	// Adds dummy status/counts as SessionActivityItem might expect them
 	function formatActivityForDisplay(activityData: any, index: number): SessionActivity {
 		return {
 			id: activityData.id ?? `temp-act-${index}`,
@@ -299,9 +253,9 @@
 					</Button>
 				</div>
 			</div>
-		{:else if viewMode === 'visual' && Array.isArray(templateDefinition.activities)}
+		{:else if viewMode === 'visual' && Array.isArray(templateDefinition.definition)}
 			<div class="template-overview-page__activity-list">
-				{#each templateDefinition.activities as activityData, index (activityData.id ?? index)}
+				{#each templateDefinition.definition as activityData, index (activityData.id ?? index)}
 					{@const activity = formatActivityForDisplay(activityData, index)}
 					<SessionActivityItem {activity} isOnlyView={true} />
 				{:else}

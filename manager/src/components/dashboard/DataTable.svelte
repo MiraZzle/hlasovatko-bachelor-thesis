@@ -4,6 +4,7 @@
 		label: string;
 		sortable?: boolean;
 		class?: string;
+		render?: (item: T) => string;
 	}
 </script>
 
@@ -73,13 +74,17 @@
 		return sortedItems.slice(startIndex, startIndex + pageSize);
 	});
 
+	function getValueByPath<T>(obj: T, path: string): any {
+		return path.split('.').reduce((o, k) => (o ? o[k] : undefined), obj as any);
+	}
+
 	// Dynamic sorting logic
 	const sortedItems = $derived.by(() => {
 		if (!sortKey) return [...items];
 
 		const sorted = [...items].sort((a, b) => {
-			const valA = a[sortKey as keyof T];
-			const valB = b[sortKey as keyof T];
+			const valA = getValueByPath(a, sortKey as string);
+			const valB = getValueByPath(b, sortKey as string);
 
 			// Number comparison
 			if (typeof valA === 'number' && typeof valB === 'number') {

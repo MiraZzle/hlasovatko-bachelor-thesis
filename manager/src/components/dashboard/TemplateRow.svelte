@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
-	import type { Template } from '$lib/activity_types';
+	import type { Template } from '$lib/templates/types';
 	import { formatDate } from '$lib/functions/utils';
 
 	let {
@@ -16,10 +16,7 @@
 
 	// State for the pop-up menu
 	let isMenuOpen = $state(false);
-	let formattedDate = $derived(formatDate(template.dateCreated));
-
-	// Lowercase status for class modifier
-	const statusModifier = $derived(() => template.status.toLowerCase());
+	let formattedDate = $derived(formatDate(template.dateCreated!));
 
 	function navigateToDetails(): void {
 		goto(`/overview/templates/${template.id}/overview`);
@@ -58,7 +55,7 @@
 
 <tr class="template-row">
 	<td class="template-row__cell template-row__cell--title-code">
-		<span class="template-row__title">{template.title}</span>
+		<span class="template-row__title">{template.settings!.title}</span>
 		<span class="template-row__code">(#{template.id})</span>
 	</td>
 
@@ -66,7 +63,7 @@
 
 	<td class="template-row__cell template-row__cell--tags">
 		<div class="template-row__tags">
-			{#each template.tags as tag (tag)}
+			{#each template.settings!.tags as tag (tag)}
 				<span class="template-row__tag">{tag}</span>
 			{/each}
 		</div>
@@ -76,7 +73,7 @@
 		<div class="actions-container">
 			<button
 				class="template-row__action-button"
-				aria-label={`Actions for ${template.title}`}
+				aria-label={`Actions for ${template.settings!.title}`}
 				onclick={toggleMenu}
 				type="button"
 			>
