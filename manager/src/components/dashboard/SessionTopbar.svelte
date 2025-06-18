@@ -16,12 +16,8 @@
 
 	let isShareModalOpen = $state(false);
 
-	function handleShare(): void {
+	function shareSession(): void {
 		isShareModalOpen = true;
-	}
-	function handlePresent(): void {
-		console.log('Presenting session:', sessionId);
-		goto(`/sessions/${sessionId}/present`);
 	}
 </script>
 
@@ -31,13 +27,12 @@
 </span>
 <div class="session-layout__topbar-spacer"></div>
 
-<Button variant="outline" onclick={handleShare}>Share</Button>
-<Button variant="primary" onclick={handlePresent}>Present</Button>
+<Button variant="primary" onclick={shareSession}>Share Session</Button>
 
 {#if sessionStatus === 'Active'}
-	<Button onclick={() => stopSession(sessionId)}>Stop Session</Button>
+	<Button variant="outline" onclick={() => stopSession(sessionId)}>Stop Session</Button>
 {:else if sessionStatus === 'Inactive'}
-	<Button onclick={() => startSession(sessionId)}>Start Session</Button>
+	<Button variant="outline" onclick={() => startSession(sessionId)}>Start Session</Button>
 {/if}
 
 <ShareSessionModal
