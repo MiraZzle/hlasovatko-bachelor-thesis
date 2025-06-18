@@ -1,7 +1,5 @@
 import type { Template, TemplateSettingsDTO } from '$lib/templates/types';
 
-export function createNewTemplate() {}
-
 export function getTemplateById(templateId: string): Template {
 	console.log(`Fetching template with ID: ${templateId}`);
 	return {
@@ -176,4 +174,44 @@ export function updateTemplateSettings(
 			resolve(true);
 		}, 100);
 	});
+}
+
+export function createNewTemplate() {}
+
+/**
+ * Updates a template on the server via an API call.
+ * @param templateId The ID of the template to update.
+ * @param templateData The full template object with the new data.
+ * @returns {Promise<boolean>} True if the update was successful, otherwise throws an error.
+ */
+export async function updateTemplate(templateId: string, templateData: Template): Promise<boolean> {
+	console.log(`Updating template ${templateId} with data:`, templateData);
+
+	// This is where you would make your real API call
+	try {
+		// Using a placeholder API endpoint
+		const response = await fetch(`/api/templates/${templateId}`, {
+			method: 'PUT', // or 'POST'
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(templateData)
+		});
+
+		if (!response.ok) {
+			// If the server responds with an error status (4xx, 5xx), throw an error
+			const errorData = await response.json();
+			throw new Error(
+				errorData.message || `Failed to update template. Server status: ${response.status}`
+			);
+		}
+
+		// You could return response.json() if the server sends back the updated object
+		console.log('Template updated successfully on the server.');
+		return true;
+	} catch (error) {
+		console.error('API call to update template failed:', error);
+		// Re-throw the error so the component can catch it and display a message
+		throw error;
+	}
 }

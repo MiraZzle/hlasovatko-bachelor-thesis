@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { MultipleChoiceDefinition } from '$lib/activity_types';
+	import type { MultipleChoiceDefinition } from '$lib/activities/definition_types';
 
 	let { definition }: { definition: MultipleChoiceDefinition } = $props();
 	const CHECK_ICON = '✔';
@@ -34,9 +34,6 @@
 			</li>
 		{/each}
 	</ul>
-	{#if definition.allowMultiple}
-		<p class="activity-display__note">(Multiple answers allowed)</p>
-	{/if}
 </div>
 
 <style lang="scss">

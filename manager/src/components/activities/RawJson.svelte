@@ -1,5 +1,4 @@
 <script lang="ts">
-	//!TODO: Add type definitions for the JSON structure
 	let { definition }: { definition: any } = $props();
 
 	/*

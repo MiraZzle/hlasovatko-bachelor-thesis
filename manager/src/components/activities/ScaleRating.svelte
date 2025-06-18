@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ScaleRatingDefinition } from '$lib/activity_types';
+	import type { ScaleRatingDefinition } from '$lib/activities/definition_types';
 
 	let { definition }: { definition: ScaleRatingDefinition } = $props();
 

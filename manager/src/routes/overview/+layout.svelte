@@ -5,6 +5,7 @@
 	import Topbar from '$components/dashboard/Topbar.svelte';
 	import UserProfileBadge from '$components/dashboard/UserProfileBadge.svelte';
 	import SessionTopbar from '$components/dashboard/SessionTopbar.svelte';
+	import TemplateTopbar from '$components/dashboard/TemplateTopbar.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { getInitials } from '$lib/functions/utils';
@@ -14,6 +15,8 @@
 
 	let userInitials = $state('XY');
 	let sessionData = $derived($page.data.sessionDataForTopbar);
+	let templateData = $derived($page.data.templateDataForTopBar);
+
 	let isSidebarOpen = $state(false);
 
 	function toggleSidebar(): void {
@@ -70,6 +73,8 @@
 						sessionTitle={sessionData.title}
 						sessionStatus={sessionData.status}
 					/>
+				{:else if templateData}
+					<TemplateTopbar templateId={templateData.id} templateTitle={templateData.title} />
 				{:else}
 					<div class="overview-layout__topbar-spacer"></div>
 					<UserProfileBadge initials={userInitials} />

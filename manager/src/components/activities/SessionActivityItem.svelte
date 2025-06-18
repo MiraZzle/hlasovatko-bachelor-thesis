@@ -10,18 +10,13 @@
 	import ScaleRating from '$components/activities/ScaleRating.svelte';
 	import OpenEnded from '$components/activities/OpenEnded.svelte';
 	import RawJson from '$components/activities/RawJson.svelte';
+	import type { Activity } from '$lib/activities/types';
 
 	let {
 		activity,
-		onStart = (id) => console.log('Start:', id),
-		onStop = (id) => console.log('Stop:', id),
-		onViewResults = (id) => console.log('View Results:', id),
 		isOnlyView = false
 	}: {
-		activity: SessionActivity;
-		onStart?: (id: string) => void;
-		onStop?: (id: string) => void;
-		onViewResults?: (id: string) => void;
+		activity: Activity;
 		isOnlyView?: boolean;
 	} = $props();
 
@@ -72,13 +67,6 @@
 	<div class="session-activity-item__header">
 		<span class="session-activity-item__type">{activity.type}</span>
 		<h3 class="session-activity-item__title">{activity.title}</h3>
-		{#if activity.status && !isOnlyView}
-			<span
-				class="session-activity-item__status session-activity-item__status--{activity.status.toLowerCase()}"
-			>
-				{activity.status}
-			</span>
-		{/if}
 	</div>
 
 	<div class="session-activity-item__body">
@@ -92,20 +80,6 @@
 			<OpenEnded />
 		{:else}
 			<RawJson definition={parsedDefinition} />
-		{/if}
-	</div>
-
-	<div class="session-activity-item__footer">
-		{#if !isOnlyView}
-			{#if activity.status === 'Pending' || activity.status === 'Closed'}
-				<Button onclick={() => onStart(activity.id)}>Start</Button>
-			{/if}
-			{#if activity.status === 'Active'}
-				<Button onclick={() => onStop(activity.id)}>Stop</Button>
-			{/if}
-			{#if activity.status === 'Closed'}
-				<Button variant="outline" onclick={() => onViewResults(activity.id)}>Results</Button>
-			{/if}
 		{/if}
 	</div>
 </div>

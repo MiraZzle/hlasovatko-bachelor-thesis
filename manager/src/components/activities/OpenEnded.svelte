@@ -1,5 +1,4 @@
 <script lang="ts">
-	// No specific logic needed for OpenEnded activity type
 </script>
 
 <div class="activity-display activity-display--open-ended">

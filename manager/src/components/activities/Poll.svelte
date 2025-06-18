@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { PollDefinition } from '$lib/activity_types';
+	import type { PollDefinition } from '$lib/activities/definition_types';
 
 	let { definition }: { definition: PollDefinition } = $props();
 	const POLL_ICON = '▫';
