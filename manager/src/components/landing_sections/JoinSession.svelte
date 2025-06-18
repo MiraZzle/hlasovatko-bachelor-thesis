@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
+	import { getParticipateSessionLinkWithCode } from '$lib/router/external_routes';
 
 	let gameCode = $state('');
 
@@ -10,9 +12,8 @@
 			console.warn('Game code is empty');
 			return;
 		}
-		console.log('Joining session with code:', gameCode);
-		// TODO: redirect to manager with game code
-		// goto(`${MANAGE_URL}/manager/sessions/${gameCode}`);
+		const participateLink = getParticipateSessionLinkWithCode(gameCode);
+		window.location = participateLink;
 	}
 </script>
 

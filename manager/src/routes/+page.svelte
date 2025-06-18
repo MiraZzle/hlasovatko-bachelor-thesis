@@ -27,6 +27,6 @@
 <style lang="scss">
 	.join-session__container {
 		background-color: $color-surface-alt;
-		padding: $spacing-2xl 0;
+		padding: $spacing-2xl $spacing-lg;
 	}
 </style>
