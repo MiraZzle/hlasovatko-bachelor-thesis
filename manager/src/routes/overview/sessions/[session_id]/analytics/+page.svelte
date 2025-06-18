@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import SessionAnalyticsItem from '$components/analytics/SessionAnalyticsItem.svelte';
-	import type { SessionActivity } from '$lib/activity_types';
 	import { getActivityResultsForSession } from '$lib/analytics/analytics_utils';
 
 	let { session_id } = $page.params;

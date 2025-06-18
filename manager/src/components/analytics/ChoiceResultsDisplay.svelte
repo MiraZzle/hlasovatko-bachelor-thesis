@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { MultipleChoiceDefinition, PollDefinition } from '$lib/activities/definition_types';
 
-	import type { ChoiceActivityResult } from '$lib/activity_types';
+	import type { ChoiceActivityResult } from '$lib/analytics/result_utils';
 
 	let {
 		results,

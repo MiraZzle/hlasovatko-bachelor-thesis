@@ -1,5 +1,4 @@
 <script lang="ts">
-	// Import all necessary types and components into one place.
 	import type {
 		MultipleChoiceDefinition,
 		PollDefinition,
@@ -14,7 +13,6 @@
 		isOpenEndedResult
 	} from '$lib/analytics/result_utils';
 
-	// Import the specialized display components
 	import ChoiceResultsDisplay from '$components/analytics/ChoiceResultsDisplay.svelte';
 	import ScaleRatingResultsDisplay from '$components/analytics/ScaleRatingResultsDisplay.svelte';
 	import OpenEndedResultsDisplay from '$components/analytics/OpenEndedResultsDisplay.svelte';

@@ -2,18 +2,17 @@
 	type Props = {
 		checked?: boolean;
 		disabled?: boolean;
-		label?: string; // For aria-label
-		onchange?: (event: { checked: boolean }) => void; // Optional callback
+		label?: string;
+		onchange?: (event: { checked: boolean }) => void;
 	};
 
 	let {
-		checked = $bindable(false), // Bindable state
+		checked = $bindable(false),
 		disabled = false,
-		label = 'Toggle Switch', // Default accessible label
-		onchange = undefined // Optional callback for state change
+		label = 'Toggle Switch',
+		onchange = undefined
 	}: Props = $props();
 
-	// Internal toggle function
 	function toggle(): void {
 		if (!disabled) {
 			checked = !checked;

@@ -1,4 +1,4 @@
-type StaticActivityType =
+export type StaticActivityType =
 	| 'multiple_choice'
 	| 'poll'
 	| 'scale_rating'

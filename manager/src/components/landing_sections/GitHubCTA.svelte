@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Button from '$components/elements/typography/Button.svelte';
-
-	const GITHUB_URL = 'https://github.com/MiraZzle/hlasovatko-bachelor-thesis';
+	import { GITHUB_URL } from '$lib/config';
 </script>
 
 <section class="github-cta">

@@ -4,9 +4,9 @@
 	import Select from '$components/elements/typography/Select.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import TextArea from '$components/elements/typography/utils/TextArea.svelte';
-	import type { NewActivity, KnownActivityDefinition } from '$lib/activity_types';
 	import type { SelectOption } from '$lib/shared_types';
 	import type { NewActivityData } from '$lib/activities/types';
+	import type { StaticActivityType } from '$lib/activities/types';
 
 	let {
 		open = $bindable(false),
@@ -25,7 +25,7 @@
 	} = $props();
 
 	let title = $state('');
-	let selectedActivityType = $state<string>('');
+	let selectedActivityType = $state<StaticActivityType>('multiple_choice');
 	let activityDefinition = $state('');
 	let categoriesString = $state('');
 	let isSubmitting = $state(false);
@@ -39,7 +39,7 @@
 	$effect(() => {
 		if (open) {
 			title = '';
-			selectedActivityType = '';
+			selectedActivityType = 'multiple_choice';
 			activityDefinition = '';
 			categoriesString = '';
 			isSubmitting = false;

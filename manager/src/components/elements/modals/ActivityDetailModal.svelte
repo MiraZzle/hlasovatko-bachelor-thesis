@@ -18,7 +18,7 @@
 	function getFormattedDefinition() {
 		if (!activity?.refActivity.definition) return '{}';
 		try {
-			const jsonObj = JSON.parse(activity.refActivity.definition);
+			const jsonObj = activity.refActivity.definition;
 			return JSON.stringify(jsonObj, null, 2);
 		} catch (e) {
 			return activity.refActivity.definition;
