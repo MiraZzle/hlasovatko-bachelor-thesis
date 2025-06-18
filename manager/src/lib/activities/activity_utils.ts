@@ -27,7 +27,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab0',
 			refActivity: {
 				id: 'ab1',
-				type: 'Quiz',
+				type: 'poll',
 				title: 'Physics Brainstorm',
 				definition: {}
 			},
@@ -37,7 +37,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab1',
 			refActivity: {
 				id: 'ab2',
-				type: 'Rating',
+				type: 'scale_rating',
 				title: 'Lecture Feedback',
 				definition: {}
 			},
@@ -47,7 +47,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab2',
 			refActivity: {
 				id: 'ab4',
-				type: 'Quiz',
+				type: 'scale_rating',
 				title: 'Thermodynamics Concept',
 				definition: {}
 			},
@@ -57,7 +57,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab3',
 			refActivity: {
 				id: 'ab5',
-				type: 'Word Cloud',
+				type: 'scale_rating',
 				title: 'Entropy Description',
 				definition: {}
 			},
@@ -67,7 +67,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab4',
 			refActivity: {
 				id: 'ab6',
-				type: 'Poll',
+				type: 'scale_rating',
 				title: 'Lecture Planning',
 				definition: {}
 			},
@@ -77,7 +77,7 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab5',
 			refActivity: {
 				id: 'ab7',
-				type: 'Quiz',
+				type: 'scale_rating',
 				title: 'Chemistry Basics',
 				definition: {}
 			},
@@ -108,7 +108,7 @@ export function getActivitiesFromSession(sessionId: string): Activity[] {
 	return [
 		{
 			id: 'sact1',
-			type: 'Poll',
+			type: 'poll',
 			title: 'Which topic should we cover next?',
 			definition: {
 				type: 'Poll',
@@ -120,7 +120,7 @@ export function getActivitiesFromSession(sessionId: string): Activity[] {
 		},
 		{
 			id: 'sact2',
-			type: 'MultipleChoice',
+			type: 'multiple_choice',
 			title: 'What is the powerhouse of the cell?',
 			definition: {
 				type: 'MultipleChoice',
@@ -136,7 +136,7 @@ export function getActivitiesFromSession(sessionId: string): Activity[] {
 		},
 		{
 			id: 'sact3',
-			type: 'ScaleRating',
+			type: 'scale_rating',
 			title: 'Rate your understanding (1-5)',
 			definition: {
 				type: 'ScaleRating',
@@ -148,13 +148,13 @@ export function getActivitiesFromSession(sessionId: string): Activity[] {
 		},
 		{
 			id: 'sact4',
-			type: 'OpenEnded',
+			type: 'open_ended',
 			title: 'Any remaining questions?',
 			definition: { type: 'OpenEnded' }
 		},
 		{
 			id: 'sact5',
-			type: 'UnknownType',
+			type: 'custom_activity',
 			title: 'Custom Activity Format',
 			definition: { customField: 'value', structure: { nested: true } }
 		}

@@ -230,8 +230,7 @@
 		{:else if viewMode === 'visual' && Array.isArray(templateDefinition.definition)}
 			<div class="template-overview-page__activity-list">
 				{#each templateDefinition.definition as activityData, index (activityData.id ?? index)}
-					{@const activity = formatActivityForDisplay(activityData, index)}
-					<SessionActivityItem {activity} isOnlyView={true} />
+					<SessionActivityItem activity={activityData} />
 				{:else}
 					<p class="template-overview-page__message--info">Template has no activities defined.</p>
 				{/each}

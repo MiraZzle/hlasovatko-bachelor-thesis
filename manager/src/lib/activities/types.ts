@@ -1,8 +1,13 @@
-type StaticActivityType = 'multiple_choice' | 'poll' | 'scale_rating' | 'open_ended';
+type StaticActivityType =
+	| 'multiple_choice'
+	| 'poll'
+	| 'scale_rating'
+	| 'open_ended'
+	| 'custom_activity';
 
 export interface Activity {
 	id: string;
-	type: string;
+	type: StaticActivityType;
 	title: string;
 	definition: object;
 }
@@ -15,7 +20,7 @@ export interface PredefinedActivity {
 
 export interface NewActivityData {
 	title: string;
-	type: string;
+	type: StaticActivityType;
 	definition: object;
 	categories: string[];
 }

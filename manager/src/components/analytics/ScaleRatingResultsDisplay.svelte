@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { ScaleRatingActivityResult, ScaleRatingDefinition } from '$lib/activity_types';
+	import type { ScaleRatingDefinition } from '$lib/activities/definition_types';
+	import type { ScaleRatingActivityResult } from '$lib/analytics/result_utils';
 
 	let {
 		results,

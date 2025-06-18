@@ -29,7 +29,7 @@ export function getActivityResultsForSession(sessionId: string): ActivityResult[
 		{
 			activityRef: {
 				id: 'sact1',
-				type: 'Poll',
+				type: 'poll',
 				title: 'Which topic should we cover next?',
 				definition: {
 					type: 'Poll',
@@ -48,7 +48,7 @@ export function getActivityResultsForSession(sessionId: string): ActivityResult[
 		{
 			activityRef: {
 				id: 'sact2',
-				type: 'MultipleChoice',
+				type: 'multiple_choice',
 				title: 'What is the powerhouse of the cell?',
 				definition: {
 					type: 'MultipleChoice',
@@ -70,7 +70,7 @@ export function getActivityResultsForSession(sessionId: string): ActivityResult[
 		{
 			activityRef: {
 				id: 'sact3',
-				type: 'ScaleRating',
+				type: 'scale_rating',
 				title: 'Rate your understanding (1-5)',
 				definition: {
 					type: 'ScaleRating',
@@ -92,7 +92,7 @@ export function getActivityResultsForSession(sessionId: string): ActivityResult[
 		{
 			activityRef: {
 				id: 'sact4',
-				type: 'OpenEnded',
+				type: 'open_ended',
 				title: 'Any remaining questions?',
 				definition: { type: 'OpenEnded' }
 			},
@@ -108,7 +108,7 @@ export function getActivityResultsForSession(sessionId: string): ActivityResult[
 		{
 			activityRef: {
 				id: 'sact5',
-				type: 'UnknownType',
+				type: 'custom_activity',
 				title: 'Custom Activity Format',
 				definition: { customField: 'value', structure: { nested: true } }
 			},

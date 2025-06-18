@@ -191,34 +191,3 @@ export interface SessionActivity {
 	participantCount?: number;
 	responseCount?: number;
 }
-
-export function isChoiceResult(results: unknown): results is ChoiceActivityResult {
-	return (
-		Array.isArray(results) &&
-		results.every(
-			(r) =>
-				typeof r === 'object' &&
-				r !== null &&
-				typeof r.id === 'string' &&
-				typeof r.text === 'string' &&
-				typeof r.count === 'number'
-		)
-	);
-}
-
-export function isScaleRatingResult(results: unknown): results is ScaleRatingActivityResult {
-	return (
-		Array.isArray(results) &&
-		results.every(
-			(r) =>
-				typeof r === 'object' &&
-				r !== null &&
-				typeof r.rating === 'number' &&
-				typeof r.count === 'number'
-		)
-	);
-}
-
-export function isOpenEndedResult(results: unknown): results is OpenEndedActivityResult {
-	return Array.isArray(results) && results.every((r) => typeof r === 'string');
-}

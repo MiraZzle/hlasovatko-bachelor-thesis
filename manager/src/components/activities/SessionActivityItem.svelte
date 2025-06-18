@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
-	import Button from '$components/elements/typography/Button.svelte';
 
-	import type { SessionActivity, KnownActivityDefinition } from '$lib/activity_types';
-	import { isMultipleChoice, isPoll, isScaleRating, isOpenEnded } from '$lib/activity_types';
+	import type {
+		MultipleChoiceDefinition,
+		PollDefinition,
+		ScaleRatingDefinition
+	} from '$lib/activities/definition_types';
 
 	import MultipleChoice from '$components/activities/MultipleChoice.svelte';
 	import Poll from '$components/activities/Poll.svelte';
@@ -13,73 +15,29 @@
 	import type { Activity } from '$lib/activities/types';
 
 	let {
-		activity,
-		isOnlyView = false
+		activity
 	}: {
 		activity: Activity;
-		isOnlyView?: boolean;
 	} = $props();
-
-	/*
-	 * Parses the activity definition and validates its structure.
-	 * If the type in the definition does not match the activity type,
-	 * it injects/corrects the type into the definition.
-	 *
-	 * @returns Parsed definition or an error object if parsing fails.
-	 */
-	function getParsedDefinition(): JSON | { error: string; original: unknown } | object {
-		let def = activity.definition;
-
-		// If definition is a string, try to parse it as JSON
-		if (typeof def === 'string') {
-			try {
-				def = JSON.parse(def);
-			} catch (e) {
-				console.error(`Failed to parse definition string for activity ${activity.id}`, e);
-				return { error: 'Invalid JSON string', original: activity.definition };
-			}
-		}
-
-		// Check if the parsed definition is an object
-		if (typeof def !== 'object' || def === null) {
-			console.warn(`Activity ${activity.id} definition is not a valid object after parsing.`);
-			return { error: 'Invalid definition structure', original: activity.definition };
-		}
-
-		// Ensure the definition has a type and matches the activity type
-		if (!('type' in def) || def.type !== activity.type) {
-			console.warn(
-				`Injecting/correcting type '${activity.type}' into definition for activity ${activity.id}`
-			);
-
-			// Inject the type into definition if its missing or incorrect
-			def = { ...def, type: activity.type };
-			console.log('New definition:', def);
-		}
-		return def;
-	}
-
-	let parsedDefinition: KnownActivityDefinition | { error: string; original: unknown } | object =
-		$derived(getParsedDefinition());
 </script>
 
-<div class="session-activity-item" transition:fade|local={{ duration: 200 }}>
+<div class="session-activity-item" transition:fade|local>
 	<div class="session-activity-item__header">
-		<span class="session-activity-item__type">{activity.type}</span>
+		<span class="session-activity-item__type">{activity.type.replace('_', ' ')}</span>
 		<h3 class="session-activity-item__title">{activity.title}</h3>
 	</div>
 
 	<div class="session-activity-item__body">
-		{#if isMultipleChoice(parsedDefinition)}
-			<MultipleChoice definition={parsedDefinition} />
-		{:else if isPoll(parsedDefinition)}
-			<Poll definition={parsedDefinition} />
-		{:else if isScaleRating(parsedDefinition)}
-			<ScaleRating definition={parsedDefinition} />
-		{:else if isOpenEnded(parsedDefinition)}
+		{#if activity.type === 'multiple_choice'}
+			<MultipleChoice definition={activity.definition as MultipleChoiceDefinition} />
+		{:else if activity.type === 'poll'}
+			<Poll definition={activity.definition as PollDefinition} />
+		{:else if activity.type === 'scale_rating'}
+			<ScaleRating definition={activity.definition as ScaleRatingDefinition} />
+		{:else if activity.type === 'open_ended'}
 			<OpenEnded />
 		{:else}
-			<RawJson definition={parsedDefinition} />
+			<RawJson definition={activity.definition} />
 		{/if}
 	</div>
 </div>

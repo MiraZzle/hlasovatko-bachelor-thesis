@@ -18,8 +18,8 @@
 	</header>
 
 	<div class="session-analytics-page__list">
-		{#each activitiesWithResults as activity}
-			<SessionAnalyticsItem {activity} />
+		{#each activitiesWithResults as activityResult}
+			<SessionAnalyticsItem {activityResult} />
 		{:else}
 			<p class="session-analytics-page__no-results">
 				No activities have been run in this session yet.

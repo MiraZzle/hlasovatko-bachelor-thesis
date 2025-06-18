@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { OpenEndedActivityResult } from '$lib/activity_types';
+	import type { OpenEndedActivityResult } from '$lib/activities/definition_types';
 
 	let {
 		results

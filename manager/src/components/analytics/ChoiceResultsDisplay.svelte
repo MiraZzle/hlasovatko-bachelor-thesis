@@ -1,12 +1,14 @@
 <script lang="ts">
-	import type { ChoiceActivityResult, MultipleChoiceDefinition } from '$lib/activity_types';
+	import type { MultipleChoiceDefinition, PollDefinition } from '$lib/activities/definition_types';
+
+	import type { ChoiceActivityResult } from '$lib/activity_types';
 
 	let {
 		results,
 		definition = null
 	}: {
 		results: ChoiceActivityResult;
-		definition?: MultipleChoiceDefinition | null;
+		definition?: MultipleChoiceDefinition | PollDefinition | null;
 	} = $props();
 
 	let totalVotes = $derived(results.reduce((sum, option) => sum + option.count, 0));
@@ -23,11 +25,12 @@
 	/*
 	 * Check if the option is correct based on the definition.
 	 * If definition is null or correctOptionId is not set, return undefined.
-	 * If correctOptionId is an array, check if optionId is included.
-	 * If correctOptionId is a single value, check for equality.
 	 */
 	function isCorrect(optionId: string): boolean | undefined {
-		if (!definition || !definition.correctOptionId) return undefined;
+		if (!definition || !('correctOptionId' in definition) || !definition.correctOptionId) {
+			return undefined;
+		}
+
 		if (Array.isArray(definition.correctOptionId)) {
 			return definition.correctOptionId.includes(optionId);
 		}

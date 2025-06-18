@@ -1,58 +1,57 @@
 <script lang="ts">
-	import type { SessionActivity, KnownActivityDefinition } from '$lib/activity_types';
+	// Import all necessary types and components into one place.
+	import type {
+		MultipleChoiceDefinition,
+		PollDefinition,
+		ScaleRatingDefinition
+	} from '$lib/activities/definition_types';
+
 	import type { ActivityResult } from '$lib/activities/types';
+
 	import {
-		getKnownDefinition,
-		isMultipleChoice,
-		isScaleRating,
 		isChoiceResult,
 		isScaleRatingResult,
 		isOpenEndedResult
-	} from '$lib/activity_types';
+	} from '$lib/analytics/result_utils';
 
-	// Import result display components
+	// Import the specialized display components
 	import ChoiceResultsDisplay from '$components/analytics/ChoiceResultsDisplay.svelte';
 	import ScaleRatingResultsDisplay from '$components/analytics/ScaleRatingResultsDisplay.svelte';
 	import OpenEndedResultsDisplay from '$components/analytics/OpenEndedResultsDisplay.svelte';
 
-	let {
-		activity
-	}: {
-		activity: ActivityResult;
-	} = $props();
-
-	// Get the known definition for the activity
-	let knownDefinition = $derived(getKnownDefinition(activity.activityRef));
+	let { activityResult }: { activityResult: ActivityResult } = $props();
+	const { activityRef, results } = activityResult;
 </script>
 
-<div class="session-analytics-item">
-	<div class="session-analytics-item__header">
-		<span class="session-analytics-item__type">{activity.activityRef.type}</span>
-		<h3 class="session-analytics-item__title">{activity.activityRef.title}</h3>
+<div class="analytics-item">
+	<div class="analytics-item__header">
+		<span class="analytics-item__type">{activityRef.type.replace('_', ' ')}</span>
+		<h3 class="analytics-item__title">{activityRef.title}</h3>
 	</div>
-	<div class="session-analytics-item__body">
-		{#if (activity.activityRef.type === 'MultipleChoice' || activity.activityRef.type === 'Poll') && isChoiceResult(activity.results)}
+
+	<div class="analytics-item__body">
+		{#if (activityRef.type === 'multiple_choice' || activityRef.type === 'poll') && isChoiceResult(results)}
 			<ChoiceResultsDisplay
-				results={activity.results}
-				definition={isMultipleChoice(knownDefinition) ? knownDefinition : null}
+				{results}
+				definition={activityRef.definition as MultipleChoiceDefinition | PollDefinition}
 			/>
-		{:else if activity.activityRef.type === 'ScaleRating' && isScaleRatingResult(activity.results)}
+		{:else if activityRef.type === 'scale_rating' && isScaleRatingResult(results)}
 			<ScaleRatingResultsDisplay
-				results={activity.results}
-				definition={isScaleRating(knownDefinition) ? knownDefinition : null}
+				{results}
+				definition={activityRef.definition as ScaleRatingDefinition}
 			/>
-		{:else if activity.activityRef.type === 'OpenEnded' && isOpenEndedResult(activity.results)}
-			<OpenEndedResultsDisplay results={activity.results} />
+		{:else if activityRef.type === 'open_ended' && isOpenEndedResult(results)}
+			<OpenEndedResultsDisplay {results} />
 		{:else}
-			<p class="session-analytics-item__no-data">
-				No results available or activity type not supported for detailed analytics.
+			<p class="analytics-item__no-data">
+				No results available or this activity type does not support analytics.
 			</p>
 		{/if}
 	</div>
 </div>
 
 <style lang="scss">
-	.session-analytics-item {
+	.analytics-item {
 		background-color: $color-surface;
 		border-radius: $border-radius-lg;
 		border: 1px solid $color-border-light;
@@ -86,13 +85,6 @@
 			color: $color-text-primary;
 			margin: 0;
 			flex-grow: 1;
-		}
-		&__response-count {
-			font-size: $font-size-xs;
-			color: $color-text-secondary;
-			white-space: nowrap;
-			flex-shrink: 0;
-			margin-left: auto;
 		}
 		&__no-data {
 			font-style: italic;

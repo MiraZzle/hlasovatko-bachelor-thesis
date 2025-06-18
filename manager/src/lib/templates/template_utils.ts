@@ -16,7 +16,7 @@ export function getTemplateById(templateId: string): Template {
 		definition: [
 			{
 				id: 'act1',
-				type: 'Poll',
+				type: 'poll',
 				title: 'Which topic is most challenging?',
 				definition: {
 					type: 'Poll',
@@ -29,7 +29,7 @@ export function getTemplateById(templateId: string): Template {
 			},
 			{
 				id: 'act2',
-				type: 'MultipleChoice',
+				type: 'multiple_choice',
 				title: 'Which planet has the strongest gravitational pull?',
 				definition: {
 					type: 'MultipleChoice',
@@ -43,7 +43,7 @@ export function getTemplateById(templateId: string): Template {
 			},
 			{
 				id: 'act3',
-				type: 'ScaleRating',
+				type: 'scale_rating',
 				title: 'How confident are you about the upcoming exam?',
 				definition: {
 					type: 'ScaleRating',
@@ -55,7 +55,7 @@ export function getTemplateById(templateId: string): Template {
 			},
 			{
 				id: 'act4',
-				type: 'OpenEnded',
+				type: 'open_ended',
 				title: 'What are your remaining questions?',
 				definition: {
 					type: 'OpenEnded',
@@ -186,6 +186,14 @@ export function createNewTemplate() {}
  */
 export async function updateTemplate(templateId: string, templateData: Template): Promise<boolean> {
 	console.log(`Updating template ${templateId} with data:`, templateData);
+
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			// Simulate a successful update
+			console.log(`Template ${templateId} updated successfully.`);
+			resolve(true);
+		}, 3000);
+	});
 
 	// This is where you would make your real API call
 	try {
