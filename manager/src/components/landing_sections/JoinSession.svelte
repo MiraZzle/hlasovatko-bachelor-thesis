@@ -13,7 +13,7 @@
 			return;
 		}
 		const participateLink = getParticipateSessionLinkWithCode(gameCode);
-		window.location = participateLink;
+		window.location.href = participateLink;
 	}
 </script>
 
