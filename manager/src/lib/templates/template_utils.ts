@@ -1,6 +1,4 @@
-import type { Template } from '$lib/templates/types';
-
-export function getAvailableTemplates() {}
+import type { Template, TemplateSettingsDTO } from '$lib/templates/types';
 
 export function createNewTemplate() {}
 
@@ -63,4 +61,35 @@ export function getAllTemplates(): Template[] {
 			dateCreated: '2025-06-01T16:45:00Z'
 		}
 	];
+}
+
+export function getTemplateSettingsById(templateId: string): Promise<TemplateSettingsDTO> {
+	// Simulate fetching settings for a specific template
+	console.log(`Fetching settings for template ${templateId}...`);
+
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			const settings: TemplateSettingsDTO = {
+				sessionPacing: 'teacher-paced',
+				resultsVisibleDefault: true,
+				title: `Template ${templateId}`,
+				tags: ['Example', 'Physics 101']
+			};
+			resolve(settings);
+		}, 500);
+	});
+}
+
+export function updateTemplateSettings(
+	templateId: string,
+	settings: TemplateSettingsDTO
+): Promise<boolean> {
+	console.log(`Updating settings for template ${templateId}...`, settings);
+
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			console.log(`Settings for template ${templateId} updated successfully.`);
+			resolve(true);
+		}, 100);
+	});
 }

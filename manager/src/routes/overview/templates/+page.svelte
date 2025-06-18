@@ -7,10 +7,12 @@
 	import { getAllTemplates } from '$lib/templates/template_utils';
 	import type { Template } from '$lib/templates/types';
 
+	// state management
 	let searchTerm = $state('');
 	let currentPage = $state(1);
 	let templates = $state<Template[]>(getAllTemplates());
 
+	// define columns for datatable
 	const columns: ColumnHeader<Template>[] = [
 		{ key: 'title', label: 'Title', sortable: true },
 		{ key: 'dateCreated', label: 'Date created', sortable: true },

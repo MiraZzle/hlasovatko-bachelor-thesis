@@ -21,7 +21,7 @@
 		{ key: 'id', label: 'Actions', sortable: false }
 	];
 
-	let sessionsForTemplate = $state<Session[]>(getSessionsByTemplate(templateId));
+	let sessionsForTemplate = $derived<Session[]>(getSessionsByTemplate(templateId));
 
 	/*
 	Filter sessions based on search term.

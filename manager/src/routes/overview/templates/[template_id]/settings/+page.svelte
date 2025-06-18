@@ -1,104 +1,117 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import Button from '$components/elements/typography/Button.svelte'; // Verify path
-	import Select from '$components/elements/typography/Select.svelte'; // Verify path
-	import ToggleSwitch from '$components/elements/ToggleSwitch.svelte'; // Verify path
-	import Input from '$components/elements/typography/Input.svelte'; // Verify path
-	import { onMount, tick } from 'svelte'; // Added tick
+	import { page } from '$app/state';
+	import Button from '$components/elements/typography/Button.svelte';
+	import Select from '$components/elements/typography/Select.svelte';
+	import ToggleSwitch from '$components/elements/ToggleSwitch.svelte';
+	import Input from '$components/elements/typography/Input.svelte';
+	import { onMount, tick } from 'svelte';
+	import type { TemplateSettingsDTO } from '$lib/templates/types';
+	import type { SessionMode } from '$lib/shared_types';
+	import { getTemplateSettingsById, updateTemplateSettings } from '$lib/templates/template_utils';
 
-	// --- Get Template ID ---
-	let { template_id } = $page.params;
+	const templateId = $derived(page.params.template_id);
+	let settings = $state<TemplateSettingsDTO>();
 
-	// --- Define Types for Settings ---
-	type SessionPacing = 'teacher' | 'student';
-	interface TemplateSettingsData {
-		sessionPacing: SessionPacing;
-		resultsVisibleDefault: boolean;
-		title?: string;
-		description?: string;
-		tags: string[]; // <<< ADDED: Tags array
-	}
-
-	// --- State for Settings ---
-	let settings = $state<TemplateSettingsData>({
-		sessionPacing: 'teacher',
-		resultsVisibleDefault: true,
-		title: `Template ${template_id}`,
-		description: 'Default description for this amazing template.',
-		tags: ['Example', 'Physics 101'] // <<< ADDED: Dummy tags
-	});
-
+	// state management
 	let isLoading = $state(true);
 	let isSaving = $state(false);
 	let saveSuccessMessage = $state<string | null>(null);
 	let saveErrorMessage = $state<string | null>(null);
-
-	// --- State for Tag Input ---
 	let newTagInput = $state('');
 
-	// --- Options for Select ---
-	const pacingOptions: { value: SessionPacing; label: string }[] = [
-		{ value: 'teacher', label: 'Teacher-Paced (Instructor advances activities)' },
-		{ value: 'student', label: 'Student-Paced (Participants move at their own speed)' }
+	// options for select
+	const pacingOptions: { value: SessionMode; label: string }[] = [
+		{ value: 'teacher-paced', label: 'Teacher-Paced (Instructor advances activities)' },
+		{ value: 'student-paced', label: 'Student-Paced (Participants move at their own speed)' }
 	];
 
-	// --- Fetch Initial Settings (Simulated) ---
-	onMount(async () => {
-		isLoading = true;
-		console.log(`Fetching settings for template ${template_id}...`);
-		// --- TODO: API Call to fetch template settings ---
-		await new Promise((resolve) => setTimeout(resolve, 500));
-		// Example: Update state with fetched data
-		// settings.title = `Fetched Title for ${template_id}`;
-		// settings.tags = ['Fetched Tag 1', 'Fetched Tag 2'];
-		isLoading = false;
-	});
-
-	// --- Handlers ---
-	async function handleSaveChanges(event: SubmitEvent) {
+	/*
+	 * Handle form submission to save template settings
+	 * Prevents default form submission behavior
+	 * @param event - The submit event
+	 */
+	async function handleSaveChanges(event: SubmitEvent): Promise<void> {
 		event.preventDefault();
 		isSaving = true;
 		saveSuccessMessage = null;
 		saveErrorMessage = null;
-		console.log('Saving template settings:', settings);
 
-		// --- TODO: API Call to save settings (including settings.tags) ---
-		await new Promise((resolve) => setTimeout(resolve, 1000));
+		const settingsSnapshot = $state.snapshot(settings!);
+		console.log('Saving template settings snapshot:', settingsSnapshot);
 
-		saveSuccessMessage = 'Settings saved successfully!';
-		await tick(); // Ensure DOM updates before timeout
-		setTimeout(() => (saveSuccessMessage = null), 3000);
+		try {
+			const success = await updateTemplateSettings(templateId, settingsSnapshot!);
+			if (!success) {
+				throw new Error('Failed to save settings');
+			}
+			saveSuccessMessage = 'Settings saved successfully!';
+			await tick();
+			setTimeout(() => (saveSuccessMessage = null), 3000);
 
-		isSaving = false;
+			isSaving = false;
+		} catch (error) {
+			console.error('Error saving template settings:', error);
+			saveErrorMessage = 'Failed to save settings. Please try again later.';
+			isSaving = false;
+		}
 	}
 
-	// --- Tag Management Handlers ---
+	/*
+	 * Add a tag to the settings
+	 * @param tagValue - The tag to add
+	 */
 	function addTag(tagValue: string): void {
+		if (!settings) {
+			console.error('Settings not loaded yet');
+			return;
+		}
+
 		const newTag = tagValue.trim();
 		if (newTag && !settings.tags.includes(newTag)) {
 			settings.tags = [...settings.tags, newTag];
 		}
 	}
 
+	/*
+	 * Handle new tag input from the user
+	 * Adds the tag when Enter or comma is pressed
+	 * @param event - The keyboard event
+	 */
 	function handleNewTagInput(event: KeyboardEvent & { currentTarget: HTMLInputElement }): void {
 		if (event.key === 'Enter' || event.key === ',') {
 			event.preventDefault();
 			addTag(event.currentTarget.value);
-			newTagInput = ''; // Clear input
+			newTagInput = '';
 		}
 	}
-	function handleAddTagButton(): void {
-		addTag(newTagInput);
-		newTagInput = ''; // Clear input
-	}
 
+	/*
+	 * Remove a tag from the settings
+	 * @param tagToRemove - The tag to remove
+	 */
 	function removeTag(tagToRemove: string): void {
+		if (!settings) {
+			console.error('Settings not loaded yet');
+			return;
+		}
 		settings.tags = settings.tags.filter((tag) => tag !== tagToRemove);
 	}
+
+	// load template settings on mount
+	onMount(async () => {
+		isLoading = true;
+		try {
+			settings = await getTemplateSettingsById(templateId);
+		} catch (error) {
+			console.error('Failed to load template settings:', error);
+			saveErrorMessage = 'Failed to load template settings. Please try again later.';
+		}
+		isLoading = false;
+	});
 </script>
 
 <svelte:head>
-	<title>EngaGenie | Template {template_id} - Settings</title>
+	<title>EngaGenie | Template {templateId} - Settings</title>
 </svelte:head>
 
 <div class="template-settings-page">
@@ -116,7 +129,7 @@
 				<Input
 					label="Template Title"
 					id="template-title"
-					bind:value={settings.title}
+					bind:value={settings!.title}
 					placeholder="Enter template title"
 					disabled={isSaving}
 				/>
@@ -134,9 +147,9 @@
 						disabled={isSaving}
 					/>
 				</div>
-				{#if settings.tags.length > 0}
+				{#if settings!.tags.length > 0}
 					<div class="settings-card__tags-display">
-						{#each settings.tags as tag (tag)}
+						{#each settings!.tags as tag (tag)}
 							<span class="settings-card__tag">
 								{tag}
 								<button
@@ -162,7 +175,7 @@
 						label="Session Pacing"
 						id="session-pacing"
 						options={pacingOptions}
-						bind:value={settings.sessionPacing}
+						bind:value={settings!.sessionPacing}
 						disabled={isSaving}
 						ariaLabel="Default session pacing control"
 					/>
@@ -175,7 +188,7 @@
 						Results Visibility to Participants
 					</label>
 					<ToggleSwitch
-						bind:checked={settings.resultsVisibleDefault}
+						bind:checked={settings!.resultsVisibleDefault}
 						disabled={isSaving}
 						label="Toggle default results visibility for participants"
 					/>
@@ -210,9 +223,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../../../../styles/variables.scss'; // Adjust path depth
-
-	// Block: template-settings-page
 	.template-settings-page {
 		display: flex;
 		flex-direction: column;
@@ -239,9 +249,6 @@
 			flex-direction: column;
 			gap: $spacing-xl;
 		}
-		&__section {
-			/* relies on .settings-card */
-		}
 		&__message {
 			padding: $spacing-sm $spacing-md;
 			border-radius: $border-radius-md;
@@ -265,7 +272,6 @@
 		}
 	}
 
-	// Block: settings-card
 	.settings-card {
 		background-color: $color-surface;
 		border-radius: $border-radius-lg;
@@ -282,9 +288,7 @@
 			padding-bottom: $spacing-sm;
 			border-bottom: 1px solid $color-border-light;
 		}
-		&__field {
-			/* styles */
-		}
+
 		&__field-description {
 			font-size: $font-size-xs;
 			color: $color-text-secondary;
@@ -310,16 +314,11 @@
 				order: 3;
 			}
 		}
-		&__toggle-label {
-			/* used above */
-		}
-
-		// --- NEW: Tag Display Styles ---
 		&__tags-display {
 			display: flex;
 			flex-wrap: wrap;
 			gap: $spacing-sm;
-			margin-top: $spacing-xs; // Space below the input field
+			margin-top: $spacing-xs;
 		}
 		&__tag {
 			display: inline-flex;
@@ -334,12 +333,12 @@
 		&__tag-remove {
 			background: none;
 			border: none;
-			color: inherit; // Inherit color from tag
+			color: inherit;
 			cursor: pointer;
 			margin-left: $spacing-xs;
 			padding: 0;
 			line-height: 1;
-			font-size: $font-size-md; // Make 'x' a bit larger
+			font-size: $font-size-md;
 			opacity: 0.7;
 			&:hover {
 				opacity: 1;
