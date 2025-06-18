@@ -176,7 +176,30 @@ export function updateTemplateSettings(
 	});
 }
 
-export function createNewTemplate() {}
+export function createNewTemplate(title: string, baseTemplateId?: string): Promise<Template> {
+	console.log(`Creating new template with title: ${title}`);
+	console.log(`Base template ID: ${baseTemplateId}`);
+
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			const newTemplate: Template = {
+				id: `t${Math.random().toString(16).substring(2, 8)}`,
+				definition: [],
+				ownerId: 'user_default',
+				version: 1.0,
+				dateCreated: new Date().toISOString(),
+				settings: {
+					title,
+					sessionPacing: 'student-paced',
+					resultsVisibleDefault: true,
+					tags: []
+				}
+			};
+			console.log(`New template created with ID: ${newTemplate.id}`);
+			resolve(newTemplate);
+		}, 1000);
+	});
+}
 
 /**
  * Updates a template on the server via an API call.

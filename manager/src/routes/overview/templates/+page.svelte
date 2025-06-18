@@ -5,6 +5,7 @@
 	import type { ColumnHeader } from '$components/dashboard/DataTable.svelte';
 	import { getAllTemplates } from '$lib/templates/template_utils';
 	import type { Template } from '$lib/templates/types';
+	import { createNewTemplate } from '$lib/templates/template_utils';
 
 	// state management
 	let searchTerm = $state('');
@@ -33,27 +34,17 @@
 		isCreateModalOpen = false;
 	}
 
-	function handleCreateTemplateSubmit(data: { name: string; deriveFromId: string }): void {
+	async function handleCreateTemplateSubmit(data: {
+		name: string;
+		deriveFromId: string;
+	}): Promise<void> {
 		console.log('Creating template (from page):', data);
-		const newId = `t${Math.random().toString(16).substring(2, 8)}`;
-		const newTemplate: Template = {
-			id: 't41589',
-			definition: [],
-			ownerId: 'user_beta_456',
-			version: 1.0,
-			dateCreated: '2025-06-01T16:45:00Z',
-			settings: {
-				title: 'New Template',
-				tags: ['ux', 'feedback', 'research'],
-				sessionPacing: 'teacher-paced',
-				resultsVisibleDefault: true
-			}
-		};
+		const newTemplate: Template = await createNewTemplate(data.name, data.deriveFromId);
 		templates.push(newTemplate);
 		templates = templates;
 	}
 
-	function createNewTemplate(): void {
+	function handleCreateNewTemplate(): void {
 		openCreateModal();
 	}
 
@@ -84,7 +75,7 @@
 		items={filteredTemplates}
 		{columns}
 		noResultsMessage="No templates found."
-		onNewClick={createNewTemplate}
+		onNewClick={handleCreateNewTemplate}
 		bind:searchTerm
 		bind:currentPage
 	>
