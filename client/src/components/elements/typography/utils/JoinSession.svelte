@@ -1,15 +1,12 @@
 <script lang="ts">
-	// --- Imports ---
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 
-	// --- State ---
 	let gameCode = $state('');
 	let isLoading = $state(false);
 	let error = $state<string | null>(null);
 
-	// --- Handlers ---
 	async function handleJoinSession(event: SubmitEvent): Promise<void> {
 		event.preventDefault();
 		const code = gameCode.trim().toUpperCase();
@@ -67,19 +64,14 @@
 </section>
 
 <style lang="scss">
-	@import '../../../../styles/variables.scss'; // Adjust path if needed
-
-	// Block: join-session
 	.join-session {
 		width: 100%;
 
-		// Element: Container
 		&__container {
 			display: flex;
 			justify-content: center;
 		}
 
-		// Element: Form
 		&__form {
 			display: flex;
 			flex-direction: column;
@@ -88,14 +80,12 @@
 			gap: $spacing-xs;
 		}
 
-		// Element: Input Group (Input + Button)
 		&__input-group {
 			display: flex;
-			align-items: stretch; // Make input/button same height
+			align-items: stretch;
 			gap: $spacing-sm;
 		}
 
-		// Element: Error Message
 		&__error {
 			color: $color-error;
 			font-size: $font-size-sm;
@@ -103,19 +93,12 @@
 			width: 100%;
 		}
 
-		// --- Styling Child Components ---
-		// Target Input component wrapper
 		:global(.join-session__input-group .input-wrapper) {
 			flex-grow: 1;
 		}
 
-		// Target Button component
 		:global(.join-session__input-group .button) {
 			flex-shrink: 0;
-			// --- REMOVED explicit padding ---
-			// padding-top: $spacing-md;
-			// padding-bottom: $spacing-md;
-			// Let the button's default padding and align-items: stretch handle height
 		}
 	}
 </style>

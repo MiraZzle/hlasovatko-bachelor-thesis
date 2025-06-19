@@ -1,12 +1,16 @@
 <script lang="ts">
+	/**
+	 * @file A reusable TextArea component for user input.
+	 * It supports binding, placeholder text, and various attributes.
+	 */
 	let {
 		name = '',
 		id = '',
 		placeholder = '',
-		value = $bindable(''), // Bindable value
+		value = $bindable(''),
 		required = false,
 		disabled = false,
-		rows = 4, // Default number of rows
+		rows = 4,
 		label = null as string | null,
 		ariaLabel = null as string | null,
 		oninput = null as ((event: Event & { currentTarget: HTMLTextAreaElement }) => void) | null
@@ -48,9 +52,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../../../styles/variables.scss'; // Adjust path if needed
-
-	// Block: textarea-wrapper (Similar to input-wrapper)
 	.textarea-wrapper {
 		width: 100%;
 
@@ -70,9 +71,9 @@
 			background-color: $color-surface;
 			font-size: $font-size-md;
 			color: $color-text-primary;
-			font-family: inherit; // Ensure consistent font
+			font-family: inherit;
 			line-height: $line-height-base;
-			resize: vertical; // Allow vertical resize, disable horizontal
+			resize: vertical;
 			transition: border-color $transition-duration-fast $transition-timing-function;
 
 			&::placeholder {

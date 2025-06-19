@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file A reusable Header component that renders an HTML heading element.
+	 * It supports different heading levels (h1, h2, h3) and text alignment.
+	 */
 	export let type: 1 | 2 | 3 = 1;
 	export let textAlign: 'left' | 'center' | 'right' = 'center';
 </script>
@@ -8,8 +12,6 @@
 </svelte:element>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.header {
 		margin: 0;
 		&--1 {

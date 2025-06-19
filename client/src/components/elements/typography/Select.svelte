@@ -1,26 +1,27 @@
-<script lang="ts" generics="T extends string | number">
-	type Option = { value: T; label: string };
-
-	interface ActivityTypeOption {
-		value: T; // e.g., 'quiz', 'poll'
-		label: string; // e.g., 'Quiz', 'Poll'
-	}
+<script lang="ts">
+	/**
+	 * @file A reusable Select component for user input.
+	 * It supports binding, options, and various
+	 * 	attributes.
+	 */
+	import type { SelectOption } from '$lib/shared_types';
 
 	let {
 		options,
-		value = $bindable(), // The bindable prop from the parent (Type T)
-		label = null as string | null,
+		value = $bindable(),
+		label = null,
 		id = '',
 		name = '',
 		required = false,
 		disabled = false,
-		ariaLabel = null as string | null,
-		onchange = (event: Event & { currentTarget: HTMLSelectElement }) => {
+		ariaLabel = null,
+		onchange = (event) => {
 			console.warn('onchange not provided', event.currentTarget.value);
-		}
+		},
+		width = 'auto'
 	}: {
-		options: Option[] | ActivityTypeOption[]; // Options for the select dropdown
-		value?: T;
+		options: SelectOption[];
+		value?: string;
 		label?: string | null;
 		id?: string;
 		name?: string;
@@ -28,36 +29,39 @@
 		disabled?: boolean;
 		ariaLabel?: string | null;
 		onchange?: (event: Event & { currentTarget: HTMLSelectElement }) => void;
+		width?: 'auto' | 'full';
 	} = $props();
 
 	const defaultId = `select-${Math.random().toString(36).substring(2, 9)}`;
 	let currentId = id || defaultId;
 
-	// Derived state ONLY for setting the select's displayed value attribute (string)
 	let displayValue: string = $derived(String(value));
 
-	// Renamed handler for clarity
-	function handleChange(event: Event & { currentTarget: HTMLSelectElement }) {
+	// custom handler for onchange event
+	function handleChange(event: Event & { currentTarget: HTMLSelectElement }): void {
 		const selectedStringValue = event.currentTarget.value;
 		const selectedOption = options.find((opt) => String(opt.value) === selectedStringValue);
 
 		if (selectedOption) {
-			// *** IMPORTANT: Update the original bindable 'value' prop (Type T) ***
-			value = selectedOption.value;
+			value = selectedOption.value.toString();
 		}
 
-		// Call the optional onchange callback prop if provided
 		if (onchange) {
 			onchange(event);
 		}
 	}
+
+	// dynamic class based on props
+	let containerClasses = $derived(
+		`select-wrapper__container ${width === 'full' ? 'select-wrapper__container--full' : ''}`
+	);
 </script>
 
 <div class="select-wrapper">
 	{#if label}
 		<label for={currentId} class="select-wrapper__label">{label}</label>
 	{/if}
-	<div class="select-wrapper__container">
+	<div class={containerClasses}>
 		<select
 			class="select-wrapper__select"
 			{name}
@@ -66,7 +70,7 @@
 			{disabled}
 			aria-label={ariaLabel || label}
 			value={displayValue}
-			on:change={handleChange}
+			onchange={handleChange}
 		>
 			{#each options as option (option.value)}
 				<option value={String(option.value)}>{option.label}</option>
@@ -81,11 +85,7 @@
 </div>
 
 <style lang="scss">
-	@import '../../../styles/variables.scss';
-
 	.select-wrapper {
-		width: 100%; // Or inline-block depending on usage context
-
 		&__label {
 			display: block;
 			margin-bottom: $spacing-xs;
@@ -95,17 +95,23 @@
 		}
 
 		&__container {
-			position: relative; // For positioning the icon
-			display: inline-block; // Make container wrap the select width
-			min-width: 150px; // Example min-width
+			position: relative;
+			display: inline-block;
+			min-width: 150px;
+
+			&--full {
+				display: block;
+				width: 100%;
+				min-width: unset;
+			}
 		}
 
 		&__select {
-			appearance: none; // Remove default browser appearance
+			appearance: none;
 			-webkit-appearance: none;
 			-moz-appearance: none;
 			width: 100%;
-			padding: $spacing-sm $spacing-xl $spacing-sm $spacing-md; // Space for icon on right
+			padding: $spacing-sm $spacing-xl $spacing-sm $spacing-md;
 			border: $border-width-thin solid $color-input-border;
 			border-radius: $border-radius-md;
 			background-color: $color-surface;
@@ -132,7 +138,7 @@
 			right: $spacing-md;
 			top: 50%;
 			transform: translateY(-50%);
-			pointer-events: none; // Icon shouldn't be interactive
+			pointer-events: none;
 			color: $color-text-secondary;
 		}
 	}
