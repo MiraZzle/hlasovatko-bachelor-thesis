@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a scale rating activity.
+	 * Renders a scale with min and max labels and points.
+	 */
 	import type { ScaleRatingDefinition } from '$lib/activities/definition_types';
 
 	let { definition }: { definition: ScaleRatingDefinition } = $props();
