@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying the results of an open-ended activity.
+	 * Renders a list of responses.
+	 */
 	import type { OpenEndedActivityResult } from '$lib/activities/definition_types';
 
 	let {

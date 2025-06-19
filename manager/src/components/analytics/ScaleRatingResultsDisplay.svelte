@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying the results of a scale rating activity.
+	 * Renders a bar chart with ratings and their counts.
+	 */
 	import type { ScaleRatingDefinition } from '$lib/activities/definition_types';
 	import type { ScaleRatingActivityResult } from '$lib/analytics/result_utils';
 
@@ -18,21 +22,30 @@
 	let totalVotes = $derived(results.reduce((sum, item) => sum + item.count, 0));
 	let maxCount = $derived(results.length > 0 ? Math.max(...results.map((r) => r.count)) : 0);
 
-	/*
+	/**
 	 * Calculate the total number of votes across all ratings.
+	 * @param count - The count of votes for the current rating.
+	 * @returns The percentage of votes for the current rating.
 	 */
 	function getPercentage(count: number): number {
 		return totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
 	}
 
-	/*
+	/**
 	 * Calculate the height of the bar as a percentage of the maximum count.
 	 * Returns 0 if maxCount is 0 to avoid division by zero.
+	 * @param count - The count of votes for the current rating.
+	 * @return The height percentage of the bar.
 	 */
 	function getBarHeightPercentage(count: number): number {
 		return maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
 	}
 
+	/**
+	 * Generate scale points based on the definition and results.
+	 * Returns an array of objects containing rating, count, percentage, and bar height.
+	 * @returns An array of scale points.
+	 */
 	function getScalePoints(): {
 		rating: number;
 		count: number;
@@ -56,10 +69,13 @@
 
 	let scalePoints = $derived(getScalePoints());
 
+	// Handlers for mouse enter and leave events to show hover info
 	function handleMouseEnter(rating: number, count: number): void {
 		hoveredRating = rating;
 		hoveredCount = count;
 	}
+
+	// Function to reset hover state when mouse leaves the bar
 	function handleMouseLeave(): void {
 		hoveredRating = null;
 		hoveredCount = null;
