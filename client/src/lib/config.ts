@@ -1,2 +1,2 @@
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5209';
-export const TEACHER_FE_URL = import.meta.env.VITE_STUDENT_FE_URL || 'http://localhost:3000';
+export const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+export const MANAGER_FE_URL = import.meta.env.VITE_MANAGER_URL || 'http://localhost:3001';

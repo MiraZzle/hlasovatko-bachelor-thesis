@@ -19,6 +19,11 @@ export function getSessionById(sessionID: string): Session | null {
 	};
 }
 
+export function getSessionIdByJoinCode(joinCode: string): string | null {
+	console.log(`Fetching session ID for join code: ${joinCode}`);
+	return 'session123';
+}
+
 export function getSessionSettings(sessionId: string): SessionSettings {
 	console.log(`Fetching settings for session ${sessionId}`);
 	return {

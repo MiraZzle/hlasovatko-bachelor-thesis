@@ -1,7 +1,11 @@
 <script lang="ts">
+	/**
+	 * @file JoinSession component for joining an existing session using a code.
+	 */
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
+	import { getSessionIdByJoinCode } from '$lib/sessions/session_utils';
 
 	let gameCode = $state('');
 	let isLoading = $state(false);
@@ -17,16 +21,17 @@
 		}
 		isLoading = true;
 		error = null;
-		console.log(`Attempting to join session with code: ${code}`);
-		await new Promise((resolve) => setTimeout(resolve, 750)); // Simulate network delay
-
-		if (code.length === 6 && /^[A-Z0-9]+$/.test(code)) {
-			// Dummy validation
-			console.log('Code valid (simulation), navigating...');
-			await goto(`/participate/${code}`);
-		} else {
-			console.error('Invalid session code (simulation)');
-			error = `Invalid session code "${code}". Please check and try again.`;
+		try {
+			const sessionId = getSessionIdByJoinCode(code);
+			if (!sessionId) {
+				error = 'Invalid session code. Please try again.';
+				return;
+			}
+			await goto(`/participate/${sessionId}`);
+		} catch (err) {
+			console.error('Error joining session:', err);
+			error = 'Failed to join session. Please try again later.';
+		} finally {
 			isLoading = false;
 		}
 	}
