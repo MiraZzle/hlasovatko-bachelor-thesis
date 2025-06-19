@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a stat card in the dashboard.
+	 * Renders a title, optional icon, and content area for statistics.
+	 */
 	import type { Snippet } from 'svelte';
 
 	let {

@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a template row in the dashboard.
+	 * Renders template details and provides actions like viewing details and deleting.
+	 */
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
 	import type { Template } from '$lib/templates/types';
@@ -22,7 +26,7 @@
 		goto(`/overview/templates/${template.id}/overview`);
 	}
 
-	// Handler for the "See Details" menu item
+	// Handler for the "See details" menu item
 	function handleSeeDetails(event: MouseEvent): void {
 		event.stopPropagation();
 		navigateToDetails();
@@ -127,23 +131,7 @@
 			color: $color-text-secondary;
 			margin-top: $spacing-xs * 0.5;
 		}
-		&__status {
-			display: inline-block;
-			border-radius: $border-radius-pill;
-			font-size: $font-size-xs;
-			font-weight: $font-weight-medium;
-			text-transform: uppercase;
-			white-space: nowrap;
 
-			&--inactive {
-				background-color: $color-surface-alt;
-				color: $color-text-secondary;
-			}
-			&--active {
-				background-color: rgba($color-success, 0.15);
-				color: darken($color-success, 10%);
-			}
-		}
 		&__tags {
 			display: flex;
 			flex-wrap: wrap;

@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for the dashboard sidebar navigation.
+	 * Dynamically generates main navigation links and sublinks based on current page context.
+	 */
 	import { page } from '$app/stores';
 
 	interface NavLink {
@@ -105,6 +109,12 @@
 
 	let mainNavLinks = $derived(getMainNavLinks());
 
+	/**
+	 * Checks if the current page is active based on the provided href.
+	 * @param href - The href to check against the current page URL.
+	 * @param isParent - Whether to check for parent path matching.
+	 * @returns True if the current page matches the href, false otherwise.
+	 */
 	function isActive(href: string, isParent = false): boolean {
 		const currentPath = $page.url.pathname;
 		if (isParent) {

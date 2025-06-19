@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying the top bar of a session.
+	 * Provides actions to start/stop the session and share it with participants.
+	 */
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import { startSession, stopSession } from '$lib/functions/session_actions';
