@@ -1,10 +1,15 @@
 <script lang="ts">
-	import type { OpenEndedActivityResult } from '$lib/activity_types'; // Adjust path
+	/**
+	 * @file Component for displaying the results of an open-ended activity.
+	 * It shows a list of responses submitted by participants.
+	 */
+	import type { OpenEndedActivityResult } from '$lib/activities/definition_types';
 
-	type Props = {
+	let {
+		results
+	}: {
 		results: OpenEndedActivityResult;
-	};
-	let { results }: Props = $props();
+	} = $props();
 </script>
 
 <div class="open-ended-results-display">
@@ -21,10 +26,8 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
-
 	.open-ended-results-display {
-		max-height: 300px; // Limit height for long lists
+		max-height: 300px;
 		overflow-y: auto;
 		border: 1px solid $color-border-light;
 		border-radius: $border-radius-md;

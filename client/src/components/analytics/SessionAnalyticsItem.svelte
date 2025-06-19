@@ -1,65 +1,56 @@
 <script lang="ts">
-	import type { SessionActivity, KnownActivityDefinition } from '$lib/activity_types';
+	/**
+	 * @file Component for displaying analytics results for an activity.
+	 */
+	import type {
+		MultipleChoiceDefinition,
+		PollDefinition,
+		ScaleRatingDefinition
+	} from '$lib/activities/definition_types';
+	import type { ActivityResult } from '$lib/activities/types';
 	import {
-		getKnownDefinition,
-		isMultipleChoice,
-		isPoll,
-		isScaleRating,
-		isOpenEnded,
 		isChoiceResult,
 		isScaleRatingResult,
 		isOpenEndedResult
-	} from '$lib/activity_types'; // Import result type guards too
-
-	// Import result display components
+	} from '$lib/analytics/result_utils';
 	import ChoiceResultsDisplay from '$components/analytics/ChoiceResultsDisplay.svelte';
 	import ScaleRatingResultsDisplay from '$components/analytics/ScaleRatingResultsDisplay.svelte';
 	import OpenEndedResultsDisplay from '$components/analytics/OpenEndedResultsDisplay.svelte';
 
-	type Props = {
-		activity: SessionActivity;
-	};
-	let { activity }: Props = $props();
-
-	// Get typed definition for potentially passing to result components (e.g., for labels/correctness)
-	let knownDefinition = $derived(getKnownDefinition(activity));
+	let { activityResult }: { activityResult: ActivityResult } = $props();
+	const activityRef = $derived(activityResult.activityRef);
+	const results = $derived(activityResult.results);
 </script>
 
-<div class="session-analytics-item">
-	<div class="session-analytics-item__header">
-		<span class="session-analytics-item__type">{activity.type}</span>
-		<h3 class="session-analytics-item__title">{activity.title}</h3>
-		{#if activity.responseCount !== undefined}
-			<span class="session-analytics-item__response-count">
-				{activity.responseCount} / {activity.participantCount ?? '?'} Responses
-			</span>
-		{/if}
+<div class="analytics-item">
+	<div class="analytics-item__header">
+		<span class="analytics-item__type">{activityRef.type.replace('_', ' ')}</span>
+		<h3 class="analytics-item__title">{activityRef.title}</h3>
 	</div>
-	<div class="session-analytics-item__body">
-		{#if (activity.type === 'MultipleChoice' || activity.type === 'Poll') && isChoiceResult(activity.results)}
+
+	<div class="analytics-item__body">
+		{#if (activityRef.type === 'multiple_choice' || activityRef.type === 'poll') && isChoiceResult(results)}
 			<ChoiceResultsDisplay
-				results={activity.results}
-				definition={isMultipleChoice(knownDefinition) ? knownDefinition : null}
+				{results}
+				definition={activityRef.definition as MultipleChoiceDefinition | PollDefinition}
 			/>
-		{:else if activity.type === 'ScaleRating' && isScaleRatingResult(activity.results)}
+		{:else if activityRef.type === 'scale_rating' && isScaleRatingResult(results)}
 			<ScaleRatingResultsDisplay
-				results={activity.results}
-				definition={isScaleRating(knownDefinition) ? knownDefinition : null}
+				{results}
+				definition={activityRef.definition as ScaleRatingDefinition}
 			/>
-		{:else if activity.type === 'OpenEnded' && isOpenEndedResult(activity.results)}
-			<OpenEndedResultsDisplay results={activity.results} />
+		{:else if activityRef.type === 'open_ended' && isOpenEndedResult(results)}
+			<OpenEndedResultsDisplay {results} />
 		{:else}
-			<p class="session-analytics-item__no-data">
-				No results available or activity type not supported for detailed analytics.
+			<p class="analytics-item__no-data">
+				No results available or this activity type does not support analytics.
 			</p>
 		{/if}
 	</div>
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss'; // Adjust path
-
-	.session-analytics-item {
+	.analytics-item {
 		background-color: $color-surface;
 		border-radius: $border-radius-lg;
 		border: 1px solid $color-border-light;
@@ -93,16 +84,6 @@
 			color: $color-text-primary;
 			margin: 0;
 			flex-grow: 1;
-		}
-		&__response-count {
-			font-size: $font-size-xs;
-			color: $color-text-secondary;
-			white-space: nowrap;
-			flex-shrink: 0;
-			margin-left: auto;
-		}
-		&__body {
-			/* Container for results */
 		}
 		&__no-data {
 			font-style: italic;

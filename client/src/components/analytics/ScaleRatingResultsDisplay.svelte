@@ -1,25 +1,48 @@
 <script lang="ts">
-	import type { ScaleRatingActivityResult, ScaleRatingDefinition } from '$lib/activity_types';
+	/**
+	 * @file Component for displaying the results of a scale rating activity.
+	 * It shows a bar chart with ratings and their counts.
+	 */
+	import type { ScaleRatingDefinition } from '$lib/activities/definition_types';
+	import type { ScaleRatingActivityResult } from '$lib/analytics/result_utils';
 
-	type Props = {
+	let {
+		results,
+		definition = null
+	}: {
 		results: ScaleRatingActivityResult;
 		definition?: ScaleRatingDefinition | null;
-	};
-	let { results, definition = null }: Props = $props();
+	} = $props();
+
+	// Track hovered item state
 	let hoveredRating = $state<number | null>(null);
 	let hoveredCount = $state<number | null>(null);
 
+	// Scale points and calculations
 	let totalVotes = $derived(results.reduce((sum, item) => sum + item.count, 0));
-	let maxCount = $derived(Math.max(...results.map((item) => item.count), 0)); // Find max count for scaling bars
+	let maxCount = $derived(results.length > 0 ? Math.max(...results.map((r) => r.count)) : 0);
 
+	/*
+	 * Calculate the total number of votes across all ratings.
+	 */
 	function getPercentage(count: number): number {
 		return totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
 	}
+
+	/*
+	 * Calculate the height of the bar as a percentage of the maximum count.
+	 * Returns 0 if maxCount is 0 to avoid division by zero.
+	 */
 	function getBarHeightPercentage(count: number): number {
 		return maxCount > 0 ? Math.round((count / maxCount) * 100) : 0;
 	}
 
-	function getScalePoints() {
+	function getScalePoints(): {
+		rating: number;
+		count: number;
+		percentage: number;
+		barHeight: number;
+	}[] {
 		if (!definition || totalVotes === 0) return [];
 		const points = [];
 		for (let i = definition.min; i <= definition.max; i++) {
@@ -35,14 +58,13 @@
 		return points;
 	}
 
-	// Generate labels based on definition or just numbers
 	let scalePoints = $derived(getScalePoints());
 
-	function handleMouseEnter(rating: number, count: number) {
+	function handleMouseEnter(rating: number, count: number): void {
 		hoveredRating = rating;
 		hoveredCount = count;
 	}
-	function handleMouseLeave() {
+	function handleMouseLeave(): void {
 		hoveredRating = null;
 		hoveredCount = null;
 	}
@@ -62,6 +84,7 @@
 		<div class="scale-results-display__chart">
 			{#each scalePoints as point (point.rating)}
 				<div
+					tabindex="0"
 					role="button"
 					aria-roledescription="Rating bar"
 					aria-label={`Rating ${point.rating}: ${point.count} (${point.percentage}%)`}
@@ -95,8 +118,6 @@
 </div>
 
 <style lang="scss">
-	@import '../../styles/variables.scss';
-
 	.scale-results-display {
 		&__hover-info {
 			min-height: 1.5em;
