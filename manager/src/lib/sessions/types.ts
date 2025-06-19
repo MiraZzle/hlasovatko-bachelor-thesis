@@ -1,4 +1,5 @@
 import type { SessionMode } from '$lib/shared_types';
+import type { Template } from '$lib/templates/types';
 
 export interface Session {
 	id: string;
@@ -11,6 +12,8 @@ export interface Session {
 	participants?: number;
 	activationDate?: string;
 	mode?: SessionMode;
+	currentActivity?: number;
+	templateDefinition?: Template;
 }
 
 export interface SessionMetrics {

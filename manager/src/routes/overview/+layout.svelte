@@ -72,6 +72,7 @@
 						sessionId={sessionData.id}
 						sessionTitle={sessionData.title}
 						sessionStatus={sessionData.status}
+						joinCode={sessionData.joinCode}
 					/>
 				{:else if templateData}
 					<TemplateTopbar templateId={templateData.id} templateTitle={templateData.title} />

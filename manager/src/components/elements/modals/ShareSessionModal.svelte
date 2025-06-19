@@ -6,14 +6,16 @@
 
 	let {
 		open = $bindable(false),
-		url = $bindable(''),
+		participateUrl = $bindable(''),
+		manageUrl = $bindable(''),
 		code = $bindable(''),
 		onclose = () => {
 			open = false;
 		}
 	}: {
 		open?: boolean;
-		url: string;
+		participateUrl: string;
+		manageUrl: string;
 		code: string;
 		onclose?: () => void;
 	} = $props();
@@ -22,23 +24,23 @@
 	let copyButtonText = $state('Copy');
 
 	// Ensure the URL is valid when the component mounts
-	const joinUrlWithCode = $derived(() => {
+	const participateUrlAsObject = $derived(() => {
 		try {
-			const urlObject = new URL(url);
+			const urlObject = new URL(participateUrl);
 			urlObject.searchParams.set('code', code);
 			return urlObject.href;
 		} catch (e) {
-			console.error('Invalid base URL provided to ShareSessionModal:', url);
+			console.error('Invalid base URL provided to ShareSessionModal:', participateUrl);
 			return '';
 		}
 	});
 
 	// Generate QR code when the modal opens or when the URL/code changes
 	$effect(() => {
-		if (open && qrCanvas && joinUrlWithCode) {
+		if (open && qrCanvas && participateUrlAsObject) {
 			QRCode.toCanvas(
 				qrCanvas,
-				joinUrlWithCode(),
+				participateUrlAsObject(),
 				{
 					width: 240,
 					margin: 1,
@@ -53,32 +55,6 @@
 			);
 		}
 	});
-
-	// Reset copy button text when the modal opens
-	$effect(() => {
-		if (open) {
-			copyButtonText = 'Copy';
-		}
-	});
-
-	async function copyCodeToClipboard(): Promise<void> {
-		if (!navigator.clipboard) {
-			alert('Clipboard access is not available in your browser.');
-			return;
-		}
-		try {
-			await navigator.clipboard.writeText(code);
-			copyButtonText = 'Copied!';
-			setTimeout(() => {
-				if (copyButtonText === 'Copied!') {
-					copyButtonText = 'Copy';
-				}
-			}, 2500);
-		} catch (err) {
-			console.error('Failed to copy code to clipboard:', err);
-			alert('Could not copy code. Please copy it manually.');
-		}
-	}
 
 	const titleId = 'share-session-title';
 	const descriptionId = 'share-session-desc';
@@ -99,15 +75,13 @@
 			<span class="share-modal__code-label">Or join with code</span>
 			<div class="share-modal__code-actions">
 				<span class="share-modal__code">{code}</span>
-				<Button variant="outline" onclick={copyCodeToClipboard}>
-					{copyButtonText}
-				</Button>
 			</div>
 		</div>
 	</div>
 
 	<div class="share-modal__footer">
-		<Button variant="primary" onclick={onclose}>Done</Button>
+		<Button variant="primary" href={manageUrl} fullWidth>Manage</Button>
+		<Button variant="outline" href={participateUrl} fullWidth>Participate</Button>
 	</div>
 </ModalDialog>
 
@@ -163,6 +137,7 @@
 			display: flex;
 			align-items: center;
 			gap: $spacing-md;
+			width: 100%;
 		}
 
 		&__code {
@@ -174,12 +149,18 @@
 			padding: $spacing-sm $spacing-lg;
 			border-radius: $border-radius-md;
 			border: 1px solid $color-border-light;
+			width: 100%;
+			text-align: center;
 		}
 
 		&__footer {
 			margin-top: $spacing-xl;
-			border-top: 1px solid $color-border-light;
 			padding-top: $spacing-lg;
+			border-top: 1px solid $color-border-light;
+			display: flex;
+			flex-direction: row;
+			gap: $spacing-md;
+			justify-content: space-between;
 		}
 	}
 </style>

@@ -15,7 +15,8 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
 		sessionDataForTopbar: {
 			id: sessionData.id,
 			title: sessionData.title,
-			status: sessionData.status
+			status: sessionData.status,
+			joinCode: sessionData.joinCode
 		}
 	};
 };
