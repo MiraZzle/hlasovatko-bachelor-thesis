@@ -1,34 +1,43 @@
 <script lang="ts">
-    import { onMount } from 'svelte';
+	/**
+	 * @file MediaQuery component that listens to media query changes and provides the match status.
+	 * It allows conditional rendering based on the media query.
+	 */
+	import { onMount } from 'svelte';
 
-    export let query: string;
+	let {
+		query = '(max-width: 950px)' // Default query for mobile devices
+	}: {
+		query?: string;
+	} = $props();
 
-    let mql: MediaQueryList;
-    let mqlListener: (e: MediaQueryListEvent) => void;
-    let matches = false;
+	let queryList: MediaQueryList;
+	let mqlListener: (e: MediaQueryListEvent) => void;
+	let matches = $state(false);
 
-    onMount(() => {
-        removeActiveListener();
-        addNewListener(query);
+	// Ensure the query is a valid media query string
+	onMount(() => {
+		destroyQueryListener();
+		createQueryListener(query);
 
-        return () => {
-            removeActiveListener();
-        };
-    });
+		return () => {
+			destroyQueryListener();
+		};
+	});
 
-    function addNewListener(query: string) {
-        mql = window.matchMedia(query);
-        matches = mql.matches;
+	function createQueryListener(query: string) {
+		queryList = window.matchMedia(query);
+		matches = queryList.matches;
 
-        mqlListener = (e) => (matches = e.matches);
-        mql.addEventListener('change', mqlListener);
-    }
+		mqlListener = (e) => (matches = e.matches);
+		queryList.addEventListener('change', mqlListener);
+	}
 
-    function removeActiveListener() {
-        if (mql && mqlListener) {
-            mql.removeEventListener('change', mqlListener);
-        }
-    }
+	function destroyQueryListener() {
+		if (queryList && mqlListener) {
+			queryList.removeEventListener('change', mqlListener);
+		}
+	}
 </script>
 
 <slot {matches} />

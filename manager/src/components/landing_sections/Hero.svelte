@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Hero section for the landing page.
+	 */
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 

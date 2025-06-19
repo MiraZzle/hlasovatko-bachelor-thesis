@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Benefits section for the landing page.
+	 * Displays key advantages of using EngaGenie.
+	 */
 	import BenefitCard from '$components/elements/landing_utils/BenefitCard.svelte';
 
 	const NoRegIcon = '🔓';

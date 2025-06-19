@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Features section for the landing page.
+	 * Displays the different interactive formats available in EngaGenie.
+	 */
 	import AccordionItem from '$components/elements/typography/utils/AccordionItem.svelte';
 </script>
 

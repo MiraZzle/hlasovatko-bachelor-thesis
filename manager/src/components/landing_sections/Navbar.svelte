@@ -1,5 +1,10 @@
 <script lang="ts">
+	/**
+	 * @file Navbar component for the landing page.
+	 * Provides navigation links and a toggleable menu for mobile view.
+	 */
 	import Button from '$components/elements/typography/Button.svelte';
+	import { GITHUB_URL } from '$lib/config';
 
 	let isMenuOpen = $state(false);
 
@@ -7,6 +12,7 @@
 		isMenuOpen = !isMenuOpen;
 	}
 
+	// Close the menu when a navigation link is clicked
 	function handleNavLinkClick(): void {
 		if (isMenuOpen) {
 			isMenuOpen = false;
@@ -49,7 +55,7 @@
 					</li>
 					<li class="navbar__item">
 						<a
-							href="https://github.com/MiraZzle/hlasovatko-bachelor-thesis"
+							href={GITHUB_URL}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="navbar__link"

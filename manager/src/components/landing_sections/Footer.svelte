@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Footer component for the landing page.
+	 */
 	const currentYear = new Date().getFullYear();
 </script>
 

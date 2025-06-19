@@ -99,7 +99,6 @@ export function createActivity(data: NewActivityData): void {
 	};
 
 	console.log('Successfully added activity:', newActivity);
-	// TODO: Add an API call here to persist the change to your backend.
 }
 
 export function getActivitiesFromSession(sessionId: string): Activity[] {
