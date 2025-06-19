@@ -4,15 +4,15 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [sveltekit()],
-	server: {
-		port: 3001
-	},
 	css: {
 		preprocessorOptions: {
 			scss: {
-				additionalData: '@import "src/styles/variables.scss";'
+				additionalData: '@import "/src/styles/variables.scss";'
 			}
 		}
+	},
+	server: {
+		port: 3001
 	},
 	test: {
 		workspace: [

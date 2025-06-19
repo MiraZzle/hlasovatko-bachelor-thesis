@@ -1,0 +1,44 @@
+version: "3.9"
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+        - VITE_MANAGER_URL=${VITE_MANAGER_URL}
+        - VITE_CLIENT_URL=${VITE_CLIENT_URL}
+    ports:
+      - "${CLIENT_PORT}:3000"
+    environment:
+      - PORT=${CLIENT_PORT}
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      - VITE_MANAGER_URL=${VITE_MANAGER_URL}
+      - VITE_CLIENT_URL=${VITE_CLIENT_URL}
+
+  manager:
+    build:
+      context: ./manager
+      dockerfile: Dockerfile
+      args:
+        - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+        - VITE_MANAGER_URL=${VITE_MANAGER_URL}
+        - VITE_CLIENT_URL=${VITE_CLIENT_URL}
+    ports:
+      - "${MANAGER_PORT}:3001"
+    environment:
+      - PORT=${MANAGER_PORT}
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
+      - VITE_CLIENT_URL=${VITE_CLIENT_URL}
+      - VITE_MANAGER_URL=${VITE_MANAGER_URL}
+
+  # backend:
+  #  build:
+  #    context: ./server
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "${BACKEND_PORT}:5000"
+  #  environment:
+  #    - ASPNETCORE_URLS=http://+:5000
+  #    - MANAGER_URL=${VITE_MANAGER_URL}
+  #    - CLIENT_URL=${VITE_CLIENT_URL}

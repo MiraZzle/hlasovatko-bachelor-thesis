@@ -1,23 +1,32 @@
-<script>
-	import { goto } from '$app/navigation';
-	import Header from '$components/elements/typography/Header.svelte';
-	import Button from '$components/elements/typography/Button.svelte';
+<script lang="ts">
+	import Hero from '$components/landing_sections/Hero.svelte';
+	import JoinSession from '$components/landing_sections/JoinSession.svelte';
+	import Features from '$components/landing_sections/Features.svelte';
+	import Benefits from '$components/landing_sections/Benefits.svelte';
+	import Footer from '$components/landing_sections/Footer.svelte';
+	import Navbar from '$components/landing_sections/Navbar.svelte';
+	import GitHubCta from '$components/landing_sections/GitHubCTA.svelte';
 </script>
 
-<div class="action-container">
-	<Header>Hlasovatko</Header>
-	<Button action={() => goto('/session/create')}>Create a session</Button>
-</div>
+<svelte:head>
+	<title>EngaGenie | Home</title>
+</svelte:head>
+
+<Navbar />
+<main>
+	<Hero />
+	<section class="join-session__container">
+		<JoinSession />
+	</section>
+	<Features />
+	<Benefits />
+	<GitHubCta />
+</main>
+<Footer />
 
 <style lang="scss">
-	.action-container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-height: 100vh;
-		max-width: 960px;
-		gap: 16px;
-		margin: auto;
+	.join-session__container {
+		background-color: $color-surface-alt;
+		padding: $spacing-2xl $spacing-lg;
 	}
 </style>

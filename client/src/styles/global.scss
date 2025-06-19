@@ -1,0 +1,143 @@
+@import './variables.scss';
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: $font-size-base;
+	scroll-behavior: smooth;
+	height: 100%;
+}
+
+body {
+	font-family: $font-family-primary;
+	color: $color-text-primary;
+	background-color: $color-background;
+	line-height: $line-height-base;
+	min-height: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: $font-family-secondary;
+	font-weight: $font-weight-bold;
+	line-height: $line-height-heading;
+	margin-bottom: $spacing-md;
+}
+
+h1 {
+	font-size: $font-size-4xl;
+}
+h2 {
+	font-size: $font-size-3xl;
+}
+h3 {
+	font-size: $font-size-2xl;
+}
+h4 {
+	font-size: $font-size-xl;
+}
+h5 {
+	font-size: $font-size-lg;
+}
+h6 {
+	font-size: $font-size-md;
+}
+
+p {
+	margin-bottom: $spacing-md;
+}
+
+a {
+	color: $color-link;
+	text-decoration: none;
+	transition: color $transition-duration-fast $transition-timing-function;
+
+	&:hover {
+		color: $color-link-hover;
+		text-decoration: underline;
+	}
+}
+
+ul,
+ol {
+	list-style-position: inside;
+	margin-bottom: $spacing-md;
+	padding-left: $spacing-md;
+}
+
+img,
+video,
+svg {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+button {
+	font-family: inherit;
+	cursor: pointer;
+	border: none;
+	background: none;
+	padding: 0;
+	color: inherit;
+}
+
+input,
+textarea,
+select,
+button {
+	font-size: inherit;
+	font-family: inherit;
+}
+
+.page-container {
+	width: 100%;
+	max-width: $content-max-width;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: $spacing-lg;
+	padding-right: $spacing-lg;
+}
+
+.container {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: $spacing-md;
+	padding-right: $spacing-md;
+
+	@media (min-width: $breakpoint-sm) {
+		max-width: $container-max-width-sm;
+	}
+	@media (min-width: $breakpoint-md) {
+		max-width: $container-max-width-md;
+	}
+	@media (min-width: $breakpoint-lg) {
+		max-width: $container-max-width-lg;
+	}
+	@media (min-width: $breakpoint-xl) {
+		max-width: $container-max-width-xl;
+	}
+}
+
+#svelte {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+main {
+	flex-grow: 1;
+}
