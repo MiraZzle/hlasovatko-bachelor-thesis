@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file ToggleSwitch component for creating a styled toggle switch.
+	 * Allows users to toggle a boolean state with an optional label.
+	 */
 	type Props = {
 		checked?: boolean;
 		disabled?: boolean;

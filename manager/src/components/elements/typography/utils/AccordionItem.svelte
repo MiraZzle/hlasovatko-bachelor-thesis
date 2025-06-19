@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file AccordionItem component for displaying collapsible content.
+	 */
 	import { slide } from 'svelte/transition';
 	import ChevronIcon from '$components/icons/ChevronIcon.svelte';
 
