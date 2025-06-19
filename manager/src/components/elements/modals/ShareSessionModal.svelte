@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Modal dialog component for sharing a session.
+	 * Allows users to share a session via QR code or code input.
+	 */
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import { onMount } from 'svelte';

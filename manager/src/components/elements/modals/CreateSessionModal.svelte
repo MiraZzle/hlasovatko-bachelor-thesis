@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Modal dialog component for creating a new session.
+	 */
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
@@ -67,6 +70,7 @@
 		}
 	});
 
+	// Reset form fields when modal opens
 	$effect(() => {
 		if (open) {
 			selectedTemplateId = '';
@@ -86,6 +90,10 @@
 		}
 	});
 
+	/**
+	 * Handles the form submission to create a new session.
+	 * Validates input and calls the onCreate callback with the session data.
+	 */
 	async function handleSubmit(): Promise<void> {
 		if (!selectedTemplateId) {
 			alert('Please select a template.');

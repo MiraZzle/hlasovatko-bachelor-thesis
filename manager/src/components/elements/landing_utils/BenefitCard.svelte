@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a benefit card.
+	 * Renders a card with an icon, title, and description.
+	 */
 	let {
 		title = 'Benefit Title',
 		description = 'This is a brief description of the benefit.',

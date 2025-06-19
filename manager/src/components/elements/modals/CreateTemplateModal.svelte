@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Modal dialog component for creating a new template.
+	 */
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
@@ -33,6 +36,7 @@
 
 	const deriveOptions = $derived(getOptions());
 
+	// Reset form fields when the modal opens
 	$effect(() => {
 		if (open) {
 			name = '';
@@ -41,6 +45,10 @@
 		}
 	});
 
+	/**
+	 * Handles the form submission to create a new template.
+	 * Validates input and calls the onCreate callback with the new template data.
+	 */
 	async function handleSubmit(): Promise<void> {
 		if (!name.trim()) {
 			alert('Please enter a template name.');
