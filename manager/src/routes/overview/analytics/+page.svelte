@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Global Analytics Overview page
+	 * This page provides an overview of global analytics across all sessions.
+	 */
 	import Select from '$components/elements/typography/Select.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import StatCard from '$components/dashboard/StatCard.svelte';
@@ -20,9 +24,7 @@
 	];
 
 	/*
-	 * This function calculates global metrics based on the selected time frame.
-	 * It retrieves the total number of sessions, the most popular activity type,
-	 * and the total number of responses for the given time frame.
+	 * Calculates global metrics based on the selected time frame.
 	 */
 	function getGlobalMetrics() {
 		return {

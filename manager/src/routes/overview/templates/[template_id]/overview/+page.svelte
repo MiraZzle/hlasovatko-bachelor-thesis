@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Template Overview Page
+	 * This page allows users to view, edit, and manage templates.
+	 */
 	import { page } from '$app/stores';
 	import Button from '$components/elements/typography/Button.svelte';
 	import ToggleSwitch from '$components/elements/ToggleSwitch.svelte';

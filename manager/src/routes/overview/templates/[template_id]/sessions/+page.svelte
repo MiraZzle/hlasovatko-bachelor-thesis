@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Template Sessions Page
+	 * This page displays all sessions associated with a specific template.
+	 */
 	import SessionRow from '$components/dashboard/SessionRow.svelte';
 	import DataTable from '$components/dashboard/DataTable.svelte';
 	import type { ColumnHeader } from '$components/dashboard/DataTable.svelte';
@@ -12,7 +16,7 @@
 	let searchTerm = $state('');
 	let currentPage = $state(1);
 
-	// define columns for data table
+	// Define columns for data table
 	const columns: ColumnHeader<Session>[] = [
 		{ key: 'title', label: 'Title', sortable: true },
 		{ key: 'created', label: 'Created', sortable: true },
@@ -23,9 +27,10 @@
 
 	let sessionsForTemplate = $derived<Session[]>(getSessionsByTemplate(templateId));
 
-	/*
+	/**
 	Filter sessions based on search term.
 	Search is case-insensitive and checks both title and id.
+	@returns {Session[]} Filtered list of sessions
 	*/
 	function getFilteredSessions(): Session[] {
 		return sessionsForTemplate.filter((session) => {

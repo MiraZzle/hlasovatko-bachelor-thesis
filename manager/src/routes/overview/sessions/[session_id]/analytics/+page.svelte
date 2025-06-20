@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Session Analytics Page
+	 * This page displays analytics for a specific session, including activity results.
+	 */
 	import { page } from '$app/stores';
 	import SessionAnalyticsItem from '$components/analytics/SessionAnalyticsItem.svelte';
 	import { getActivityResultsForSession } from '$lib/analytics/analytics_utils';

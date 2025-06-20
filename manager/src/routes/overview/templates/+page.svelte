@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file My Templates Page
+	 * This page displays all templates created by the user and allows them to create new templates.
+	 */
 	import TemplateRow from '$components/dashboard/TemplateRow.svelte';
 	import CreateTemplateModal from '$components/elements/modals/CreateTemplateModal.svelte';
 	import DataTable from '$components/dashboard/DataTable.svelte';
