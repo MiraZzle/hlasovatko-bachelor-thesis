@@ -132,7 +132,7 @@
 </script>
 
 <ModalDialog bind:open {onclose} width="sm" {titleId}>
-	<h2 id={titleId} class="create-session-modal__title">Start New Session</h2>
+	<h2 id={titleId} class="create-session-modal__title">Add new Session</h2>
 
 	<form onsubmit={handleSubmit} class="create-session-modal__form">
 		<Select

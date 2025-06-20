@@ -78,6 +78,7 @@
 		onNewClick={openCreateSessionModal}
 		bind:searchTerm
 		bind:currentPage
+		newItemLabel="Add new Session"
 	>
 		<svelte:fragment slot="row" let:item>
 			<SessionRow session={item} />

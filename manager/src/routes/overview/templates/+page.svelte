@@ -76,6 +76,7 @@
 		{columns}
 		noResultsMessage="No templates found."
 		onNewClick={handleCreateNewTemplate}
+		newItemLabel="Add new Template"
 		bind:searchTerm
 		bind:currentPage
 	>

@@ -131,7 +131,7 @@
 			/>
 		</div>
 		{#if onNewClick}
-			<Button variant="primary" onclick={onNewClick}>+ New {newItemLabel ?? ''}</Button>
+			<Button variant="primary" onclick={onNewClick}>+ {newItemLabel ?? ''}</Button>
 		{/if}
 	</header>
 
