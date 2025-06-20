@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a predefined activity card.
+	 * Renders the activity type, title, and associated tags.
+	 */
 	import type { PredefinedActivity } from '$lib/activities/types';
 
 	let {

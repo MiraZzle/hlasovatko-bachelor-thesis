@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a multiple-choice activity.
+	 * Renders a list of options with indicators for correct answers.
+	 */
 	import type { MultipleChoiceDefinition } from '$lib/activities/definition_types';
 
 	let { definition }: { definition: MultipleChoiceDefinition } = $props();
@@ -64,18 +68,9 @@
 		&__option-marker {
 			font-weight: $font-weight-bold;
 			color: $color-text-secondary;
-			&--correct {
-				color: $color-success;
-			}
 		}
 		&__option-text {
 			color: $color-text-primary;
-		}
-		&__note {
-			font-size: $font-size-xs;
-			color: $color-text-secondary;
-			margin-top: $spacing-sm;
-			font-style: italic;
 		}
 	}
 </style>

@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a session row in the dashboard.
+	 * Renders session details and provides actions like viewing details and deleting.
+	 */
 	import { goto } from '$app/navigation';
 	import type { Session } from '$lib/sessions/types';
 	import { tick } from 'svelte';

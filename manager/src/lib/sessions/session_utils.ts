@@ -12,7 +12,7 @@ export function getSessionById(sessionID: string): Session | null {
 		title: 'Sample Session',
 		templateID: 'template123',
 		templateVersion: '1',
-		status: 'Active',
+		status: 'Inactive',
 		created: new Date().toISOString(),
 		joinCode: 'ABC123'
 	};

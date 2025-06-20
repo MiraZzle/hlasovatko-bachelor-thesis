@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file JoinSession component for allowing users to join a session using a game code.
+	 */
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';

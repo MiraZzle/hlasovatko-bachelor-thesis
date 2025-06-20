@@ -46,3 +46,9 @@ export function isScaleRatingResult(results: unknown): results is ScaleRatingAct
 export function isOpenEndedResult(results: unknown): results is OpenEndedActivityResult {
 	return Array.isArray(results) && results.every((r) => typeof r === 'string');
 }
+
+export type ResultValue =
+	| ChoiceActivityResult
+	| ScaleRatingActivityResult
+	| OpenEndedActivityResult
+	| unknown[];

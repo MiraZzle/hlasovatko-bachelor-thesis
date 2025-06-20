@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Modal dialog component for displaying activity details.
+	 * Provides a structured view of activity information including type, categories, and definition.
+	 */
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import type { PredefinedActivity } from '$lib/activities/types';
@@ -15,7 +19,8 @@
 		onclose?: () => void;
 	} = $props();
 
-	function getFormattedDefinition() {
+	// Format the activity definition as JSON or return a string representation
+	function getFormattedDefinition(): object | string {
 		if (!activity?.refActivity.definition) return '{}';
 		try {
 			const jsonObj = activity.refActivity.definition;

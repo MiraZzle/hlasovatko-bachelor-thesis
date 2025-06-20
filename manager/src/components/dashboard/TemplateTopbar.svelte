@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a template header in the dashboard.
+	 * Renders the title of the template with appropriate styling.
+	 */
 	let {
 		templateId,
 		templateTitle
@@ -21,9 +25,5 @@
 		text-overflow: ellipsis;
 		flex-shrink: 1;
 		margin-right: $spacing-sm;
-	}
-
-	.template-header__spacer {
-		flex-grow: 1;
 	}
 </style>

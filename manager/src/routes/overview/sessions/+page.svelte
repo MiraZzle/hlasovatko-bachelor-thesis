@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Sessions Overview Page
+	 * This page displays a list of all user sessions with options to create new sessions.
+	 */
 	import SessionRow from '$components/dashboard/SessionRow.svelte';
 	import CreateSessionModal from '$components/elements/modals/CreateSessionModal.svelte';
 	import DataTable from '$components/dashboard/DataTable.svelte';
@@ -78,6 +82,7 @@
 		onNewClick={openCreateSessionModal}
 		bind:searchTerm
 		bind:currentPage
+		newItemLabel="Add new Session"
 	>
 		<svelte:fragment slot="row" let:item>
 			<SessionRow session={item} />

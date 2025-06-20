@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a raw JSON activity.
+	 * Renders the JSON definition in a formatted way.
+	 */
 	let { definition }: { definition: any } = $props();
 
 	/*

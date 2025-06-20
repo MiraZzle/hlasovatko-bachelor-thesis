@@ -28,8 +28,16 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			refActivity: {
 				id: 'ab1',
 				type: 'poll',
-				title: 'Physics Brainstorm',
-				definition: {}
+				title: 'Physics Brainstorm Kick-off',
+				definition: {
+					type: 'Poll',
+					options: [
+						{ id: 'o1', text: 'Classical Mechanics' },
+						{ id: 'o2', text: 'Quantum Mechanics' },
+						{ id: 'o3', text: 'Thermodynamics' },
+						{ id: 'o4', text: 'Electromagnetism' }
+					]
+				}
 			},
 			categories: ['Physics', 'Event']
 		},
@@ -38,18 +46,36 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			refActivity: {
 				id: 'ab2',
 				type: 'scale_rating',
-				title: 'Lecture Feedback',
-				definition: {}
+				title: 'How well did you understand the lecture on Thermodynamics?',
+				definition: {
+					type: 'ScaleRating',
+					min: 1,
+					max: 5,
+					minLabel: 'Not at all',
+					maxLabel: 'Completely'
+				}
 			},
-			categories: ['Event', 'Feedback']
+			categories: ['Event', 'Feedback', 'Physics']
 		},
 		{
 			id: 'ab2',
 			refActivity: {
 				id: 'ab4',
-				type: 'scale_rating',
-				title: 'Thermodynamics Concept',
-				definition: {}
+				type: 'multiple_choice',
+				title: 'What is the first law of thermodynamics?',
+				definition: {
+					type: 'MultipleChoice',
+					options: [
+						{ id: 'm1', text: 'Energy cannot be created or destroyed.' },
+						{ id: 'm2', text: 'The entropy of an isolated system always increases.' },
+						{
+							id: 'm3',
+							text: 'The entropy of a system approaches a constant value as the temperature approaches absolute zero.'
+						}
+					],
+					correctOptionId: 'm1',
+					allowMultiple: false
+				}
 			},
 			categories: ['Physics', 'Definitions']
 		},
@@ -57,9 +83,11 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab3',
 			refActivity: {
 				id: 'ab5',
-				type: 'scale_rating',
-				title: 'Entropy Description',
-				definition: {}
+				type: 'open_ended',
+				title: 'In your own words, what is entropy?',
+				definition: {
+					type: 'OpenEnded'
+				}
 			},
 			categories: ['Physics', 'Concept']
 		},
@@ -67,9 +95,16 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab4',
 			refActivity: {
 				id: 'ab6',
-				type: 'scale_rating',
-				title: 'Lecture Planning',
-				definition: {}
+				type: 'poll',
+				title: 'What topic should the next lecture focus on?',
+				definition: {
+					type: 'Poll',
+					options: [
+						{ id: 'o1', text: 'Special Relativity' },
+						{ id: 'o2', text: 'Particle Physics' },
+						{ id: 'o3', text: 'Cosmology' }
+					]
+				}
 			},
 			categories: ['Planning']
 		},
@@ -77,9 +112,19 @@ export function getAllActivitiesFromBank(): PredefinedActivity[] {
 			id: 'ab5',
 			refActivity: {
 				id: 'ab7',
-				type: 'scale_rating',
-				title: 'Chemistry Basics',
-				definition: {}
+				type: 'multiple_choice',
+				title: 'Which of the following is a noble gas?',
+				definition: {
+					type: 'MultipleChoice',
+					options: [
+						{ id: 'm1', text: 'Oxygen' },
+						{ id: 'm2', text: 'Helium' },
+						{ id: 'm3', text: 'Nitrogen' },
+						{ id: 'm4', text: 'Carbon' }
+					],
+					correctOptionId: 'm2',
+					allowMultiple: false
+				}
 			},
 			categories: ['Chemistry', 'Definitions']
 		}
@@ -99,7 +144,6 @@ export function createActivity(data: NewActivityData): void {
 	};
 
 	console.log('Successfully added activity:', newActivity);
-	// TODO: Add an API call here to persist the change to your backend.
 }
 
 export function getActivitiesFromSession(sessionId: string): Activity[] {

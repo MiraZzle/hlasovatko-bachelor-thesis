@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for the top bar in the dashboard.
+	 * Provides a header with customizable content and styling.
+	 */
 	import type { Snippet } from 'svelte';
 
 	let {

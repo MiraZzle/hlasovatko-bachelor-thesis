@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for the user profile badge in the dashboard.
+	 * Displays user initials and provides a dropdown menu for profile actions.
+	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { logout } from '$lib/auth/auth';
@@ -15,6 +19,7 @@
 	let dropdownElement: HTMLDivElement | null = $state(null);
 	let buttonElement: HTMLButtonElement | null = $state(null);
 
+	// Toggle the dropdown menu visibility
 	function toggleDropdown(): void {
 		isDropdownOpen = !isDropdownOpen;
 		if (isDropdownOpen) {
@@ -26,6 +31,7 @@
 		isDropdownOpen = false;
 	}
 
+	// Close the dropdown if a click occurs outside of it
 	function handleClickOutside(event: MouseEvent): void {
 		if (
 			isDropdownOpen &&

@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying analytics results for different activity types.
+	 * Renders results based on the activity type and its definition.
+	 */
 	import type {
 		MultipleChoiceDefinition,
 		PollDefinition,

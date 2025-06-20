@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Session Activities Page
+	 * This page displays all activities associated with a specific session.
+	 */
 	import { page } from '$app/stores';
 	import SessionActivityItem from '$components/activities/SessionActivityItem.svelte';
 	import { getActivitiesFromSession } from '$lib/activities/activity_utils';

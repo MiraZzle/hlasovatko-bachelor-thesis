@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Header component for creating headings with different levels and text alignment.
+	 */
 	export let type: 1 | 2 | 3 = 1;
 	export let textAlign: 'left' | 'center' | 'right' = 'center';
 </script>

@@ -1,23 +1,34 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying the top bar of a session.
+	 * Provides actions to start/stop the session and share it with participants.
+	 */
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import { startSession, stopSession } from '$lib/functions/session_actions';
 	import ShareSessionModal from '$components/elements/modals/ShareSessionModal.svelte';
+	import { getManageSessionLink, getParticipateSessionLink } from '$lib/router/external_routes';
+	import { get } from 'svelte/store';
 
 	let {
 		sessionId,
 		sessionTitle,
-		sessionStatus
+		sessionStatus,
+		joinCode
 	}: {
 		sessionId: string;
 		sessionTitle: string;
 		sessionStatus: 'Active' | 'Inactive' | 'Finished';
+		joinCode: string;
 	} = $props();
 
 	let isShareModalOpen = $state(false);
+	let participateUrl = $state(getParticipateSessionLink(sessionId));
+	let manageUrl = $state(getManageSessionLink(sessionId));
 
-	function shareSession(): void {
+	function handleStartSession(): void {
 		isShareModalOpen = true;
+		startSession(sessionId);
 	}
 </script>
 
@@ -27,18 +38,19 @@
 </span>
 <div class="session-layout__topbar-spacer"></div>
 
-<Button variant="primary" onclick={shareSession}>Share Session</Button>
-
-{#if sessionStatus === 'Active'}
-	<Button variant="outline" onclick={() => stopSession(sessionId)}>Stop Session</Button>
-{:else if sessionStatus === 'Inactive'}
-	<Button variant="outline" onclick={() => startSession(sessionId)}>Start Session</Button>
+{#if sessionStatus == 'Active'}
+	<Button variant="danger" onclick={() => stopSession(sessionId)}
+		>Stop Session {sessionStatus}</Button
+	>
+{:else if sessionStatus == 'Inactive'}
+	<Button variant="primary" onclick={handleStartSession}>Start Session</Button>
 {/if}
 
 <ShareSessionModal
 	open={isShareModalOpen}
-	url={`https://example.com/sessions/${sessionId}`}
-	code={sessionId}
+	{participateUrl}
+	{manageUrl}
+	code={joinCode}
 	onclose={() => (isShareModalOpen = false)}
 />
 

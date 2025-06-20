@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file TextArea component for creating a styled textarea input.
+	 */
 	let {
 		name = '',
 		id = '',

@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Modal dialog component for exporting global analytics data.
+	 * Allows users to select a format and export their session statistics.
+	 */
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
@@ -39,6 +43,10 @@
 		}
 	});
 
+	/**
+	 * Handles the form submission to export statistics.
+	 * Validates input and calls the onExport callback with the selected format.
+	 */
 	async function handleSubmit(): Promise<void> {
 		if (isSubmitting) return;
 		isSubmitting = true;

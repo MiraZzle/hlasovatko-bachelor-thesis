@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file My Profile page
+	 * This page allows users to view and manage their profile information, change password, and handle API keys.
+	 */
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import { goto } from '$app/navigation';
@@ -79,6 +83,7 @@
 		passwordUpdateError = null;
 		passwordUpdateSuccess = null;
 
+		// Validate input fields
 		if (!currentPassword || !newPassword || !confirmPassword) {
 			passwordUpdateError = 'Please fill in all password fields.';
 			return;
@@ -117,8 +122,7 @@
 
 	/**
 	 * Copies the API key to the clipboard.
-	 * Displays a success message forsome  time.
-	 * Alerts if the API key is not available or if clipboard API is not supported.
+	 * Displays a success message forsome time.
 	 */
 	async function copyApiKey(): Promise<void> {
 		if (!currentUser.apiKey) {

@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Modal dialog component for adding a new activity to the bank.
+	 */
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
@@ -30,7 +33,8 @@
 	let categoriesString = $state('');
 	let isSubmitting = $state(false);
 
-	function getActivityTypeOptions() {
+	// Function to derive activity type options from the provided activityTypes
+	function getActivityTypeOptions(): SelectOption[] {
 		return [{ value: '', label: 'Select activity type...' }, ...activityTypes];
 	}
 
@@ -46,6 +50,10 @@
 		}
 	});
 
+	/**
+	 * Handles the form submission to add a new activity.
+	 * Validates input and calls the onAdd callback with the new activity data.
+	 */
 	async function handleSubmit(): Promise<void> {
 		if (!title.trim() || !selectedActivityType) {
 			alert('Please provide a title and select an activity type.');

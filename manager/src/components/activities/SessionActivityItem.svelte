@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a session activity item.
+	 * Renders the activity type, title, and its definition.
+	 */
 	import { fade } from 'svelte/transition';
 
 	import type {
@@ -79,39 +83,6 @@
 			color: $color-text-primary;
 			margin: 0;
 			flex-grow: 1;
-		}
-
-		&__status {
-			display: inline-block;
-			padding: $spacing-xs $spacing-sm;
-			border-radius: $border-radius-pill;
-			font-size: $font-size-xs;
-			font-weight: $font-weight-medium;
-			text-transform: uppercase;
-			white-space: nowrap;
-			margin-left: auto;
-			flex-shrink: 0;
-			&--pending {
-				background-color: $color-surface-alt;
-				color: $color-text-secondary;
-			}
-			&--active {
-				background-color: rgba($color-success, 0.15);
-				color: darken($color-success, 10%);
-			}
-			&--closed {
-				background-color: darken($color-surface-alt, 5%);
-				color: $color-text-disabled;
-			}
-		}
-
-		&__footer {
-			display: flex;
-			justify-content: flex-end;
-			gap: $spacing-sm;
-			padding-top: $spacing-sm;
-			border-top: 1px solid $color-border-light;
-			margin-top: auto;
 		}
 	}
 </style>

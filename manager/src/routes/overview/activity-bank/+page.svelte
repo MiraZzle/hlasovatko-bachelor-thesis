@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Activity Bank page
+	 * This page allows users to view, filter, and create activities.
+	 */
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
 	import ActivityCard from '$components/dashboard/ActivityCard.svelte';
@@ -20,9 +24,10 @@
 	let selectedActivityForDetail = $state<PredefinedActivity | null>(null);
 	let fileInputRef: HTMLInputElement | null = null;
 
-	/*
+	/**
 	 * Gets all unique categories from activities
 	 * Returns an array of SelectOption objects for categories
+	 * @returns Array of categories
 	 */
 	function getCategoryOptions(): SelectOption[] {
 		const categories = new Set<string>();
@@ -33,10 +38,11 @@
 		return [{ value: 'all', label: 'All Categories' }, ...options];
 	}
 
-	/*
+	/**
 	 * Gets all defined activity types
 	 * Returns an array of SelectOption objects for activity types
-	 * If forFiltering is true, adds an "All Activity Types" option
+	 * @param forFiltering - If true, includes an "All Activity Types" option
+	 * @returns Array of activiy types
 	 */
 	function getActivityTypeOptions(forFiltering: boolean = false): SelectOption[] {
 		const types = getDefinedActivityTypes();
@@ -95,9 +101,10 @@
 		}
 	}
 
-	/*
+	/**
 	 * Handles card click to open activity detail modal
 	 * Sets the selected activity for detail view
+	 * @param id - ID of the activity to be opened
 	 */
 	function handleCardClick(id: string): void {
 		const activity = activities.find((a) => a.id === id);
@@ -109,9 +116,9 @@
 		}
 	}
 
-	/*
+	/**
 	 * Filters activities based on selected category and activity type
-	 * Returns an array of activities that match the filters
+	 * @returns Filtered array of activities
 	 */
 	function getFilteredActivities(): PredefinedActivity[] {
 		return activities.filter((activity) => {

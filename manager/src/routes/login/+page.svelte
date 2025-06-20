@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Login page
+	 */
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';

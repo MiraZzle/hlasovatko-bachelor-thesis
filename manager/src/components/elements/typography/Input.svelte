@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Input component for creating a styled input field.
+	 */
 	let {
 		type = 'text',
 		name = '',

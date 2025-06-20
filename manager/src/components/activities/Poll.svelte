@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying a poll activity.
+	 * Renders a list of options with a marker for each option.
+	 */
 	import type { PollDefinition } from '$lib/activities/definition_types';
 
 	let { definition }: { definition: PollDefinition } = $props();

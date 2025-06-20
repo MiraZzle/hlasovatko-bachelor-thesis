@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying an open-ended activity.
+	 * Renders a placeholder text indicating that participants will provide a text response.
+	 */
 </script>
 
 <div class="activity-display activity-display--open-ended">

@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Button component for creating styled buttons with various variants and sizes.
+	 */
 	import type { Snippet } from 'svelte';
 
 	type ButtonVariant =

@@ -1,6 +1,9 @@
 <script lang="ts">
+	/**
+	 * @file Reusable component for displaying the results of a multiple-choice or poll activity.
+	 * Renders a list of options with their vote counts and percentages.
+	 */
 	import type { MultipleChoiceDefinition, PollDefinition } from '$lib/activities/definition_types';
-
 	import type { ChoiceActivityResult } from '$lib/analytics/result_utils';
 
 	let {
@@ -15,16 +18,20 @@
 	const CORRECT_OPTION = '✔ Correct';
 	const FALSE_OPTION = '✘';
 
-	/*
+	/**
 	 * Calculate the total number of votes across all options.
+	 * @param count - The count of votes for the current option.
+	 * @returns The percentage of votes for the current option.
 	 */
 	function getPercentage(count: number): number {
 		return totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
 	}
 
-	/*
+	/**
 	 * Check if the option is correct based on the definition.
 	 * If definition is null or correctOptionId is not set, return undefined.
+	 * @param optionId - The ID of the option to check.
+	 * @returns True if the option is correct, false if incorrect, or undefined if no
 	 */
 	function isCorrect(optionId: string): boolean | undefined {
 		if (!definition || !('correctOptionId' in definition) || !definition.correctOptionId) {

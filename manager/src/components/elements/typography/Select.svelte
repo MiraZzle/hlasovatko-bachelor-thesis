@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Select component for creating a styled dropdown select input.
+	 */
 	import type { SelectOption } from '$lib/shared_types';
 
 	let {

@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file GitHub Call to Action section for the landing page.
+	 */
 	import Button from '$components/elements/typography/Button.svelte';
 	import { GITHUB_URL } from '$lib/config';
 </script>

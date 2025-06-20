@@ -1,4 +1,9 @@
 <script lang="ts">
+	/**
+	 * @file Footer component for the landing page.
+	 */
+	import { GITHUB_URL } from '$lib/config';
+
 	const currentYear = new Date().getFullYear();
 </script>
 
@@ -12,12 +17,7 @@
 		<div class="app-footer__links">
 			<ul class="app-footer__list">
 				<li class="app-footer__item">
-					<a
-						href="https://github.com/your-org/engagenie"
-						class="app-footer__link"
-						target="_blank"
-						rel="noopener">GitHub</a
-					>
+					<a href={GITHUB_URL} class="app-footer__link" target="_blank" rel="noopener">GitHub</a>
 				</li>
 				<li class="app-footer__item">
 					<a href="mailto:you@example.com" class="app-footer__link">Contact</a>

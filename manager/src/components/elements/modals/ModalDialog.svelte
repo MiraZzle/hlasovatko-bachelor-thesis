@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Modal dialog component for displaying a modal dialog.
+	 * Provides a customizable dialog with options for width, close behavior, and content.
+	 */
 	import { onMount, onDestroy, tick } from 'svelte';
 	import type { Snippet } from 'svelte';
 	import { browser } from '$app/environment';
@@ -42,6 +46,7 @@
 		}
 	}
 
+	// Handle clicks on the overlay to close the dialog
 	function handleOverlayClick(event: MouseEvent): void {
 		if (closeOnOutsideClick && event.target === event.currentTarget) {
 			requestClose();
@@ -57,6 +62,7 @@
 		}
 	}
 
+	// Add global keydown listener for Escape key when the dialog is open
 	onMount(() => {
 		if (browser && closeOnEscape) {
 			window.addEventListener('keydown', handleGlobalKeydown);
@@ -68,6 +74,7 @@
 		};
 	});
 
+	// Focus the dialog when it opens
 	$effect(() => {
 		if (open && dialogElement) {
 			tick().then(() => {

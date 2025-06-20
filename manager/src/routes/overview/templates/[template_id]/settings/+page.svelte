@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Template Settings Page
+	 * This page allows users to configure settings for a specific template.
+	 */
 	import { page } from '$app/state';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
@@ -25,10 +29,9 @@
 		{ value: 'student-paced', label: 'Student-Paced (Participants move at their own speed)' }
 	];
 
-	/*
+	/**
 	 * Handle form submission to save template settings
 	 * Prevents default form submission behavior
-	 * @param event - The submit event
 	 */
 	async function handleSaveChanges(event: SubmitEvent): Promise<void> {
 		event.preventDefault();
@@ -56,7 +59,7 @@
 		}
 	}
 
-	/*
+	/**
 	 * Add a tag to the settings
 	 * @param tagValue - The tag to add
 	 */
@@ -72,7 +75,7 @@
 		}
 	}
 
-	/*
+	/**
 	 * Handle new tag input from the user
 	 * Adds the tag when Enter or comma is pressed
 	 * @param event - The keyboard event
@@ -85,7 +88,7 @@
 		}
 	}
 
-	/*
+	/**
 	 * Remove a tag from the settings
 	 * @param tagToRemove - The tag to remove
 	 */

@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Landing Page
+	 */
 	import Hero from '$components/landing_sections/Hero.svelte';
 	import JoinSession from '$components/landing_sections/JoinSession.svelte';
 	import Features from '$components/landing_sections/Features.svelte';

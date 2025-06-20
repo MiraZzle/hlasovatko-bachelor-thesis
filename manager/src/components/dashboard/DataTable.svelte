@@ -1,4 +1,10 @@
 <script module lang="ts">
+	/**
+	 * @file Reusable component for displaying a data table.
+	 * Renders a table with sortable columns, pagination, and search functionality.
+	 */
+
+	// Generic type for items in the table
 	export interface ColumnHeader<T> {
 		key: keyof T | (string & {});
 		label: string;
@@ -43,9 +49,10 @@
 	let sortDirection = $state<'asc' | 'desc'>('asc');
 	const totalPages = $derived(Math.ceil(items.length / pageSize));
 
-	/*
+	/**
 	 * Handles sorting by a specific key.
 	 * Sets direction if the same key is clicked, otherwise sets to ascending.
+	 * @param key - The key to sort by, must be a valid key of T or a string.
 	 */
 	function handleSort(key: keyof T | (string & {})): void {
 		if (sortKey === key) {
@@ -124,7 +131,7 @@
 			/>
 		</div>
 		{#if onNewClick}
-			<Button variant="primary" onclick={onNewClick}>+ New {newItemLabel ?? ''}</Button>
+			<Button variant="primary" onclick={onNewClick}>+ {newItemLabel ?? ''}</Button>
 		{/if}
 	</header>
 

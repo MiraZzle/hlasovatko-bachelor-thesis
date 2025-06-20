@@ -1,4 +1,7 @@
 <script lang="ts">
+	/**
+	 * @file Overview Layout includes a sidebar, topbar, and content area.
+	 */
 	import { page } from '$app/stores';
 	import Sidebar from '$components/dashboard/Sidebar.svelte';
 	import DashboardLayout from '$components/dashboard/DashboardLayout.svelte';
@@ -72,6 +75,7 @@
 						sessionId={sessionData.id}
 						sessionTitle={sessionData.title}
 						sessionStatus={sessionData.status}
+						joinCode={sessionData.joinCode}
 					/>
 				{:else if templateData}
 					<TemplateTopbar templateId={templateData.id} templateTitle={templateData.title} />

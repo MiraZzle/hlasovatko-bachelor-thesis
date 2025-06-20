@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Session Overview Page
+	 * This page provides an overview of a specific session, including details, join info, and key metrics.
+	 */
 	import { page } from '$app/stores';
 	import Button from '$components/elements/typography/Button.svelte';
 	import StatCard from '$components/dashboard/StatCard.svelte';

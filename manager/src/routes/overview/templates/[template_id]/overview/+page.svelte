@@ -1,4 +1,8 @@
 <script lang="ts">
+	/**
+	 * @file Template Overview Page
+	 * This page allows users to view, edit, and manage templates.
+	 */
 	import { page } from '$app/stores';
 	import Button from '$components/elements/typography/Button.svelte';
 	import ToggleSwitch from '$components/elements/ToggleSwitch.svelte';
@@ -11,14 +15,18 @@
 	import type { Template } from '$lib/templates/types';
 	import { updateTemplate } from '$lib/templates/template_utils';
 	import type { Activity } from '$lib/activities/types';
+	import { getAllActivitiesFromBank } from '$lib/activities/activity_utils';
+	import AddFromBankModal from '$components/elements/modals/AddFromBankModal.svelte';
 
 	let template_id = $page.params.template_id;
+	let activitiesFromBank = getAllActivitiesFromBank();
 
 	// State management
 	let viewMode = $state<'json' | 'visual'>('visual'); // default to visual mode
 	let templateDefinition = $state<Template | null>(null);
 	let isLoading = $state(true);
 	let error = $state<string | null>(null);
+	let isModalOpen = $state(false);
 
 	// JSON editor state
 	let templateJsonString = $state('');
@@ -108,18 +116,6 @@
 	}
 
 	/*
-	 * Formats activity data for display in the visual mode
-	 */
-	function formatActivityForDisplay(activityData: any, index: number): Activity {
-		return {
-			id: activityData.id ?? `temp-act-${index}`,
-			type: activityData.type ?? 'Unknown',
-			title: activityData.title ?? activityData.question ?? 'Untitled Activity',
-			definition: activityData.definition ?? activityData
-		};
-	}
-
-	/*
 	 * Handles input changes in the JSON editor
 	 * Validates the JSON and updates the state accordingly
 	 */
@@ -134,6 +130,37 @@
 		} catch (e) {
 			jsonParseError = `Invalid JSON: ${e instanceof SyntaxError ? e.message : 'Syntax error'}`;
 		}
+	}
+
+	/**
+	 * Adds new activities to the template definition
+	 * Optimistically updates the UI and persists changes to the backend
+	 * @param newActivities - Array of activities to add
+	 */
+	function addActivitiesToTemplate(newActivities: Activity[]): void {
+		// Reactively update the template's definition
+		templateDefinition!.definition = [...templateDefinition!.definition, ...newActivities];
+
+		// Persist the changes to the backend
+		updateTemplate(templateDefinition!.id, templateDefinition!)
+			.then((success) => {
+				if (success) {
+					alert('Template updated successfully!');
+				} else {
+					// Revert optimistic update on failure
+					templateDefinition!.definition = templateDefinition!.definition.filter(
+						(act) => !newActivities.includes(act)
+					);
+					alert('Failed to update template.');
+				}
+			})
+			.catch((error) => {
+				templateDefinition!.definition = templateDefinition!.definition.filter(
+					(act) => !newActivities.includes(act)
+				);
+				console.error('Error updating template:', error);
+				alert('An error occurred while updating the template.');
+			});
 	}
 
 	/*
@@ -183,6 +210,7 @@
 				id="template-file-input"
 			/>
 			<Button variant="outline" onclick={triggerFileInput}>Import/Replace JSON</Button>
+			<Button onclick={() => (isModalOpen = true)}>Add from Bank</Button>
 		</div>
 		<div class="template-overview-page__view-toggle">
 			<label for="view-mode-toggle">Visual mode</label>
@@ -243,6 +271,12 @@
 		{/if}
 	</div>
 </div>
+
+<AddFromBankModal
+	bind:open={isModalOpen}
+	activities={activitiesFromBank}
+	onAdd={addActivitiesToTemplate}
+/>
 
 <style lang="scss">
 	.template-overview-page {
