@@ -1,5 +1,6 @@
 version: "3.9"
 services:
+  # Client FE service
   client:
     build:
       context: ./client
@@ -17,6 +18,7 @@ services:
       - VITE_CLIENT_URL=${VITE_CLIENT_URL}
       - NODE_ENV=production
 
+  # Manager FE service
   manager:
     build:
       context: ./manager
@@ -34,6 +36,7 @@ services:
       - VITE_MANAGER_URL=${VITE_MANAGER_URL}
       - NODE_ENV=production
 
+  # Backend API service
   backend:
     build:
       context: ./server
@@ -49,6 +52,7 @@ services:
       - ConnectionStrings__Default=Host=db;Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
 
+  # PostgreSQL database
   db:
     image: postgres
     restart: always
@@ -61,12 +65,14 @@ services:
     ports:
       - "${DB_PORT}:5432"
 
+  # Adminer for database management
   adminer:
     image: adminer
     restart: always
     ports:
       - "${ADMINER_PORT}:8080"
 
+  # Nginx as a reverse proxy
   nginx:
     image: nginx:latest
     ports:

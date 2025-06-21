@@ -1,88 +1,84 @@
 # EngaGenie
 
-This repository contains the code and project files for my bachelor thesis.
+This repository contains the code and project files for my bachelor thesis — a real-time classroom engagement platform.
+
+---
 
 ## Cloning the Repository
-
-Clone the repository using:
 
 ```bash
 git clone https://github.com/MiraZzle/hlasovatko-bachelor-thesis.git
 cd hlasovatko-bachelor-thesis
 ```
 
+---
+
 ## How to Run
 
-### Option 1: Run with Docker Compose
+Requires [Docker](https://www.docker.com/products/docker-desktop/) and [Docker Compose](https://docs.docker.com/compose/).
 
-Make sure Docker and Docker Compose are installed on your machine
+### 1. Create `.env` file in the root
 
-1. Create a `.env` file in the project root with the following content:
+```env
+CLIENT_PORT=3000
+MANAGER_PORT=3001
+BACKEND_PORT=5000
+DB_PORT=5432
+ADMINER_PORT=8085
 
-   ```env
-   CLIENT_PORT=3000
-   MANAGER_PORT=3001
-   BACKEND_PORT=5000
+VITE_BACKEND_URL=http://localhost/api
+VITE_MANAGER_URL=http://localhost/
+VITE_CLIENT_URL=http://localhost/engage
 
-   VITE_BACKEND_URL=http://localhost:5000
-   VITE_MANAGER_URL=http://localhost:3001
-   VITE_CLIENT_URL=http://localhost:3000
+JWT_SECRET=supersecretkey
+JWT_EXPIRATION=1h
 
-   JWT_SECRET=supersecretkey
-   JWT_EXPIRATION=1h
-   ```
+DB_USER=postgres
+DB_PASSWORD=1234
+DB_NAME=engagenie
+```
 
-2. To run with compose, use the following commands:
+### 2. Run
 
-   ```bash
-   docker compose build --no-cache
-   docker compose up
-   ```
+```bash
+docker compose build --no-cache
+docker compose up
+```
 
-- The student client will be available at `http://localhost:3000`
-- The teacher manager interface will be at `http://localhost:3001`
-- The backend API (if enabled) will be at `http://localhost:5000`
+- Manager (teacher): [http://localhost/](http://localhost/)
+- Client (student): [http://localhost/engage](http://localhost/engage)
+- Backend API: [http://localhost/api](http://localhost/api)
+- Adminer (DB UI): [http://localhost:8085](http://localhost:8085)
 
-> Tip: If needed, uncomment the `backend` service in `docker-compose.yml`.
+> All traffic goes through NGINX reverse proxy on port **80**.
+> Login credentials for testing:
+> Email: test@example.com
+> Password: 1234
 
-### Option 2: Run manually with pnpm
+## Password: 1234
 
-Make sure [Node.js](https://nodejs.org/) (v18+) and [pnpm](https://pnpm.io/) are installed.
+## PostgreSQL Management
 
-1. Create a `.env` file in each frontend folder (`/client` and `/manager`) with appropriate environment variables:
+You can inspect the database with Adminer:
 
-   Example for `/manager/.env`:
+- Go to: [http://localhost:8085](http://localhost:8085)
+- Login:
 
-   ```env
-   VITE_BACKEND_URL=http://localhost:5000
-   VITE_CLIENT_URL=http://localhost:3000
-   ```
+  - System: PostgreSQL
+  - Server: `db`
+  - User: `postgres`
+  - Password: `1234`
+  - Database: `engagenie`
 
-   Example for `/client/.env`:
-
-   ```env
-   VITE_BACKEND_URL=http://localhost:5000
-   VITE_MANAGER_URL=http://localhost:3001
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   pnpm install
-   ```
-
-3. Run the desired frontend:
-
-   ```bash
-   pnpm run dev
-   ```
-
-> If you want to run both frontends at once, open two terminals and run the same command inside `/client` and `/manager`.
+---
 
 ## Documentation
 
-For detailed documentation, visit the project [wiki](https://github.com/MiraZzle/hlasovatko-bachelor-thesis/wiki).
+See the full project wiki: [GitHub Wiki](https://github.com/MiraZzle/hlasovatko-bachelor-thesis/wiki)
 
-## Overleaf
+---
 
-The [thesis](https://www.overleaf.com/read/ghkpfkxdbsyv#629916) is written in LaTeX and managed on Overleaf.
+## Thesis
+
+The thesis is written in LaTeX and available on Overleaf:
+🔗 [Overleaf Project](https://www.overleaf.com/read/ghkpfkxdbsyv#629916)
