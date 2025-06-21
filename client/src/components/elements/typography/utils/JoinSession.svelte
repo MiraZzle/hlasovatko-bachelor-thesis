@@ -6,6 +6,7 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import { getSessionIdByJoinCode } from '$lib/sessions/session_utils';
+	import { base } from '$app/paths';
 
 	let gameCode = $state('');
 	let isLoading = $state(false);
@@ -27,7 +28,7 @@
 				error = 'Invalid session code. Please try again.';
 				return;
 			}
-			await goto(`/participate/${sessionId}`);
+			await goto(`${base}/participate/${sessionId}`);
 		} catch (err) {
 			console.error('Error joining session:', err);
 			error = 'Failed to join session. Please try again later.';

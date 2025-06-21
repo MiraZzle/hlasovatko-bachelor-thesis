@@ -15,6 +15,7 @@ services:
       - VITE_BACKEND_URL=${VITE_BACKEND_URL}
       - VITE_MANAGER_URL=${VITE_MANAGER_URL}
       - VITE_CLIENT_URL=${VITE_CLIENT_URL}
+      - NODE_ENV=production
 
   manager:
     build:
@@ -31,6 +32,7 @@ services:
       - VITE_BACKEND_URL=${VITE_BACKEND_URL}
       - VITE_CLIENT_URL=${VITE_CLIENT_URL}
       - VITE_MANAGER_URL=${VITE_MANAGER_URL}
+      - NODE_ENV=production
 
   backend:
     build:
@@ -65,7 +67,16 @@ services:
     ports:
       - "${ADMINER_PORT}:8080"
 
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - client
+      - manager
+      - backend
+
 volumes:
   pgdata:
-
-  #TODO: Add nginx service for reverse proxy
