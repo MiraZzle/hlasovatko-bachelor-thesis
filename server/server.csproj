@@ -21,7 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Factories\" />
+    <Folder Include="Models\Answers\" />
+    <Folder Include="Services\" />
     <Folder Include="Tests\" />
+    <Folder Include="Utils\" />
   </ItemGroup>
 
 </Project>

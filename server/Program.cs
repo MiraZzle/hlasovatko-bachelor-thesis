@@ -1,7 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
 using server.Data;
-using server.Services;
 
 namespace server
 {
@@ -26,9 +25,6 @@ namespace server
             builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("Hlasovatko"));
 
             // register custom app services
-            builder.Services.AddScoped<ActivityService>();
-            builder.Services.AddScoped<SessionService>();
-            builder.Services.AddScoped<AnswerService>();
 
             // register api explorer and swagger
             builder.Services.AddEndpointsApiExplorer();
