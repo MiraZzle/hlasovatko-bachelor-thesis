@@ -82,4 +82,4 @@ See the full project wiki: [GitHub Wiki](https://github.com/MiraZzle/hlasovatko-
 ## Thesis
 
 The thesis is written in LaTeX and available on Overleaf:
-🔗 [Overleaf Project](https://www.overleaf.com/read/ghkpfkxdbsyv#629916)
+[Overleaf Project](https://www.overleaf.com/read/ghkpfkxdbsyv#629916)
