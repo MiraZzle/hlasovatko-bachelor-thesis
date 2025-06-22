@@ -1,24 +1,21 @@
 ﻿using server.Models.Activities;
+using server.Models.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Entities
 {
-    public class Session {
+    public class Session
+    {
         [Key]
-        public Guid SessionId { get; set; } = new Guid();
-        public string SessionName { get; set; }
-
-        public List<Activity> Activities { get; set; } = new List<Activity>();
-
-        public Session() { }
-
-        public void InitializeFromJson(JsonElement definition) {
-            SessionName = definition.GetProperty("title").GetString();
-        }
-
-        public void Start() {
-            // add session logic
-        }
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Title { get; set; } = string.Empty;
+        public Guid TemplateId { get; set; }
+        [ForeignKey("TemplateId")]
+        public Models.Template Template { get; set; } = null!;
+        public SessionStatus Status { get; set; }
+        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public string? JoinCode { get; set; }
+        public List<Activity> Activities { get; set; } = new();
     }
 }
