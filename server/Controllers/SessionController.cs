@@ -9,10 +9,11 @@ namespace server.Controllers
     [ApiController]
     public class SessionController : ControllerBase
     {
-        [HttpGet("/test")]
+        [HttpGet("test")]
         public IActionResult Test()
         {
-            return Ok("Test successful!");
+            var jwtSecret = Environment.GetEnvironmentVariable("ConnectionStrings__Default");
+            return Ok(jwtSecret);
         }
     }
 }
