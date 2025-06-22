@@ -1,6 +1,9 @@
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using server.Data;
+using server.Services;
+using System.Text;
 
 namespace server
 {
@@ -9,22 +12,40 @@ namespace server
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Get connection string from env or fallback
-            var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Default")
-                ?? builder.Configuration.GetConnectionString("Default");
+            // Setup auth
+            builder.Services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                };
+            });
 
-            // Register DbContext with PostgreSQL
+            // DB connection string
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(connectionString));
+                // Retry on failure to connect to the database
+                options.UseNpgsql(connectionString, npgsqlOptions => {
+                    npgsqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(10),
+                        errorCodesToAdd: null);
+                }));
 
             // Setup CORS to allow frontend clients
-            var clientUrl = Environment.GetEnvironmentVariable("CLIENT_URL") ?? "http://localhost:3000";
-            var managerUrl = Environment.GetEnvironmentVariable("MANAGER_URL") ?? "http://localhost:3001";
+            var clientUrl = builder.Configuration["CLIENT_URL"] ?? "http://localhost:3000";
+            var managerUrl = builder.Configuration["MANAGER_URL"] ?? "http://localhost:3001";
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(policy =>
-                {
+            builder.Services.AddCors(options => {
+                options.AddDefaultPolicy(policy => {
                     policy.WithOrigins(clientUrl, managerUrl)
                           .AllowAnyHeader()
                           .AllowAnyMethod()
@@ -32,18 +53,36 @@ namespace server
                 });
             });
 
+            // Register services
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Middleware pipeline
+            // Automatically apply migrations on startup
+            try {
+                using (var scope = app.Services.CreateScope()) {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    dbContext.Database.Migrate();
+                }
+            }
+            catch (Exception ex) {
+                var logger = app.Services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred while migrating the database.");
+            }
+
+            // Middleware
             app.UseCors();
             app.UseSwagger();
             app.UseSwaggerUI();
-            app.UseHttpsRedirection();
+
+            
+            app.UseAuthentication();
             app.UseAuthorization();
+
             app.MapControllers();
             app.Run();
         }

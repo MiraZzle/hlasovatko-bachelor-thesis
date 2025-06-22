@@ -50,7 +50,8 @@ services:
       - MANAGER_URL=${VITE_MANAGER_URL}
       - CLIENT_URL=${VITE_CLIENT_URL}
       - ConnectionStrings__Default=Host=db;Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
-      - JWT_SECRET=${JWT_SECRET}
+      - Jwt__Key=${JWT_SECRET}
+      - Jwt__Issuer=${JWT_ISSUER}
 
   # PostgreSQL database
   db:
