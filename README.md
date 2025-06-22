@@ -30,7 +30,8 @@ VITE_BACKEND_URL=http://localhost/api
 VITE_MANAGER_URL=http://localhost/
 VITE_CLIENT_URL=http://localhost/engage
 
-JWT_SECRET=supersecretkey
+#At least 16 characters
+JWT_SECRET=ABCDEFGHIJKLMNOPQRSTUVWXYZ
 JWT_EXPIRATION=1h
 
 DB_USER=postgres
