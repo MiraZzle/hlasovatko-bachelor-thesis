@@ -33,7 +33,7 @@ namespace server
                 ApiKeyAuthOptions.DefaultScheme, options => {});
 
             builder.Services.AddAuthorization(options => {
-                options.AddPolicy("UserAccess", new AuthorizationPolicyBuilder()
+                options.AddPolicy("AuthenticatedUser", new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, ApiKeyAuthOptions.DefaultScheme)
                     .RequireAuthenticatedUser()
                     .Build());
@@ -65,6 +65,9 @@ namespace server
             // Register custom services
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
+            builder.Services.AddScoped<IActivityService, ActivityService>();
+            builder.Services.AddScoped<ISessionService, SessionService>();
+            builder.Services.AddScoped<ITemplateService, TemplateService>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();

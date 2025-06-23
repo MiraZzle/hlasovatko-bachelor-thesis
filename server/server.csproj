@@ -20,6 +20,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.2" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.12.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
+    <PackageReference Include="NJsonSchema" Version="11.3.2" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Npgsql.Json.NET" Version="9.0.3" />
@@ -29,7 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Factories\" />
-    <Folder Include="Schemas\" />
+    <Folder Include="Models\Analytics\" />
     <Folder Include="Tests\" />
   </ItemGroup>
 
