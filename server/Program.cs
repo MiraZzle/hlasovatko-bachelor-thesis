@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using server.Auth;
 using server.Data;
 using server.Services;
 using System.Text;
@@ -27,9 +29,16 @@ namespace server
                     ValidAudience = builder.Configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
                 };
-            });
+            }).AddScheme<ApiKeyAuthOptions, ApiKeyAuthHandler>(
+                ApiKeyAuthOptions.DefaultScheme, options => {});
 
-            // DB connection string
+            builder.Services.AddAuthorization(options => {
+                options.AddPolicy("UserAccess", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, ApiKeyAuthOptions.DefaultScheme)
+                    .RequireAuthenticatedUser()
+                    .Build());
+            });
+            // Get DB connection string
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<AppDbContext>(options =>
                 // Retry on failure to connect to the database
@@ -53,8 +62,9 @@ namespace server
                 });
             });
 
-            // Register services
+            // Register custom services
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
