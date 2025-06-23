@@ -19,9 +19,6 @@ namespace server.Controllers
             _authService = authService;
         }
 
-        /// <summary>
-        /// Registers a new user.
-        /// </summary>
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterRequestDto request) {
@@ -31,7 +28,6 @@ namespace server.Controllers
 
             try {
                 var newUser = await _authService.RegisterAsync(request);
-                // Return a 201 Created status with basic info, excluding sensitive data
                 return CreatedAtAction(nameof(Register), new { id = newUser.Id }, new { newUser.Id, newUser.Name, newUser.Email });
             }
             catch (Exception ex) {
@@ -39,9 +35,6 @@ namespace server.Controllers
             }
         }
 
-        /// <summary>
-        /// Authenticates a user and returns a JWT.
-        /// </summary>
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginRequestDto request) {
@@ -58,10 +51,6 @@ namespace server.Controllers
             }
         }
 
-        /// <summary>
-        /// A protected endpoint to test JWT authentication.
-        /// Only accessible to authenticated users.
-        /// </summary>
         [HttpGet("test")]
         [Authorize]
         public IActionResult TestAuth() {

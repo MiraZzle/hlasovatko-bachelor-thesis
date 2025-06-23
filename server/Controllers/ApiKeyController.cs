@@ -18,21 +18,14 @@ namespace server.Controllers
             _apiKeyService = apiKeyService;
         }
 
-        /// <summary>
-        /// Gets the current user's ID from their JWT claims.
-        /// </summary>
         private Guid GetCurrentUserId() {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId)) {
-                // This should not happen if the [Authorize] attribute is working correctly
                 throw new InvalidOperationException("User ID not found in token.");
             }
             return userId;
         }
 
-        /// <summary>
-        /// Gets metadata for the currently authenticated user's API key.
-        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetKey() {
             var userId = GetCurrentUserId();
@@ -45,15 +38,11 @@ namespace server.Controllers
             return Ok(keyInfo);
         }
 
-        /// <summary>
-        /// Generates a new API key for the authenticated user, replacing any old one.
-        /// </summary>
         [HttpPost("regenerate")]
         public async Task<IActionResult> RegenerateKey() {
             var userId = GetCurrentUserId();
             var newKey = await _apiKeyService.RegenerateKeyAsync(userId);
 
-            // Returns the full, raw API key for the user to copy.
             return Ok(newKey);
         }
     }
