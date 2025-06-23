@@ -1,0 +1,29 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://yourdomain.com/schemas/poll.json",
+  "title": "Poll Activity",
+  "description": "Schema for a simple poll with multiple options.",
+  "type": "object",
+  "properties": {
+    "options": {
+      "description": "The list of choices available for the poll.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the option."
+          },
+          "text": {
+            "type": "string",
+            "description": "The display text for the option."
+          }
+        },
+        "required": [ "id", "text" ]
+      }
+    }
+  },
+  "required": [ "options" ]
+}

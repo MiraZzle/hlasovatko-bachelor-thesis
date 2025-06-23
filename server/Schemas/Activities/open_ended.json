@@ -1,0 +1,14 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://yourdomain.com/schemas/open_ended.json",
+  "title": "Open-Ended Activity",
+  "description": "Schema for an activity where users provide a text-based answer.",
+  "type": "object",
+  "properties": {
+    "placeholder": {
+      "description": "Optional placeholder text to display in the input field.",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
