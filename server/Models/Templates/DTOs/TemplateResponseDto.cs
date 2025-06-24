@@ -10,6 +10,6 @@ namespace server.Models.Templates.DTOs
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public List<string> Tags { get; set; } = new();
-        public List<ActivityResponseDto> Definition { get; set; } = new();
+        public List<ActivityBankResponseDto> Definition { get; set; } = new();
     }
 }

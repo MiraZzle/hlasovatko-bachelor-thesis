@@ -1,5 +1,6 @@
 ﻿using server.Models.Auth.server.Models.Auth;
 using System.ComponentModel.DataAnnotations;
+using server.Models.Activities;
 
 namespace server.Models.Auth
 {
@@ -16,8 +17,8 @@ namespace server.Models.Auth
 
         public string PasswordHash { get; set; } = default!;
 
-        // Navigation property for the one-to-one relationship
-        // An ApiKey is optional (nullable) for a new user
         public virtual ApiKey? ApiKey { get; set; }
+        public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
+
     }
 }

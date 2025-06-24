@@ -14,6 +14,6 @@ namespace server.Models.Templates.DTOs
         /// A list of full activity definitions to be copied into the new template.
         /// </summary>
         [Required]
-        public List<ActivityRequestDto> Activities { get; set; } = new();
+        public List<ActivityBankRequestDto> Activities { get; set; } = new();
     }
 }
