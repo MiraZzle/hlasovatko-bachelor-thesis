@@ -1,88 +1,52 @@
+import { API_URL } from '$lib/config';
 import type { User } from './types';
 
+/**
+ * Logs the user out by clearing their session data from localStorage.
+ */
 export function logout(): void {
 	localStorage.removeItem('token');
 	localStorage.removeItem('user');
-	/*
-	await fetch('/api/auth/logout', {
-		method: 'POST',
-		headers: {
-			Authorization: `Bearer ${localStorage.getItem('token')}`
-		}
-	});
-	*/
 }
 
+/**
+ * Retrieves the JWT from localStorage.
+ * @returns The token string, or null if it doesn't exist.
+ */
 export function getToken(): string | null {
 	return localStorage.getItem('token');
 }
 
+/**
+ * Checks if the user is authenticated.
+ * For a more secure check, it decodes the JWT to see if it has expired.
+ * @returns True if a valid, non-expired token exists, otherwise false.
+ */
 export function isAuthenticated(): boolean {
-	const token = localStorage.getItem('token');
-	return token !== null && token !== '';
-
-	/*
-	try {
-		const payload = JSON.parse(atob(token.split('.')[1]));
-		return payload && Date.now() / 1000 < payload.exp;
-	} catch {
+	const token = getToken();
+	if (!token) {
 		return false;
 	}
-	*/
-}
-
-// return user
-export async function login(email: string, password: string): Promise<User | null> {
-	if (email === 'test@example.com' && password === '1234') {
-		const user: User = {
-			id: '1',
-			name: 'Test User',
-			email: email,
-			token: 'fake-jwt-token'
-		};
-		localStorage.setItem('token', user.token);
-		localStorage.setItem('user', JSON.stringify(user));
-		return user;
-	} else {
-		return null;
-	}
 
 	try {
-		const res = await fetch('/api/auth/login', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ email, password })
-		});
-
-		if (!res.ok) return null;
-
-		const data = await res.json();
-
-		// Validate shape if necessary
-		const user: User = {
-			id: data.user.id,
-			name: data.user.name,
-			email: data.user.email,
-			token: data.token
-		};
-
-		// Persist user
-		localStorage.setItem('token', user.token);
-		localStorage.setItem('user', JSON.stringify(user));
-		return user;
-	} catch (err) {
-		console.error('Login error:', err);
-		return null;
+		const payload = JSON.parse(atob(token.split('.')[1]));
+		// Check if the token's expiration time is in the future.
+		return payload && Date.now() / 1000 < payload.exp;
+	} catch {
+		// If the token is malformed, treat it as invalid.
+		return false;
 	}
 }
 
-export function getUser(): { username: string } | null {
-	const user = localStorage.getItem('user');
-	if (user) {
+/**
+ * Retrieves the stored user object from localStorage.
+ * @returns The user object, or null if not found or invalid.
+ */
+export function getUser(): User | null {
+	const userJson = localStorage.getItem('user');
+	if (userJson) {
 		try {
-			return JSON.parse(user);
+			return JSON.parse(userJson) as User;
 		} catch (e) {
 			console.error('Error parsing user data:', e);
 			return null;
@@ -91,77 +55,161 @@ export function getUser(): { username: string } | null {
 	return null;
 }
 
-export async function changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
-	if (oldPassword === '1234' && newPassword.length >= 6) {
-		localStorage.setItem('password', newPassword);
-		return true;
+/**
+ * Attempts to log in a user via the API.
+ * On success, stores the user and token in localStorage.
+ * @param email - The user's email.
+ * @param password - The user's password.
+ * @returns The User object on success, or null on failure.
+ */
+export async function login(email: string, password: string): Promise<User | null> {
+	try {
+		const res = await fetch(`${API_URL}/api/v1/auth/login`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ email, password })
+		});
+
+		if (!res.ok) {
+			console.error('Login failed:', res.statusText);
+			return null;
+		}
+
+		const data = await res.json();
+
+		const user: User = {
+			id: data.userId,
+			name: data.name,
+			email: data.email,
+			token: data.token
+		};
+
+		localStorage.setItem('token', user.token);
+		localStorage.setItem('user', JSON.stringify(user));
+		return user;
+	} catch (err) {
+		console.error('Login API error:', err);
+		return null;
 	}
-	return false;
-
-	// Enable later
-	/*
-    try {
-        const res = await fetch('/api/auth/change-password', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({ oldPassword, newPassword })
-        });
-
-        return res.ok;
-    } catch (err) {
-        console.error('Change password error:', err);
-        return false;
-    }
-    */
 }
 
-export async function regenerateApiKey(): Promise<string> {
-	return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-	// Simulate API key generation
-
-	/*
+/**
+ * Registers a new user via the API.
+ * @param name - The new user's name.
+ * @param email - The new user's email.
+ * @param password - The new user's password.
+ * @returns True on success, false on failure.
+ */
+export async function register(name: string, email: string, password: string): Promise<boolean> {
 	try {
-		const res = await fetch('/api/auth/generate-api-key', {
+		const res = await fetch(`${API_URL}/api/v1/auth/register`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ name, email, password })
+		});
+
+		return res.ok;
+	} catch (err) {
+		console.error('Registration API error:', err);
+		return false;
+	}
+}
+
+/**
+ * Changes the authenticated user's password.
+ * @param oldPassword - The user's current password.
+ * @param newPassword - The desired new password (at least 6 chars long).
+ * @returns True on success, false on failure.
+ */
+export async function changePassword(oldPassword: string, newPassword: string): Promise<boolean> {
+	const token = getToken();
+	if (!token) {
+		console.error('Cannot change password, user is not authenticated.');
+		return false;
+	}
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/auth/change-password`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${localStorage.getItem('token')}`
-			}
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({ oldPassword, newPassword })
 		});
-		if (!res.ok) {
-			throw new Error('Failed to generate API key');
-		}
-		const data = await res.json();
-		return data.apiKey;
+
+		console.log('Change password response:', res.status, res.statusText);
+
+		return res.ok;
 	} catch (err) {
-		console.error('API key generation error:', err);
-		return '';
+		console.error('Change password API error:', err);
+		return false;
 	}
-	*/
 }
 
-export async function getPartialApiKey(): Promise<string> {
-	// Simulate fetching a partial API key
-	return Math.random().toString(36).substring(2, 8);
-	/*
+/**
+ * Regenerates the user's API key.
+ * @returns The new raw API key string, or an empty string on failure.
+ */
+export async function regenerateApiKey(): Promise<string> {
+	const token = getToken();
+	if (!token) {
+		console.error('Cannot regenerate API key, user is not authenticated.');
+		return '';
+	}
 	try {
-		const res = await fetch('/api/auth/get-partial-api-key', {
-			method: 'GET',
+		const res = await fetch(`${API_URL}/api/v1/apikey/regenerate`, {
+			method: 'POST',
 			headers: {
-				Authorization: `Bearer ${localStorage.getItem('token')}`
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
 			}
 		});
 		if (!res.ok) {
-			throw new Error('Failed to fetch partial API key');
+			console.error('Failed to regenerate API key:', res.statusText);
+			return '';
 		}
 		const data = await res.json();
-		return data.partialApiKey;
+		return data.rawApiKey || '';
 	} catch (err) {
-		console.error('Partial API key fetch error:', err);
+		console.error('Regenerate API key error:', err);
 		return '';
 	}
-	*/
+}
+
+/**
+ * Gets metadata about the user's API key, including the partial key.
+ * @returns The partial key string, or an empty string on failure or if no key exists.
+ */
+export async function getPartialApiKey(): Promise<string> {
+	const token = getToken();
+	if (!token) {
+		console.error('Cannot get API key, user is not authenticated.');
+		return '';
+	}
+	try {
+		const res = await fetch(`${API_URL}/api/v1/apikey`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+		if (!res.ok) {
+			if (res.status === 404) {
+				// No API key exists yet
+				return '';
+			}
+			console.error('Failed to fetch partial API key:', res.statusText);
+			return '';
+		}
+		const data = await res.json();
+		return data.partialKey || '';
+	} catch (err) {
+		console.error('Get partial API key error:', err);
+		return '';
+	}
 }
