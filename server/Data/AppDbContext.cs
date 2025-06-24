@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using server.Entities;
-using server.Models.Activities;
-using server.Models.Auth.server.Models.Auth;
-using server.Models.Auth;
 using server.Models;
+using server.Models.Activities;
+using server.Models.Auth;
+using server.Models.Auth.server.Models.Auth;
+using server.Models.Templates;
 
 namespace server.Data
 {
@@ -16,6 +17,7 @@ namespace server.Data
         public DbSet<User> Users { get; set; }
         public DbSet<ApiKey> ApiKeys { get; set; }
         public DbSet<Template> Templates { get; set; }
+        public DbSet<TemplateSettings> TemplateSettings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
@@ -29,6 +31,11 @@ namespace server.Data
             modelBuilder.Entity<ApiKey>()
                 .HasIndex(a => a.UserId)
                 .IsUnique();
+
+            modelBuilder.Entity<Template>()
+                .HasMany(t => t.Definition)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Session>()
                 .HasIndex(s => s.JoinCode)

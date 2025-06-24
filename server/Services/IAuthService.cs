@@ -7,5 +7,7 @@ namespace server.Services
     {
         Task<User> RegisterAsync(RegisterRequestDto request);
         Task<AuthResponseDto> LoginAsync(LoginRequestDto request);
+        Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request);
+
     }
 }

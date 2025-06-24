@@ -6,10 +6,11 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using server.Models.Auth;
 
 namespace server.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/v1/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -17,6 +18,14 @@ namespace server.Controllers
 
         public AuthController(IAuthService authService) {
             _authService = authService;
+        }
+
+        private Guid GetCurrentUserId() {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId)) {
+                throw new InvalidOperationException("User ID could not be determined from token.");
+            }
+            return userId;
         }
 
         [HttpPost("register")]
@@ -48,6 +57,26 @@ namespace server.Controllers
             }
             catch (Exception ex) {
                 return Unauthorized(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("change-password")]
+        [Authorize(Policy = "AuthenticatedUser")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto request) {
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+
+            try {
+                var userId = GetCurrentUserId();
+                var success = await _authService.ChangePasswordAsync(userId, request);
+                if (success) {
+                    return Ok(new { message = "Password changed successfully." });
+                }
+                return BadRequest(new { message = "Failed to change password." });
+            }
+            catch (Exception ex) {
+                return BadRequest(new { message = ex.Message });
             }
         }
 

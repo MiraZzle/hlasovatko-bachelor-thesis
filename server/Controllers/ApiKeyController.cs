@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace server.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/v1/apikey")]
     [ApiController]
     [Authorize]
     public class ApiKeyController : ControllerBase

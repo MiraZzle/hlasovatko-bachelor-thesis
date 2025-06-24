@@ -52,5 +52,22 @@ namespace server.Services
                 Token = token
             };
         }
+
+        public async Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request) {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) {
+                return false;
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash)) {
+                throw new Exception("Incorrect old password.");
+            }
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }
