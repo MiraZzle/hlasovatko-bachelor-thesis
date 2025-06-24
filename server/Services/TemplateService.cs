@@ -20,42 +20,10 @@ namespace server.Services
         }
 
         public async Task<TemplateResponseDto> CreateTemplateAsync(CreateTemplateRequestDto templateDto, Guid ownerId) {
-            var activitiesForTemplate = new List<Activity>();
+            // placeholder for validation logic
 
-            foreach (var activityDto in templateDto.Activities) {
-                var createdActivityDto = await _activityService.CreateActivityAsync(activityDto);
-
-                var newActivityEntity = await _context.Activities.FindAsync(createdActivityDto.Id);
-                if (newActivityEntity != null) {
-                    activitiesForTemplate.Add(newActivityEntity);
-                }
-            }
-
-            var template = new Template {
-                OwnerId = ownerId,
-                Settings = new TemplateSettings {
-                    Title = templateDto.Title,
-                    Tags = templateDto.Tags
-                },
-
-                Definition = activitiesForTemplate
-            };
-
-            _context.Templates.Add(template);
-            await _context.SaveChangesAsync();
-
-
-            return new TemplateResponseDto {
-                Id = template.Id,
-                Title = template.Settings.Title,
-                Tags = template.Settings.Tags,
-                Definition = template.Definition.Select(a => new ActivityResponseDto {
-                    Id = a.Id,
-                    Title = a.Title,
-                    ActivityType = a.ActivityType,
-                    Definition = JsonDocument.Parse(a.Definition).RootElement
-                }).ToList()
-            };
+            return null;
+            
         }
 
         public async Task<TemplateResponseDto?> GetTemplateByIdAsync(Guid id) {
@@ -72,7 +40,7 @@ namespace server.Services
                 Id = template.Id,
                 Title = template.Settings.Title,
                 Tags = template.Settings.Tags,
-                Definition = template.Definition.Select(a => new ActivityResponseDto {
+                Definition = template.Definition.Select(a => new ActivityBankResponseDto {
                     Id = a.Id,
                     Title = a.Title,
                     ActivityType = a.ActivityType,

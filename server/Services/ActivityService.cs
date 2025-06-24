@@ -22,97 +22,52 @@ namespace server.Services
             _logger = logger;
         }
 
-        private async Task ValidateActivityDefinition(string activityType, string definitionJson) {
-            var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", $"{activityType}.json");
-
-            if (!File.Exists(schemaPath)) {
-                throw new Exception($"Schema for activity type '{activityType}' not found.");
-            }
-
-            var schemaJson = await File.ReadAllTextAsync(schemaPath);
-            var schema = await JsonSchema.FromJsonAsync(schemaJson);
-
-            var errors = schema.Validate(definitionJson);
-            if (errors.Any()) {
-                var errorMessages = string.Join(", ", errors.Select(e => e.Path + ": " + e.Kind));
-                throw new Exception($"Invalid activity definition: {errorMessages}");
-            }
-        }
-
-        public async Task<ActivityResponseDto> CreateActivityAsync(ActivityRequestDto activityDto) {
-            await ValidateActivityDefinition(activityDto.ActivityType, activityDto.Definition);
+        public async Task<ActivityBankResponseDto> AddToBankAsync(ActivityBankRequestDto dto, Guid ownerId) {
+            await ValidateActivityDefinition(dto.ActivityType, dto.Definition);
 
             var activity = new Activity {
-                Title = activityDto.Title,
-                ActivityType = activityDto.ActivityType,
-                Definition = activityDto.Definition
+                OwnerId = ownerId,
+                Title = dto.Title,
+                ActivityType = dto.ActivityType,
+                Definition = dto.Definition,
+                Tags = dto.Tags
             };
 
             _context.Activities.Add(activity);
             await _context.SaveChangesAsync();
 
-            return new ActivityResponseDto {
+            return MapActivityToDto(activity);
+        }
+
+        public async Task<IEnumerable<ActivityBankResponseDto>> GetBankAsync(Guid ownerId) {
+            var activitiesFromDb = await _context.Activities
+                .Where(a => a.OwnerId == ownerId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return activitiesFromDb.Select(a => MapActivityToDto(a));
+        }
+
+        private async Task ValidateActivityDefinition(string activityType, string definitionJson) {
+            var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", $"{activityType}.json");
+            if (!File.Exists(schemaPath)) {
+                throw new Exception($"Schema for activity type '{activityType}' not found.");
+            }
+            var schema = await JsonSchema.FromJsonAsync(await File.ReadAllTextAsync(schemaPath));
+            var errors = schema.Validate(definitionJson);
+            if (errors.Any()) {
+                throw new Exception($"Invalid activity definition: {string.Join(", ", errors.Select(e => e.Path + ": " + e.Kind))}");
+            }
+        }
+
+        private ActivityBankResponseDto MapActivityToDto(Activity activity) {
+            return new ActivityBankResponseDto {
                 Id = activity.Id,
                 Title = activity.Title,
                 ActivityType = activity.ActivityType,
-                Definition = JsonDocument.Parse(activity.Definition).RootElement
+                Definition = JsonDocument.Parse(activity.Definition).RootElement,
+                Tags = activity.Tags
             };
-        }
-
-        public async Task<ActivityResponseDto?> GetActivityByIdAsync(Guid id) {
-            var activity = await _context.Activities.AsNoTracking().FirstOrDefaultAsync(a => a.Id == id);
-
-            if (activity == null)
-                return null;
-
-            return new ActivityResponseDto {
-                Id = activity.Id,
-                Title = activity.Title,
-                ActivityType = activity.ActivityType,
-                Definition = JsonDocument.Parse(activity.Definition).RootElement
-            };
-        }
-
-        public async Task<IEnumerable<ActivityResponseDto>> GetAllActivitiesAsync() {
-            var activities = await _context.Activities.AsNoTracking().ToListAsync();
-
-            return activities.Select(activity => new ActivityResponseDto {
-                Id = activity.Id,
-                Title = activity.Title,
-                ActivityType = activity.ActivityType,
-                Definition = JsonDocument.Parse(activity.Definition).RootElement
-            });
-        }
-
-        public async Task<ActivityResponseDto?> UpdateActivityAsync(Guid id, ActivityRequestDto activityDto) {
-            var activity = await _context.Activities.FirstOrDefaultAsync(a => a.Id == id);
-            if (activity == null)
-                return null;
-
-            await ValidateActivityDefinition(activityDto.ActivityType, activityDto.Definition);
-
-            activity.Title = activityDto.Title;
-            activity.ActivityType = activityDto.ActivityType;
-            activity.Definition = activityDto.Definition;
-
-            await _context.SaveChangesAsync();
-
-            return new ActivityResponseDto {
-                Id = activity.Id,
-                Title = activity.Title,
-                ActivityType = activity.ActivityType,
-                Definition = JsonDocument.Parse(activity.Definition).RootElement
-            };
-        }
-
-        public async Task<bool> DeleteActivityAsync(Guid id) {
-            var activity = await _context.Activities.FirstOrDefaultAsync(a => a.Id == id);
-            if (activity == null)
-                return false;
-
-            _context.Activities.Remove(activity);
-            await _context.SaveChangesAsync();
-            return true;
         }
     }
 }
