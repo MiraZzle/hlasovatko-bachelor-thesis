@@ -5,7 +5,7 @@
 	 */
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
-	import type { PredefinedActivity } from '$lib/activities/types';
+	import type { Activity } from '$lib/activities/types';
 
 	let {
 		open = $bindable(false),
@@ -15,18 +15,18 @@
 		}
 	}: {
 		open?: boolean;
-		activity: PredefinedActivity | null;
+		activity: Activity | null;
 		onclose?: () => void;
 	} = $props();
 
 	// Format the activity definition as JSON or return a string representation
 	function getFormattedDefinition(): object | string {
-		if (!activity?.refActivity.definition) return '{}';
+		if (!activity?.definition) return '{}';
 		try {
-			const jsonObj = activity.refActivity.definition;
+			const jsonObj = activity.definition;
 			return JSON.stringify(jsonObj, null, 2);
 		} catch (e) {
-			return activity.refActivity.definition;
+			return activity.definition;
 		}
 	}
 
@@ -38,19 +38,19 @@
 
 <ModalDialog bind:open {onclose} width="md" {titleId}>
 	{#if activity}
-		<h2 id={titleId} class="detail-modal__title">{activity.refActivity.title}</h2>
+		<h2 id={titleId} class="detail-modal__title">{activity.title}</h2>
 
 		<div class="detail-modal__content">
 			<div class="detail-modal__item">
 				<span class="detail-modal__label">Type</span>
-				<span class="detail-modal__value">{activity.refActivity.type}</span>
+				<span class="detail-modal__value">{activity.type}</span>
 			</div>
 
 			<div class="detail-modal__item">
 				<span class="detail-modal__label">Categories</span>
 				<div class="detail-modal__tags">
-					{#if activity.categories.length}
-						{#each activity.categories as category}
+					{#if activity.tags!.length}
+						{#each activity.tags! as category}
 							<span class="detail-modal__tag">{category}</span>
 						{/each}
 					{:else}

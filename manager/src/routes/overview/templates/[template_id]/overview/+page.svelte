@@ -15,11 +15,11 @@
 	import type { Template } from '$lib/templates/types';
 	import { updateTemplate } from '$lib/templates/template_utils';
 	import type { Activity } from '$lib/activities/types';
-	import { getAllActivitiesFromBank } from '$lib/activities/activity_utils';
 	import AddFromBankModal from '$components/elements/modals/AddFromBankModal.svelte';
+	import { getActivityBank } from '$lib/activities/activity_utils';
 
 	let template_id = $page.params.template_id;
-	let activitiesFromBank = getAllActivitiesFromBank();
+	let activitiesFromBank = $state<Activity[]>([]);
 
 	// State management
 	let viewMode = $state<'json' | 'visual'>('visual'); // default to visual mode
@@ -42,6 +42,7 @@
 	 * Load the template definition when the component mounts
 	 */
 	onMount(async () => {
+		activitiesFromBank = await getActivityBank();
 		isLoading = true;
 		error = null;
 		try {

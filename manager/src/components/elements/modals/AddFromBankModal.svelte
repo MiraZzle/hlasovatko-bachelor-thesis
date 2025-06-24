@@ -3,7 +3,7 @@
 	 * @file AddFromBankModal component for selecting and adding activities from a predefined bank.
 	 */
 	import type { Snippet } from 'svelte';
-	import type { PredefinedActivity, Activity } from '$lib/activities/types';
+	import type { Activity } from '$lib/activities/types';
 	import Button from '$components/elements/typography/Button.svelte';
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 
@@ -13,16 +13,16 @@
 		onAdd
 	}: {
 		open?: boolean;
-		activities?: PredefinedActivity[];
+		activities?: Activity[];
 		onAdd: (activities: Activity[]) => void;
 	} = $props();
 
 	let selectedActivityIds: string[] = $state([]);
 
 	function handleAdd() {
-		const activitiesToAdd = activities
-			.filter((activity) => selectedActivityIds.includes(activity.id))
-			.map((predefinedActivity) => predefinedActivity.refActivity);
+		const activitiesToAdd = activities.filter((activity) =>
+			selectedActivityIds.includes(activity.id)
+		);
 
 		onAdd(activitiesToAdd);
 		handleClose();
@@ -51,10 +51,8 @@
 							class="add-from-bank__item-checkbox"
 						/>
 						<div class="add-from-bank__item-details">
-							<span class="add-from-bank__item-title">{activity.refActivity.title}</span>
-							<span class="add-from-bank__item-type"
-								>{activity.refActivity.type.replace('_', ' ')}</span
-							>
+							<span class="add-from-bank__item-title">{activity.title}</span>
+							<span class="add-from-bank__item-type">{activity.type.replace('_', ' ')}</span>
 						</div>
 					</label>
 				{/each}

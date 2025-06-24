@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace server.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/v1/activity-bank")]
     [ApiController]
     [Authorize(Policy = "AuthenticatedUser")]
     public class ActivityController : ControllerBase
@@ -17,44 +17,31 @@ namespace server.Controllers
             _activityService = activityService;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateActivity([FromBody] ActivityRequestDto request) {
-            try {
-                var newActivity = await _activityService.CreateActivityAsync(request);
-                return CreatedAtAction(nameof(GetActivity), new { id = newActivity.Id }, newActivity);
+        private Guid GetCurrentUserId() {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId)) {
+                throw new InvalidOperationException("User ID could not be determined from token.");
             }
-            catch (Exception ex) {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetActivity(Guid id) {
-            var activity = await _activityService.GetActivityByIdAsync(id);
-            return activity == null ? NotFound() : Ok(activity);
+            return userId;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActivities() {
-            var activities = await _activityService.GetAllActivitiesAsync();
+        public async Task<IActionResult> GetActivityBank() {
+            var ownerId = GetCurrentUserId();
+            var activities = await _activityService.GetBankAsync(ownerId);
             return Ok(activities);
         }
 
-        [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateActivity(Guid id, [FromBody] ActivityRequestDto request) {
+        [HttpPost]
+        public async Task<IActionResult> AddToBank([FromBody] ActivityBankRequestDto request) {
             try {
-                var updatedActivity = await _activityService.UpdateActivityAsync(id, request);
-                return updatedActivity == null ? NotFound() : Ok(updatedActivity);
+                var ownerId = GetCurrentUserId();
+                var newActivity = await _activityService.AddToBankAsync(request, ownerId);
+                return CreatedAtAction(nameof(GetActivityBank), new { id = newActivity.Id }, newActivity);
             }
             catch (Exception ex) {
                 return BadRequest(new { message = ex.Message });
             }
-        }
-
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteActivity(Guid id) {
-            var success = await _activityService.DeleteActivityAsync(id);
-            return success ? NoContent() : NotFound();
         }
     }
 }
