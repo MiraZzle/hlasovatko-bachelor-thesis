@@ -19,7 +19,6 @@ namespace server.Data
         public DbSet<Template> Templates { get; set; }
         public DbSet<TemplateSettings> TemplateSettings { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);
 
@@ -40,6 +39,11 @@ namespace server.Data
             modelBuilder.Entity<Session>()
                 .HasIndex(s => s.JoinCode)
                 .IsUnique();
+
+            modelBuilder.Entity<Template>()
+                .HasOne(t => t.Settings)
+                .WithOne(s => s.Template)
+                .HasForeignKey<TemplateSettings>(s => s.TemplateId);
         }
     }
 }
