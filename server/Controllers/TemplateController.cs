@@ -6,7 +6,7 @@ using System.Security.Claims;
 
 namespace server.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/v1/template")]
     [ApiController]
     [Authorize(Policy = "AuthenticatedUser")]
     public class TemplateController : ControllerBase
@@ -20,13 +20,17 @@ namespace server.Controllers
         private Guid GetCurrentUserId() {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId)) {
-                throw new InvalidOperationException("User ID could not be determined from token");
+                throw new InvalidOperationException("User ID could not be determined from token.");
             }
             return userId;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateTemplate([FromBody] CreateTemplateRequestDto request) {
+            if (!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+
             try {
                 var ownerId = GetCurrentUserId();
                 var newTemplate = await _templateService.CreateTemplateAsync(request, ownerId);
@@ -39,10 +43,10 @@ namespace server.Controllers
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetTemplate(Guid id) {
-            // TODO: check for ownership
             var template = await _templateService.GetTemplateByIdAsync(id);
             return template == null ? NotFound() : Ok(template);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllTemplatesForUser() {
@@ -51,11 +55,45 @@ namespace server.Controllers
             return Ok(templates);
         }
 
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateTemplate(Guid id, [FromBody] UpdateTemplateDto request) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var ownerId = GetCurrentUserId();
+            var updatedTemplate = await _templateService.UpdateTemplateAsync(id, request, ownerId);
+
+            if (updatedTemplate == null) {
+                return NotFound(new { message = "Template not found or you do not have permission to edit it." });
+            }
+            return Ok(updatedTemplate);
+        }
+
+        [HttpPut("{id:guid}/settings")]
+        public async Task<IActionResult> UpdateTemplateSettings(Guid id, [FromBody] UpdateTemplateSettingsDto request) {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var ownerId = GetCurrentUserId();
+            var updatedTemplate = await _templateService.UpdateTemplateSettingsAsync(id, request, ownerId);
+
+            if (updatedTemplate == null) {
+                return NotFound(new { message = "Template not found or you do not have permission to edit it." });
+            }
+
+            return Ok(updatedTemplate);
+        }
+
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteTemplate(Guid id) {
             var ownerId = GetCurrentUserId();
             var success = await _templateService.DeleteTemplateAsync(id, ownerId);
-            return success ? NoContent() : NotFound(new { message = "Template not found or you do not have permission to delete it" });
+
+            if (!success) {
+                return NotFound(new { message = "Template not found or you do not have permission to delete it." });
+            }
+
+            return NoContent();
         }
     }
 }
