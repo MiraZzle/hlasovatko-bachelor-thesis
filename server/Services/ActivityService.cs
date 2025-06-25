@@ -39,6 +39,18 @@ namespace server.Services
             return MapActivityToDto(activity);
         }
 
+        public async Task ValidateActivityDefinitionAsync(string activityType, string definitionJson) {
+            var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", $"{activityType}.json");
+            if (!File.Exists(schemaPath)) {
+                throw new Exception($"Schema for activity type '{activityType}' not found.");
+            }
+            var schema = await JsonSchema.FromJsonAsync(await File.ReadAllTextAsync(schemaPath));
+            var errors = schema.Validate(definitionJson);
+            if (errors.Any()) {
+                throw new Exception($"Invalid activity definition: {string.Join(", ", errors.Select(e => e.Path + ": " + e.Kind))}");
+            }
+        }
+
         public async Task<IEnumerable<ActivityBankResponseDto>> GetBankAsync(Guid ownerId) {
             var activitiesFromDb = await _context.Activities
                 .Where(a => a.OwnerId == ownerId)

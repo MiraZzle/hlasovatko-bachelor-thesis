@@ -19,11 +19,88 @@ namespace server.Services
             _activityService = activityService;
         }
 
-        public async Task<TemplateResponseDto> CreateTemplateAsync(CreateTemplateRequestDto templateDto, Guid ownerId) {
-            // placeholder for validation logic
+        public async Task<TemplateResponseDto?> UpdateTemplateAsync(Guid id, UpdateTemplateDto dto, Guid ownerId) {
+            var template = await _context.Templates
+                .Include(t => t.Settings)
+                .Include(t => t.Definition)
+                .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == ownerId);
 
-            return null;
-            
+            if (template == null)
+                return null;
+
+            template.Settings.Title = dto.Settings.Title;
+            template.Settings.Tags = dto.Settings.Tags;
+            template.Settings.SessionPacing = dto.Settings.SessionPacing;
+            template.Settings.ResultsVisibleDefault = dto.Settings.ResultsVisibleDefault;
+
+            template.Definition.Clear();
+            await _context.SaveChangesAsync(); 
+
+            var newActivities = new List<Activity>();
+            foreach (var activityRequest in dto.Definition) {
+                await _activityService.ValidateActivityDefinitionAsync(activityRequest.ActivityType, activityRequest.Definition);
+                newActivities.Add(new Activity {
+                    Title = activityRequest.Title,
+                    ActivityType = activityRequest.ActivityType,
+                    Definition = activityRequest.Definition,
+                    Tags = activityRequest.Tags,
+                    OwnerId = ownerId
+                });
+            }
+
+            template.Definition = newActivities;
+
+            await _context.SaveChangesAsync();
+            return await GetTemplateByIdAsync(id);
+        }
+
+        public async Task<TemplateResponseDto> CreateTemplateAsync(CreateTemplateRequestDto templateDto, Guid ownerId) {
+            var activitiesForTemplate = new List<Activity>();
+            foreach (var activityRequest in templateDto.Activities) {
+                await _activityService.ValidateActivityDefinitionAsync(activityRequest.ActivityType, activityRequest.Definition);
+                activitiesForTemplate.Add(new Activity {
+                    Title = activityRequest.Title,
+                    ActivityType = activityRequest.ActivityType,
+                    Definition = activityRequest.Definition,
+                    Tags = activityRequest.Tags,
+                    OwnerId = ownerId
+                });
+            }
+
+            var template = new Template {
+                OwnerId = ownerId,
+                Settings = new TemplateSettings {
+                    Title = templateDto.Title,
+                    Tags = templateDto.Tags,
+                    SessionPacing = templateDto.SessionPacing,
+                    ResultsVisibleDefault = templateDto.ResultsVisibleDefault
+                },
+                Definition = activitiesForTemplate
+            };
+
+            _context.Templates.Add(template);
+            await _context.SaveChangesAsync();
+
+            return MapTemplateToDto(template);
+        }
+
+        public async Task<TemplateResponseDto?> UpdateTemplateSettingsAsync(Guid id, UpdateTemplateSettingsDto settingsDto, Guid ownerId) {
+            var template = await _context.Templates
+                .Include(t => t.Settings)
+                .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == ownerId);
+
+            if (template?.Settings == null)
+                return null;
+
+            template.Settings.Title = settingsDto.Title;
+            template.Settings.Tags = settingsDto.Tags;
+            template.Settings.SessionPacing = settingsDto.SessionPacing;
+            template.Settings.ResultsVisibleDefault = settingsDto.ResultsVisibleDefault;
+
+            await _context.SaveChangesAsync();
+
+            var updatedTemplate = await GetTemplateByIdAsync(id);
+            return updatedTemplate;
         }
 
         public async Task<TemplateResponseDto?> GetTemplateByIdAsync(Guid id) {
@@ -36,17 +113,7 @@ namespace server.Services
             if (template == null)
                 return null;
 
-            return new TemplateResponseDto {
-                Id = template.Id,
-                Title = template.Settings.Title,
-                Tags = template.Settings.Tags,
-                Definition = template.Definition.Select(a => new ActivityBankResponseDto {
-                    Id = a.Id,
-                    Title = a.Title,
-                    ActivityType = a.ActivityType,
-                    Definition = JsonDocument.Parse(a.Definition).RootElement
-                }).ToList()
-            };
+            return MapTemplateToDto(template);
         }
 
         public async Task<IEnumerable<TemplateResponseDto>> GetAllTemplatesForUserAsync(Guid ownerId) {
@@ -56,11 +123,7 @@ namespace server.Services
                 .AsNoTracking()
                 .ToListAsync();
 
-            return templates.Select(template => new TemplateResponseDto {
-                Id = template.Id,
-                Title = template.Settings.Title,
-                Tags = template.Settings.Tags
-            });
+            return templates.Select(MapTemplateToDto);
         }
 
         public async Task<bool> DeleteTemplateAsync(Guid id, Guid ownerId) {
@@ -74,6 +137,29 @@ namespace server.Services
             _context.Templates.Remove(template);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private TemplateResponseDto MapTemplateToDto(Template template) {
+            var response = new TemplateResponseDto {
+                Id = template.Id,
+                DateCreated = template.DateCreated,
+                Definition = template.Definition?.Select(a => new ActivityBankResponseDto {
+                    Id = a.Id,
+                    Title = a.Title,
+                    ActivityType = a.ActivityType,
+                    Definition = JsonDocument.Parse(a.Definition).RootElement,
+                    Tags = a.Tags
+                }).ToList() ?? new List<ActivityBankResponseDto>()
+            };
+
+            if (template.Settings != null) {
+                response.Title = template.Settings.Title;
+                response.Tags = template.Settings.Tags;
+                response.SessionPacing = template.Settings.SessionPacing;
+                response.ResultsVisibleDefault = template.Settings.ResultsVisibleDefault;
+            }
+
+            return response;
         }
     }
 }
