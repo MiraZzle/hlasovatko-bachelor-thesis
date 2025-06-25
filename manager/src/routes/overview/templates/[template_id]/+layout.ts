@@ -2,7 +2,7 @@ import { getTemplateById } from '$lib/templates/template_utils';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ params, fetch }) => {
-	const templateData = getTemplateById(params.template_id);
+	const templateData = await getTemplateById(params.template_id);
 
 	if (!templateData) {
 		return {

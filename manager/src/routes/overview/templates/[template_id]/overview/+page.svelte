@@ -177,13 +177,14 @@
 		error = null;
 
 		try {
-			const updatedTemplateObject = JSON.parse(templateJsonString);
-			const success = await updateTemplate(template_id, updatedTemplateObject);
-			if (!success) {
+			const updatedTemplateObject: Template = JSON.parse(templateJsonString);
+			const result = await updateTemplate(template_id, updatedTemplateObject);
+
+			if (!result) {
 				throw new Error('Server returned an error on save.');
 			}
 
-			templateDefinition = updatedTemplateObject;
+			templateDefinition = result;
 			saveSuccessMessage = 'Template saved successfully!';
 			setTimeout(() => (saveSuccessMessage = null), 3000);
 		} catch (err) {

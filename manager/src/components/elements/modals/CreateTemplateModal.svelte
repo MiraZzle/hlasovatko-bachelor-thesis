@@ -21,11 +21,10 @@
 		open?: boolean;
 		templates?: Template[];
 		onclose?: () => void;
-		onCreate?: (data: { name: string; deriveFromId: string }) => void | Promise<void>;
+		onCreate?: (data: { name: string }) => void | Promise<void>;
 	} = $props();
 
 	let name = $state('');
-	let deriveFromId = $state('none');
 	let isSubmitting = $state(false);
 
 	function getOptions(): { value: string; label: string }[] {
@@ -40,7 +39,6 @@
 	$effect(() => {
 		if (open) {
 			name = '';
-			deriveFromId = 'none';
 			isSubmitting = false;
 		}
 	});
@@ -58,7 +56,7 @@
 
 		isSubmitting = true;
 		try {
-			await onCreate({ name: name.trim(), deriveFromId: deriveFromId });
+			await onCreate({ name: name.trim() });
 			requestClose();
 		} catch (err) {
 			console.error('Error during template creation:', err);
@@ -88,15 +86,6 @@
 			required
 			placeholder="e.g., Weekly Physics Quiz"
 			disabled={isSubmitting}
-		/>
-
-		<Select
-			label="Derive from"
-			id="derive-from-modal"
-			options={deriveOptions}
-			bind:value={deriveFromId}
-			disabled={isSubmitting}
-			width="full"
 		/>
 
 		<div class="create-template-modal__actions">

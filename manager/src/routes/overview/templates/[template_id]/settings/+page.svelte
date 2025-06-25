@@ -11,10 +11,10 @@
 	import { onMount, tick } from 'svelte';
 	import type { TemplateSettingsDTO } from '$lib/templates/types';
 	import type { SessionMode } from '$lib/shared_types';
-	import { getTemplateSettingsById, updateTemplateSettings } from '$lib/templates/template_utils';
+	import { getTemplateById, updateTemplateSettings } from '$lib/templates/template_utils';
 
 	const templateId = $derived(page.params.template_id);
-	let settings = $state<TemplateSettingsDTO>();
+	let settings = $state<TemplateSettingsDTO | undefined>();
 
 	// state management
 	let isLoading = $state(true);
@@ -35,6 +35,8 @@
 	 */
 	async function handleSaveChanges(event: SubmitEvent): Promise<void> {
 		event.preventDefault();
+		if (!settings) return;
+
 		isSaving = true;
 		saveSuccessMessage = null;
 		saveErrorMessage = null;
@@ -104,7 +106,12 @@
 	onMount(async () => {
 		isLoading = true;
 		try {
-			settings = await getTemplateSettingsById(templateId);
+			const template = await getTemplateById(templateId);
+			if (template) {
+				settings = template.settings;
+			} else {
+				saveErrorMessage = 'Template not found.';
+			}
 		} catch (error) {
 			console.error('Failed to load template settings:', error);
 			saveErrorMessage = 'Failed to load template settings. Please try again later.';

@@ -10,17 +10,19 @@
 	import type { Session } from '$lib/sessions/types';
 	import { getAllSessions } from '$lib/sessions/session_utils';
 	import type { TemplateStub } from '$lib/templates/types';
-	import { getAvailableBaseTemplates } from '$lib/templates/template_utils';
 	import { createNewSession } from '$lib/sessions/session_utils';
 	import type { SessionMode } from '$lib/shared_types';
+	import { onMount } from 'svelte';
+	import { getAllTemplates } from '$lib/templates/template_utils';
 
 	// state management
 	let isCreateSessionModalOpen = $state(false);
 	let searchTerm = $state('');
 	let currentPage = $state(1);
 
-	let availableTemplates = $state<TemplateStub[]>(getAvailableBaseTemplates());
+	let availableTemplates = $state<TemplateStub[]>([]);
 	let sessions = $state<Session[]>(getAllSessions());
+	let isLoading = $state(true);
 
 	// Define columns for the DataTable
 	const columns: ColumnHeader<Session>[] = [
@@ -30,6 +32,21 @@
 		{ key: 'participants', label: 'Participants', sortable: true },
 		{ key: 'id', label: 'Actions', sortable: false }
 	];
+
+	// Fetch data when the component mounts
+	onMount(async () => {
+		isLoading = true;
+		const [templatesData, sessionsData] = await Promise.all([getAllTemplates(), getAllSessions()]);
+
+		// Map the full Template objects to TemplateStub objects for the modal
+		availableTemplates = templatesData.map((t) => ({
+			id: t.id,
+			title: t.settings?.title ?? 'Untitled Template'
+		}));
+
+		sessions = sessionsData;
+		isLoading = false;
+	});
 
 	// Filters sessions based on search term
 	function getFilteredSessions(): Session[] {
