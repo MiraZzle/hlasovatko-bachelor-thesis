@@ -1,5 +1,8 @@
 ﻿using server.Models.Activities.DTOs;
+using server.Models.Enums;
+using server.Utils;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace server.Models.Templates.DTOs
 {
@@ -7,12 +10,10 @@ namespace server.Models.Templates.DTOs
     {
         [Required]
         public string Title { get; set; } = string.Empty;
-
         public List<string> Tags { get; set; } = new();
-
-        /// <summary>
-        /// A list of full activity definitions to be copied into the new template.
-        /// </summary>
+        [JsonConverter(typeof(SessionModeJsonConverter))]
+        public SessionMode SessionPacing { get; set; }
+        public bool ResultsVisibleDefault { get; set; }
         [Required]
         public List<ActivityBankRequestDto> Activities { get; set; } = new();
     }
