@@ -1,5 +1,7 @@
 ﻿using server.Models.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+using server.Utils;
 
 namespace server.Models.Sessions.DTOs
 {
@@ -8,14 +10,11 @@ namespace server.Models.Sessions.DTOs
         [Required]
         public Guid TemplateId { get; set; }
 
-        /// <summary>
-        /// Optional: The future date and time when the session should become active.
-        /// </summary>
         public DateTime? ActivationDate { get; set; }
 
-        /// <summary>
-        /// Optional: The pacing mode for the session. Defaults to TeacherPaced if not provided.
-        /// </summary>
+        [JsonConverter(typeof(SessionModeJsonConverter))]
         public SessionMode? Mode { get; set; }
+        public string? Title { get; set; }
+
     }
 }

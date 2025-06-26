@@ -1,7 +1,9 @@
 ﻿using server.Models.Activities;
 using server.Models.Enums;
+using server.Utils;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace server.Entities
 {
@@ -19,6 +21,7 @@ namespace server.Entities
         public Models.Template Template { get; set; } = null!;
 
         [Required]
+        [JsonConverter(typeof(SessionStatusJsonConverter))]
         public SessionStatus Status { get; set; }
 
         public DateTime Created { get; set; } = DateTime.UtcNow;
@@ -35,5 +38,7 @@ namespace server.Entities
         public int Participants { get; set; } = 0;
 
         public int? CurrentActivity { get; set; }
+
+        public int TemplateVersion { get; set; } = 0;
     }
 }
