@@ -33,7 +33,7 @@ namespace server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddToBank([FromBody] ActivityBankRequestDto request) {
+        public async Task<IActionResult> AddToBank([FromBody] ActivityRequestDto request) {
             try {
                 var ownerId = GetCurrentUserId();
                 var newActivity = await _activityService.AddToBankAsync(request, ownerId);

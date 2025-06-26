@@ -14,6 +14,7 @@ namespace server.Data
 
         public DbSet<Session> Sessions { get; set; }
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<BankActivity> BankActivities { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ApiKey> ApiKeys { get; set; }
         public DbSet<Template> Templates { get; set; }
@@ -44,6 +45,12 @@ namespace server.Data
                 .HasOne(t => t.Settings)
                 .WithOne(s => s.Template)
                 .HasForeignKey<TemplateSettings>(s => s.TemplateId);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.BankActivities)
+                .WithOne(b => b.Owner)
+                .HasForeignKey(b => b.OwnerId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
