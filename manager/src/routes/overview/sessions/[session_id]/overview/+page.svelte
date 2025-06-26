@@ -4,58 +4,101 @@
 	 * This page provides an overview of a specific session, including details, join info, and key metrics.
 	 */
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import StatCard from '$components/dashboard/StatCard.svelte';
-	import { goto } from '$app/navigation';
 	import { getSessionById, getSessionMetrics } from '$lib/sessions/session_utils';
 	import { getParticipateSessionLink, getManageSessionLink } from '$lib/router/external_routes';
-	let { session_id } = $page.params;
+	import type { SessionMetrics } from '$lib/sessions/types';
 
-	function getFullSessionDetails() {
-		let sessionInfo = getSessionById(session_id);
+	type SessionDetails = {
+		title: string;
+		templateId: string;
+		status: string;
+		createdDate: string;
+		joinCode?: string;
+		manageLink: string;
+		participateLink: string;
+	};
 
-		if (!sessionInfo) {
-			return null;
+	let session_id = $page.params.session_id;
+
+	let sessionDetails: SessionDetails | null = $state(null);
+	let sessionMetrics: SessionMetrics | null = $state(null);
+	let isLoading = $state(true);
+	let error: string | null = $state(null);
+	let notification = $state('');
+
+	// Fetch data when the component is first mounted
+	onMount(() => {
+		async function loadSessionData() {
+			isLoading = true;
+			try {
+				const sessionInfo = await getSessionById(session_id);
+
+				if (!sessionInfo) {
+					throw new Error(`The session with ID '${session_id}' could not be found.`);
+				}
+
+				// Map data to the shape our component needs
+				sessionDetails = {
+					title: sessionInfo.title,
+					templateId: sessionInfo.templateID,
+					status: sessionInfo.status,
+					createdDate: sessionInfo.created,
+					joinCode: sessionInfo.joinCode,
+					manageLink: getManageSessionLink(session_id),
+					participateLink: getParticipateSessionLink(session_id)
+				};
+
+				// Fetch metrics (currently mocked)
+				sessionMetrics = getSessionMetrics(session_id);
+			} catch (err: any) {
+				console.error('Failed to load session details:', err);
+				error = err.message || 'An unknown error occurred.';
+			} finally {
+				isLoading = false;
+			}
 		}
 
-		return {
-			title: sessionInfo.title,
-			templateId: sessionInfo.templateID,
-			status: sessionInfo.status,
-			createdDate: sessionInfo.created,
-			joinCode: sessionInfo.joinCode,
-			manageLink: getManageSessionLink(session_id),
-			participateLink: getParticipateSessionLink(session_id)
-		};
-	}
-
-	let sessionDetails = $derived(getFullSessionDetails());
-	let sessionMetrics = $derived(getSessionMetrics(session_id));
+		loadSessionData();
+	});
 
 	// Icons
 	const IconCopy = () => '📄';
 	const IconLink = () => '🔗';
 
+	function showNotification(message: string) {
+		notification = message;
+		setTimeout(() => {
+			notification = '';
+		}, 3000);
+	}
+
 	// Copy join code to clipboard
 	function copyJoinCode() {
-		if (!sessionDetails || !sessionDetails.joinCode) {
-			return;
-		}
+		if (!sessionDetails?.joinCode) return;
+
 		navigator.clipboard
 			.writeText(sessionDetails.joinCode)
-			.then(() => alert(`Code ${sessionDetails.joinCode} copied!`))
-			.catch((err) => console.error('Failed to copy code:', err));
+			.then(() => showNotification(`Code ${sessionDetails!.joinCode} copied!`))
+			.catch((err) => {
+				console.error('Failed to copy code:', err);
+				showNotification('Failed to copy code.');
+			});
 	}
 
 	// Copy full link to clipboard
 	function copyParticipateLink() {
-		if (!sessionDetails) {
-			return;
-		}
+		if (!sessionDetails?.participateLink) return;
+
 		navigator.clipboard
 			.writeText(sessionDetails.participateLink)
-			.then(() => alert(`Link copied!`))
-			.catch((err) => console.error('Failed to copy link:', err));
+			.then(() => showNotification(`Link copied!`))
+			.catch((err) => {
+				console.error('Failed to copy link:', err);
+				showNotification('Failed to copy link.');
+			});
 	}
 </script>
 
@@ -107,13 +150,13 @@
 			<h2 class="session-overview-page__title">Key Metrics</h2>
 			<div class="metrics-grid">
 				<StatCard title="Participants">
-					<span class="metrics-grid__value">{sessionMetrics.participants}</span>
+					<span class="metrics-grid__value">{sessionMetrics!.participants}</span>
 				</StatCard>
 				<StatCard title="Activities Run">
-					<span class="metrics-grid__value">{sessionMetrics.activitiesRun}</span>
+					<span class="metrics-grid__value">{sessionMetrics!.activitiesRun}</span>
 				</StatCard>
 				<StatCard title="Answers Received">
-					<span class="metrics-grid__value">{sessionMetrics.answersReceived}</span>
+					<span class="metrics-grid__value">{sessionMetrics!.answersReceived}</span>
 				</StatCard>
 			</div>
 		</section>

@@ -14,6 +14,7 @@
 	import type { SessionMode } from '$lib/shared_types';
 	import { onMount } from 'svelte';
 	import { getAllTemplates } from '$lib/templates/template_utils';
+	import { get } from 'svelte/store';
 
 	// state management
 	let isCreateSessionModalOpen = $state(false);
@@ -21,7 +22,7 @@
 	let currentPage = $state(1);
 
 	let availableTemplates = $state<TemplateStub[]>([]);
-	let sessions = $state<Session[]>(getAllSessions());
+	let sessions = $state<Session[]>([]);
 	let isLoading = $state(true);
 
 	// Define columns for the DataTable

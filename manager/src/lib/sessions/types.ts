@@ -1,12 +1,14 @@
 import type { SessionMode } from '$lib/shared_types';
 import type { Template } from '$lib/templates/types';
 
+export type SessionStatus = 'Inactive' | 'Active' | 'Finished' | 'Planned';
+
 export interface Session {
 	id: string;
 	title: string;
 	templateID: string;
 	templateVersion?: string;
-	status: 'Active' | 'Planned' | 'Finished' | 'Inactive';
+	status: SessionStatus; // changed this from string to SessionStatus
 	created: string;
 	joinCode?: string;
 	participants?: number;

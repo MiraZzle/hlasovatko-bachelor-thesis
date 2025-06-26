@@ -9,6 +9,7 @@
 	import ShareSessionModal from '$components/elements/modals/ShareSessionModal.svelte';
 	import { getManageSessionLink, getParticipateSessionLink } from '$lib/router/external_routes';
 	import { get } from 'svelte/store';
+	import type { SessionStatus } from '$lib/sessions/types';
 
 	let {
 		sessionId,
@@ -18,7 +19,7 @@
 	}: {
 		sessionId: string;
 		sessionTitle: string;
-		sessionStatus: 'Active' | 'Inactive' | 'Finished';
+		sessionStatus: SessionStatus;
 		joinCode: string;
 	} = $props();
 
@@ -38,11 +39,11 @@
 </span>
 <div class="session-layout__topbar-spacer"></div>
 
-{#if sessionStatus == 'Active'}
+{#if sessionStatus.toLowerCase() == 'active'}
 	<Button variant="danger" onclick={() => stopSession(sessionId)}
 		>Stop Session {sessionStatus}</Button
 	>
-{:else if sessionStatus == 'Inactive'}
+{:else if sessionStatus.toLowerCase() == 'inactive'}
 	<Button variant="primary" onclick={handleStartSession}>Start Session</Button>
 {/if}
 

@@ -9,6 +9,7 @@
 	import { page } from '$app/state';
 	import { getSessionsByTemplate } from '$lib/sessions/session_utils';
 	import type { Session } from '$lib/sessions/types';
+	import { onMount } from 'svelte';
 
 	const templateId = $derived(page.params.template_id);
 
@@ -25,7 +26,12 @@
 		{ key: 'id', label: 'Actions', sortable: false }
 	];
 
-	let sessionsForTemplate = $derived<Session[]>(getSessionsByTemplate(templateId));
+	let sessionsForTemplate = $state<Session[]>([]);
+
+	// Fetch sessions for the template when the component mounts
+	onMount(async () => {
+		sessionsForTemplate = await getSessionsByTemplate(templateId);
+	});
 
 	/**
 	Filter sessions based on search term.
