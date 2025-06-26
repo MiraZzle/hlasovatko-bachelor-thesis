@@ -27,6 +27,26 @@ namespace server.Services
             return session == null ? null : MapSessionToDto(session);
         }
 
+        public async Task<IEnumerable<SessionResponseDto>> GetAllSessionsAsync(Guid ownerId) {
+            var sessions = await _context.Sessions
+                .Include(s => s.Template)
+                .Where(s => s.Template.OwnerId == ownerId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return sessions.Select(MapSessionToDto);
+        }
+
+        public async Task<IEnumerable<SessionResponseDto>> GetSessionsByTemplateAsync(Guid templateId, Guid ownerId) {
+            var sessions = await _context.Sessions
+                .Include(s => s.Template)
+                .Where(s => s.TemplateId == templateId && s.Template.OwnerId == ownerId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return sessions.Select(MapSessionToDto);
+        }
+
         public async Task<SessionResponseDto> CreateSessionFromTemplateAsync(CreateSessionRequestDto request, Guid ownerId) {
             var template = await _context.Templates
                 .Include(t => t.Definition)
@@ -39,19 +59,20 @@ namespace server.Services
             }
 
             var session = new Session {
-                Title = template.Settings.Title,
+                Title = !string.IsNullOrEmpty(request.Title) ? request.Title : template.Settings.Title,
                 TemplateId = template.Id,
+                TemplateVersion = template.Version,
                 Status = request.ActivationDate.HasValue ? SessionStatus.Planned : SessionStatus.Inactive,
                 JoinCode = await GenerateUniqueJoinCode(),
                 ActivationDate = request.ActivationDate,
                 Mode = request.Mode ?? SessionMode.TeacherPaced,
-                CurrentActivity = null // No activity is active initially
+                CurrentActivity = null
             };
 
             session.Activities = template.Definition.Select(activity => new Activity {
                 Title = activity.Title,
                 ActivityType = activity.ActivityType,
-                Definition = activity.Definition
+                Definition = activity.Definition,
             }).ToList();
 
             _context.Sessions.Add(session);
@@ -66,7 +87,7 @@ namespace server.Services
                 return null;
 
             session.Status = SessionStatus.Active;
-            session.CurrentActivity = 0; // Start with the first activity
+            session.CurrentActivity = 0;
             await _context.SaveChangesAsync();
 
             return MapSessionToDto(session);
@@ -78,7 +99,7 @@ namespace server.Services
                 return null;
 
             session.Status = SessionStatus.Finished;
-            session.CurrentActivity = null; // No activity is active
+            session.CurrentActivity = null;
             await _context.SaveChangesAsync();
 
             return MapSessionToDto(session);
@@ -92,12 +113,10 @@ namespace server.Services
 
             var currentIdx = session.CurrentActivity ?? -1;
 
-            // Check if there is a next activity
             if (currentIdx < session.Activities.Count - 1) {
                 session.CurrentActivity = currentIdx + 1;
             }
-            else // This was the last activity
-            {
+            else {
                 session.Status = SessionStatus.Finished;
                 session.CurrentActivity = null;
             }
@@ -118,13 +137,10 @@ namespace server.Services
             var random = new Random();
             string code;
 
-            // generate a random code of 6char codes - with repeating chars allowed
             do {
                 code = new string(Enumerable.Repeat(chars, 6)
                     .Select(s => s[random.Next(s.Length)]).ToArray());
             }
-
-            // op until we find a unique code
             while (await _context.Sessions.AnyAsync(s => s.JoinCode == code));
 
             return code;
@@ -134,18 +150,20 @@ namespace server.Services
             return new SessionResponseDto {
                 Id = session.Id,
                 Title = session.Title,
+                TemplateId = session.TemplateId,
+                TemplateVersion = session.TemplateVersion,
                 Status = session.Status,
                 JoinCode = session.JoinCode ?? "",
                 ActivationDate = session.ActivationDate,
                 Mode = session.Mode,
                 Participants = session.Participants,
                 CurrentActivity = session.CurrentActivity,
-                Activities = session.Activities.Select(a => new ActivityResponseDto {
+                Activities = session.Activities?.Select(a => new ActivityResponseDto {
                     Id = a.Id,
                     Title = a.Title,
                     ActivityType = a.ActivityType,
                     Definition = JsonDocument.Parse(a.Definition).RootElement
-                }).ToList()
+                }).ToList() ?? new List<ActivityResponseDto>()
             };
         }
     }
