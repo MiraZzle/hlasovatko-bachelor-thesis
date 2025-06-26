@@ -5,7 +5,7 @@ namespace server.Models.Activities.DTOs
     /// <summary>
     /// DTO for returning a full activity, including its parsed definition.
     /// </summary>
-    public class ActivityBankResponseDto
+    public class ActivityResponseDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;

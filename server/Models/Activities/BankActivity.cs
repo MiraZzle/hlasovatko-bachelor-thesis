@@ -4,8 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models.Activities
 {
-    public class Activity : IActivity
+    public class BankActivity : IActivity
     {
+
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -20,5 +21,11 @@ namespace server.Models.Activities
         public string Definition { get; set; } = "{}";
 
         public List<string> Tags { get; set; } = new();
+
+        [Required]
+        public Guid OwnerId { get; set; }
+
+        [ForeignKey("OwnerId")]
+        public virtual User Owner { get; set; } = null!;
     }
 }

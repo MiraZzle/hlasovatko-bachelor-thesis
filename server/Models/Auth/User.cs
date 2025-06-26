@@ -18,7 +18,7 @@ namespace server.Models.Auth
         public string PasswordHash { get; set; } = default!;
 
         public virtual ApiKey? ApiKey { get; set; }
-        public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
+        public virtual ICollection<BankActivity> BankActivities { get; set; } = new List<BankActivity>();
 
     }
 }

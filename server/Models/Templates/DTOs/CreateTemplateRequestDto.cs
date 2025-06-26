@@ -15,6 +15,6 @@ namespace server.Models.Templates.DTOs
         public SessionMode SessionPacing { get; set; }
         public bool ResultsVisibleDefault { get; set; }
         [Required]
-        public List<ActivityBankRequestDto> Activities { get; set; } = new();
+        public List<ActivityRequestDto> Activities { get; set; } = new();
     }
 }

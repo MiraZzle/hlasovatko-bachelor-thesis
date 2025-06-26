@@ -6,7 +6,7 @@ namespace server.Models.Activities.DTOs
     /// DTO for creating or updating an activity.
     /// The Definition is passed as a string and validated on the backend.
     /// </summary>
-    public class ActivityBankRequestDto
+    public class ActivityRequestDto
     {
         [Required]
         public string Title { get; set; } = string.Empty;

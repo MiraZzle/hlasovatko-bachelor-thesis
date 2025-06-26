@@ -8,6 +8,6 @@ namespace server.Models.Templates.DTOs
         [Required]
         public UpdateTemplateSettingsDto Settings { get; set; } = new();
         [Required]
-        public List<ActivityBankRequestDto> Definition { get; set; } = new();
+        public List<ActivityRequestDto> Definition { get; set; } = new();
     }
 }

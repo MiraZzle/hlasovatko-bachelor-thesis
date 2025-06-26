@@ -14,6 +14,6 @@ namespace server.Models.Templates.DTOs
         public SessionMode SessionPacing { get; set; }
         public bool ResultsVisibleDefault { get; set; }
         public DateTime DateCreated { get; set; }
-        public List<ActivityBankResponseDto> Definition { get; set; } = new();
+        public List<ActivityResponseDto> Definition { get; set; } = new();
     }
 }
