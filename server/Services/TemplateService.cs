@@ -52,7 +52,6 @@ namespace server.Services
                     ActivityType = req.ActivityType,
                     Definition = req.Definition,
                     Tags = req.Tags,
-                    OwnerId = ownerId
                 });
             }
 
@@ -73,7 +72,6 @@ namespace server.Services
                     ActivityType = activityRequest.ActivityType,
                     Definition = activityRequest.Definition,
                     Tags = activityRequest.Tags,
-                    OwnerId = ownerId
                 });
             }
 
@@ -153,13 +151,13 @@ namespace server.Services
             var response = new TemplateResponseDto {
                 Id = template.Id,
                 DateCreated = template.DateCreated,
-                Definition = template.Definition?.Select(a => new ActivityBankResponseDto {
+                Definition = template.Definition?.Select(a => new ActivityResponseDto {
                     Id = a.Id,
                     Title = a.Title,
                     ActivityType = a.ActivityType,
                     Definition = JsonDocument.Parse(a.Definition).RootElement,
                     Tags = a.Tags
-                }).ToList() ?? new List<ActivityBankResponseDto>()
+                }).ToList() ?? new List<ActivityResponseDto>()
             };
 
             if (template.Settings != null) {

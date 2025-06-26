@@ -140,7 +140,7 @@ namespace server.Services
                 Mode = session.Mode,
                 Participants = session.Participants,
                 CurrentActivity = session.CurrentActivity,
-                Activities = session.Activities.Select(a => new ActivityBankResponseDto {
+                Activities = session.Activities.Select(a => new ActivityResponseDto {
                     Id = a.Id,
                     Title = a.Title,
                     ActivityType = a.ActivityType,

@@ -22,10 +22,10 @@ namespace server.Services
             _logger = logger;
         }
 
-        public async Task<ActivityBankResponseDto> AddToBankAsync(ActivityBankRequestDto dto, Guid ownerId) {
+        public async Task<ActivityResponseDto> AddToBankAsync(ActivityRequestDto dto, Guid ownerId) {
             await ValidateActivityDefinition(dto.ActivityType, dto.Definition);
 
-            var activity = new Activity {
+            var activity = new BankActivity {
                 OwnerId = ownerId,
                 Title = dto.Title,
                 ActivityType = dto.ActivityType,
@@ -33,7 +33,7 @@ namespace server.Services
                 Tags = dto.Tags
             };
 
-            _context.Activities.Add(activity);
+            _context.BankActivities.Add(activity);
             await _context.SaveChangesAsync();
 
             return MapActivityToDto(activity);
@@ -51,8 +51,8 @@ namespace server.Services
             }
         }
 
-        public async Task<IEnumerable<ActivityBankResponseDto>> GetBankAsync(Guid ownerId) {
-            var activitiesFromDb = await _context.Activities
+        public async Task<IEnumerable<ActivityResponseDto>> GetBankAsync(Guid ownerId) {
+            var activitiesFromDb = await _context.BankActivities
                 .Where(a => a.OwnerId == ownerId)
                 .AsNoTracking()
                 .ToListAsync();
@@ -72,8 +72,8 @@ namespace server.Services
             }
         }
 
-        private ActivityBankResponseDto MapActivityToDto(Activity activity) {
-            return new ActivityBankResponseDto {
+        public ActivityResponseDto MapActivityToDto(IActivity activity) {
+            return new ActivityResponseDto {
                 Id = activity.Id,
                 Title = activity.Title,
                 ActivityType = activity.ActivityType,
