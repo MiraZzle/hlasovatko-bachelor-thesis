@@ -14,7 +14,7 @@ namespace server.Models.Activities.DTOs
         [Required]
         public string ActivityType { get; set; } = string.Empty;
 
-        [Required]
+        [Required] // change this to json
         public string Definition { get; set; } = "{}";
         public List<string> Tags { get; set; } = new();
     }

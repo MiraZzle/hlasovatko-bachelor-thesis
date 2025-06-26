@@ -21,36 +21,46 @@ namespace server.Services
 
         public async Task<TemplateResponseDto?> UpdateTemplateAsync(Guid id, UpdateTemplateDto dto, Guid ownerId) {
             var template = await _context.Templates
-                .Include(t => t.Settings)
                 .Include(t => t.Definition)
                 .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == ownerId);
 
-            if (template == null)
+            if (template == null) {
                 return null;
+            }
 
-            template.Settings.Title = dto.Settings.Title;
-            template.Settings.Tags = dto.Settings.Tags;
-            template.Settings.SessionPacing = dto.Settings.SessionPacing;
-            template.Settings.ResultsVisibleDefault = dto.Settings.ResultsVisibleDefault;
+            _context.Activities.RemoveRange(template.Definition);
 
-            template.Definition.Clear();
-            await _context.SaveChangesAsync(); 
+
+            await _context.SaveChangesAsync();
+
+
+            var templateForUpdate = await _context.Templates
+                                            .Include(t => t.Settings)
+                                            .FirstOrDefaultAsync(t => t.Id == id);
+
+            templateForUpdate.Settings.Title = dto.Settings.Title;
+            templateForUpdate.Settings.Tags = dto.Settings.Tags;
+            templateForUpdate.Settings.SessionPacing = dto.Settings.SessionPacing;
+            templateForUpdate.Settings.ResultsVisibleDefault = dto.Settings.ResultsVisibleDefault;
+
 
             var newActivities = new List<Activity>();
-            foreach (var activityRequest in dto.Definition) {
-                await _activityService.ValidateActivityDefinitionAsync(activityRequest.ActivityType, activityRequest.Definition);
+            foreach (var req in dto.Definition) {
+                await _activityService.ValidateActivityDefinitionAsync(req.ActivityType, req.Definition);
                 newActivities.Add(new Activity {
-                    Title = activityRequest.Title,
-                    ActivityType = activityRequest.ActivityType,
-                    Definition = activityRequest.Definition,
-                    Tags = activityRequest.Tags,
+                    Title = req.Title,
+                    ActivityType = req.ActivityType,
+                    Definition = req.Definition,
+                    Tags = req.Tags,
                     OwnerId = ownerId
                 });
             }
 
-            template.Definition = newActivities;
-
+            templateForUpdate.Definition = newActivities;
+            _context.Activities.AddRange(newActivities);
+            
             await _context.SaveChangesAsync();
+            
             return await GetTemplateByIdAsync(id);
         }
 
