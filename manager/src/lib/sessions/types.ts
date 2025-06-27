@@ -8,7 +8,7 @@ export interface Session {
 	title: string;
 	templateID: string;
 	templateVersion?: string;
-	status: SessionStatus; // changed this from string to SessionStatus
+	status: SessionStatus;
 	created: string;
 	joinCode?: string;
 	participants?: number;

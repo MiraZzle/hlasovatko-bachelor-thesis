@@ -166,3 +166,64 @@ export async function createNewSession(
 	const sessionDto: SessionResponseDto = await response.json();
 	return mapResponseToSession(sessionDto);
 }
+
+/**
+ * Sends a request to start a session.
+ * @param sessionId The ID of the session to start.
+ * @returns A promise that resolves to the updated Session object.
+ */
+export async function startSession(sessionId: string): Promise<Session> {
+	const token = getToken();
+
+	const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/start`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		}
+	});
+
+	if (!response.ok) {
+		let errorMessage = 'Failed to start the session.';
+		try {
+			const errorData = await response.json();
+			errorMessage = errorData.message || errorMessage;
+		} catch (e) {
+			console.log('Error parsing response:', e);
+		}
+		throw new Error(errorMessage);
+	}
+
+	const sessionDto: SessionResponseDto = await response.json();
+	return mapResponseToSession(sessionDto);
+}
+
+/**
+ * Sends a request to stop a session.
+ * @param sessionId The ID of the session to stop.
+ * @returns A promise that resolves to the updated Session object.
+ */
+export async function stopSession(sessionId: string): Promise<Session> {
+	const token = getToken();
+	const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/stop`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		}
+	});
+
+	if (!response.ok) {
+		let errorMessage = 'Failed to stop the session.';
+		try {
+			const errorData = await response.json();
+			errorMessage = errorData.message || errorMessage;
+		} catch (e) {
+			console.log('Error parsing response:', e);
+		}
+		throw new Error(errorMessage);
+	}
+
+	const sessionDto: SessionResponseDto = await response.json();
+	return mapResponseToSession(sessionDto);
+}

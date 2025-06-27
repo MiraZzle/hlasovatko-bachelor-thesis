@@ -55,7 +55,8 @@
 			const lowerSearch = searchTerm.toLowerCase();
 			return (
 				session.title.toLowerCase().includes(lowerSearch) ||
-				session.templateID.toLowerCase().includes(lowerSearch)
+				session.joinCode?.toLowerCase().includes(lowerSearch) ||
+				session.status.toLowerCase().includes(lowerSearch)
 			);
 		});
 	}
@@ -93,7 +94,7 @@
 <div class="sessions-overview-page">
 	<DataTable
 		title="My Sessions"
-		searchPlaceholder="Search sessions by title, code..."
+		searchPlaceholder="Search sessions by title, code, status..."
 		items={filteredSessions}
 		{columns}
 		noResultsMessage="You haven't run any sessions yet."

@@ -7,10 +7,19 @@
 	import SessionActivityItem from '$components/activities/SessionActivityItem.svelte';
 	import { getActivitiesFromSession } from '$lib/activities/activity_utils';
 	import type { Activity } from '$lib/activities/types';
+	import { onMount } from 'svelte';
 
-	let { session_id } = $page.params;
+	let session_id = $page.params.session_id;
 
-	let activities = $state<Activity[]>(getActivitiesFromSession(session_id));
+	let activities = $state<Activity[]>([]);
+
+	onMount(async () => {
+		try {
+			activities = await getActivitiesFromSession(session_id);
+		} catch (error) {
+			console.error('Failed to load activities:', error);
+		}
+	});
 </script>
 
 <svelte:head>

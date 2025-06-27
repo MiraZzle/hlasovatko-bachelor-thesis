@@ -1,6 +1,7 @@
-import type { ActivityBankResponse, ActivityType, Activity } from './types.ts';
+import type { ActivityResponse, ActivityType, Activity } from './types.ts';
 import { getToken } from '$lib/auth/auth';
 import { API_URL } from '$lib/config';
+
 export function getDefinedActivityTypes(): ActivityType[] {
 	return [
 		{ name: 'multiple_choice' },
@@ -80,7 +81,7 @@ export async function getActivityBank(): Promise<Activity[]> {
 		}
 
 		const activities = await res.json();
-		return activities.map((act: ActivityBankResponse) => ({
+		return activities.map((act: ActivityResponse) => ({
 			id: act.id,
 			title: act.title,
 			type: act.activityType,
@@ -93,61 +94,47 @@ export async function getActivityBank(): Promise<Activity[]> {
 	}
 }
 
-export function getActivitiesFromSession(sessionId: string): Activity[] {
-	console.log(`Fetching activities for session ${sessionId}`);
+/**
+ * Fetches all activities for a given session.
+ * @param sessionId The ID of the session.
+ * @returns A promise that resolves to an array of activities.
+ */
+export async function getActivitiesFromSession(sessionId: string): Promise<Activity[]> {
+	const token = getToken();
+	if (!token) {
+		console.error('Authentication token not found.');
+		return [];
+	}
 
-	return [
-		{
-			id: 'sact1',
-			type: 'poll',
-			title: 'Which topic should we cover next?',
-			definition: {
-				type: 'Poll',
-				options: [
-					{ id: 'o1', text: 'Topic A' },
-					{ id: 'o2', text: 'Topic B' }
-				]
+	try {
+		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/activities`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`
 			}
-		},
-		{
-			id: 'sact2',
-			type: 'multiple_choice',
-			title: 'What is the powerhouse of the cell?',
-			definition: {
-				type: 'MultipleChoice',
-				options: [
-					{ id: 'm1', text: 'Nucleus' },
-					{ id: 'm2', text: 'Ribosome' },
-					{ id: 'm3', text: 'Mitochondrion' },
-					{ id: 'm4', text: 'Chloroplast' }
-				],
-				correctOptionId: 'm3',
-				allowMultiple: false
-			}
-		},
-		{
-			id: 'sact3',
-			type: 'scale_rating',
-			title: 'Rate your understanding (1-5)',
-			definition: {
-				type: 'ScaleRating',
-				min: 1,
-				max: 5,
-				minLabel: 'Confused',
-				maxLabel: 'Confident'
-			}
-		},
-		{
-			id: 'sact4',
-			type: 'open_ended',
-			title: 'Any remaining questions?',
-			definition: { type: 'OpenEnded' }
-		},
-		{
-			id: 'sact5',
-			type: 'custom_activity',
-			title: 'Custom Activity Format',
-			definition: { customField: 'value', structure: { nested: true } }
+		});
+
+		if (!response.ok) {
+			const errorText = await response.text();
+			console.error(
+				`Failed to fetch activities for session ${sessionId}:`,
+				response.status,
+				errorText
+			);
+			return [];
 		}
-	];
+
+		const activitiesFromApi = await response.json();
+
+		return activitiesFromApi.map((activity: ActivityResponse) => ({
+			id: activity.id,
+			title: activity.title,
+			type: activity.activityType,
+			definition: activity.definition,
+			tags: activity.tags
+		}));
+	} catch (err) {
+		console.error(`API error when fetching activities for session ${sessionId}:`, err);
+		return [];
+	}
 }

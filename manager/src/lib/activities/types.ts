@@ -13,7 +13,7 @@ export interface Activity {
 	tags?: string[];
 }
 
-export interface ActivityBankResponse {
+export interface ActivityResponse {
 	id: string;
 	title: string;
 	activityType: string;
