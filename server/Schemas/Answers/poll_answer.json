@@ -1,0 +1,15 @@
+﻿{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://yourdomain.com/schemas/poll_answer.json",
+  "title": "Poll Activity Answer",
+  "description": "Schema for an answer to a poll activity.",
+  "type": "object",
+  "properties": {
+    "selectedOptionId": {
+      "description": "The unique identifier of the single option selected by the user.",
+      "type": "string",
+      "format": "uuid"
+    }
+  },
+  "required": [ "selectedOptionId" ]
+}

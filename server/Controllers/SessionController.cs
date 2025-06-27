@@ -58,6 +58,18 @@ namespace server.Controllers
             return session == null ? NotFound() : Ok(session);
         }
 
+        [HttpGet("{id:guid}/activities")]
+        public async Task<IActionResult> GetSessionActivities(Guid id) {
+            var ownerId = GetCurrentUserId();
+            var activities = await _sessionService.GetSessionActivitiesAsync(id, ownerId);
+
+            if (activities == null) {
+                return NotFound(new { message = "Session not found or you are not authorized to view its activities." });
+            }
+
+            return Ok(activities);
+        }
+
         [HttpPost("{id:guid}/start")]
         public async Task<IActionResult> StartSession(Guid id) {
             var ownerId = GetCurrentUserId();

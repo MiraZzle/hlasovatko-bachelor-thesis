@@ -1,4 +1,5 @@
-﻿using server.Models.Sessions.DTOs;
+﻿using server.Models.Activities.DTOs;
+using server.Models.Sessions.DTOs;
 
 namespace server.Services
 {
@@ -11,5 +12,6 @@ namespace server.Services
         Task<SessionResponseDto?> StartSessionAsync(Guid sessionId, Guid ownerId);
         Task<SessionResponseDto?> StopSessionAsync(Guid sessionId, Guid ownerId);
         Task<SessionResponseDto?> NextActivityAsync(Guid sessionId, Guid ownerId);
-        }
+        Task<IEnumerable<ActivityResponseDto>?> GetSessionActivitiesAsync(Guid sessionId, Guid ownerId);
+    }
 }

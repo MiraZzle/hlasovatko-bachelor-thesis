@@ -166,5 +166,25 @@ namespace server.Services
                 }).ToList() ?? new List<ActivityResponseDto>()
             };
         }
+
+        public async Task<IEnumerable<ActivityResponseDto>?> GetSessionActivitiesAsync(Guid sessionId, Guid ownerId) {
+            var session = await _context.Sessions
+                .Include(s => s.Template)
+                .Include(s => s.Activities)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == sessionId && s.Template.OwnerId == ownerId);
+
+            if (session == null) {
+                return null;
+            }
+
+            return session.Activities.Select(a => new ActivityResponseDto {
+                Id = a.Id,
+                Title = a.Title,
+                ActivityType = a.ActivityType,
+                Definition = JsonDocument.Parse(a.Definition).RootElement,
+                Tags = a.Tags
+            });
+        }
     }
 }
