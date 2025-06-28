@@ -29,7 +29,7 @@ namespace server.Utils
                 issuer: jwtIssuer,
                 audience: jwtIssuer,
                 claims: claims,
-                expires: DateTime.Now.AddHours(2), // token lifetime 
+                expires: DateTime.Now.AddHours(2),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
