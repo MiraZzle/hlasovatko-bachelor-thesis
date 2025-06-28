@@ -104,11 +104,11 @@ namespace server.Services
             return results;
         }
 
-        public async Task<ActivityResultDto?> GetAggregatedResultsForActivityAsync(Guid sessionId, Guid activityId, Guid ownerId) {
+        public async Task<ActivityResultDto?> GetAggregatedResultsForActivityAsync(Guid sessionId, Guid activityId) {
             var session = await _context.Sessions
                 .Include(s => s.Activities)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == sessionId && s.Template.OwnerId == ownerId);
+                .FirstOrDefaultAsync(s => s.Id == sessionId);
 
             if (session == null)
                 return null;

@@ -1,10 +1,18 @@
 import { API_URL } from '$lib/config';
-import type { Activity, ActivityResult } from '$lib/activities/types';
+import type { Activity, ActivityResult, StaticActivityType } from '$lib/activities/types';
 import type { SubmitPayload } from '$lib/activities/definition_types';
 
 interface ActivityResultDto {
-	activityRef: Activity;
+	activityRef: ActivityResponseDto;
 	results: unknown[];
+}
+
+interface ActivityResponseDto {
+	id: string;
+	title: string;
+	activityType: string;
+	definition: object;
+	tags: string[];
 }
 
 /**
@@ -26,13 +34,14 @@ export async function submitAnswer(sessionId: string, payload: SubmitPayload): P
 	const participantId = getParticipantId();
 	let answerJson: object;
 
-	// Construct the correct answer object based on the activity type
 	switch (payload.activityType) {
 		case 'poll':
 			answerJson = { selectedOptionId: payload.value };
 			break;
 		case 'multiple_choice':
-			answerJson = { selectedOptionIds: [payload.value] };
+			answerJson = {
+				selectedOptionIds: Array.isArray(payload.value) ? payload.value : [payload.value]
+			};
 			break;
 		case 'open_ended':
 			answerJson = { text: payload.value };
@@ -74,9 +83,19 @@ export async function getActivityResults(
 	);
 	if (!response.ok) return null;
 	const dto: ActivityResultDto = await response.json();
+
+	// Correctly map the DTO to the client-side Activity type
+	const activity: Activity = {
+		id: dto.activityRef.id,
+		title: dto.activityRef.title,
+		type: dto.activityRef.activityType as StaticActivityType,
+		definition: dto.activityRef.definition,
+		tags: dto.activityRef.tags
+	};
+
 	return {
-		activityRef: dto.activityRef,
-		baseActivityType: dto.activityRef.type,
+		activityRef: activity,
+		baseActivityType: activity.type,
 		results: dto.results
 	};
 }

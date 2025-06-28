@@ -8,6 +8,6 @@ namespace server.Services
         Task<IEnumerable<AnswerResponseDto>> GetAnswersForActivityAsync(Guid sessionId, Guid activityId, Guid ownerId);
         Task<IEnumerable<AnswerResponseDto>> GetAllAnswersForSessionAsync(Guid sessionId, Guid ownerId);
         Task<IEnumerable<ActivityResultDto>> GetAggregatedResultsForSessionAsync(Guid sessionId, Guid ownerId);
-        Task<ActivityResultDto?> GetAggregatedResultsForActivityAsync(Guid sessionId, Guid activityId, Guid ownerId);
+        Task<ActivityResultDto?> GetAggregatedResultsForActivityAsync(Guid sessionId, Guid activityId);
     }
 }

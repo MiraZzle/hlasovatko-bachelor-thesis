@@ -31,12 +31,16 @@
 	let isLoading = $state(true);
 	let errorMessage: string | null = $state(null);
 
-	let statePollInterval: any;
-	let resultsPollInterval: any;
+	let statePollTimeoutId: any;
+	let resultsPollTimeoutId: any;
 
 	let isStudentPaced = $state(false);
 	let hasSubmitted = $state(false);
 	let showResults = $state(true);
+
+	const STATE_POLLING_INTERVAL = 3000;
+	const RESULTS_POLLING_INTERVAL = 5000;
+	const JITTER_AMOUNT = 1000; // Max random jitter in ms
 
 	onMount(async () => {
 		sessionInfo = await getSessionById(session_id);
@@ -53,8 +57,7 @@
 		isLoading = false;
 
 		if (!isStudentPaced) {
-			pollState();
-			statePollInterval = setInterval(pollState, 3000);
+			pollStateWithJitter();
 		}
 
 		if (sessionState) {
@@ -63,8 +66,9 @@
 	});
 
 	onDestroy(() => {
-		clearInterval(statePollInterval);
-		clearInterval(resultsPollInterval);
+		// Clear the timeouts when the component is destroyed
+		clearTimeout(statePollTimeoutId);
+		clearTimeout(resultsPollTimeoutId);
 	});
 
 	$effect(() => {
@@ -93,25 +97,35 @@
 	});
 
 	$effect(() => {
-		clearInterval(resultsPollInterval);
+		clearTimeout(resultsPollTimeoutId);
 		currentResults = null;
 
 		if (showResults && currentActivity && sessionInfo) {
 			if (isStudentPaced && !hasSubmitted) return;
-
-			pollResults();
-			resultsPollInterval = setInterval(pollResults, 5000);
+			pollResultsWithJitter();
 		}
 	});
 
-	async function pollState() {
+	/**
+	 * Fetches the session state
+	 */
+	async function pollStateWithJitter() {
 		sessionState = await getSessionState(session_id);
+
+		const jitter = Math.random() * JITTER_AMOUNT;
+		statePollTimeoutId = setTimeout(pollStateWithJitter, STATE_POLLING_INTERVAL + jitter);
 	}
 
-	async function pollResults() {
+	/**
+	 * Fetches activity results
+	 */
+	async function pollResultsWithJitter() {
 		if (currentActivity) {
 			currentResults = await getActivityResults(session_id, currentActivity.id);
 		}
+
+		const jitter = Math.random() * JITTER_AMOUNT;
+		resultsPollTimeoutId = setTimeout(pollResultsWithJitter, RESULTS_POLLING_INTERVAL + jitter);
 	}
 
 	async function handleActivitySubmit(payload: SubmitPayload) {
@@ -130,10 +144,6 @@
 
 	function goToNext() {
 		if (studentPacedIndex < allActivities.length - 1) studentPacedIndex++;
-	}
-
-	function goToPrev() {
-		if (studentPacedIndex > 0) studentPacedIndex--;
 	}
 </script>
 
@@ -178,7 +188,6 @@
 
 		{#if isStudentPaced}
 			<footer class="participate-page__footer">
-				<Button onclick={goToPrev} disabled={studentPacedIndex === 0}>Previous</Button>
 				<Button onclick={goToNext} disabled={studentPacedIndex >= allActivities.length - 1}
 					>Next</Button
 				>
@@ -189,7 +198,8 @@
 
 <style lang="scss">
 	.participate-page {
-		max-width: 768px;
+		max-width: $container-max-width-sm;
+		width: 100%;
 		margin: 2rem auto;
 		padding: 2rem;
 		font-family: sans-serif;
@@ -212,53 +222,11 @@
 			}
 		}
 
-		&__results-control {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 1.5rem;
-			padding: 1.5rem;
-			border: 1px dashed #ccc;
-			border-radius: 8px;
-			background-color: #fafafa;
-		}
-
-		&__results-display {
-			width: 100%;
-		}
-
 		&__footer {
 			margin-top: 1rem;
 			display: flex;
 			flex-direction: column;
 			gap: 1.5rem;
-		}
-
-		&__navigation {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 1rem;
-			background-color: #f8f9fa;
-			border-radius: 8px;
-		}
-
-		&__results-viewer {
-			background-color: #2d2d2d;
-			color: #f1f1f1;
-			border-radius: 8px;
-			padding: 1rem;
-
-			h3 {
-				margin: 0 0 1rem;
-				border-bottom: 1px solid #444;
-				padding-bottom: 0.5rem;
-			}
-
-			pre {
-				white-space: pre-wrap;
-				word-wrap: break-word;
-			}
 		}
 	}
 </style>

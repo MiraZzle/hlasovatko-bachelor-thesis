@@ -73,8 +73,7 @@ namespace server.Controllers
         [HttpGet("session/{sessionId:guid}/activity/{activityId:guid}/results")]
         [AllowAnonymous]
         public async Task<IActionResult> GetActivityResults(Guid sessionId, Guid activityId) {
-            var ownerId = GetCurrentUserId();
-            var result = await _answerService.GetAggregatedResultsForActivityAsync(sessionId, activityId, ownerId);
+            var result = await _answerService.GetAggregatedResultsForActivityAsync(sessionId, activityId);
             return result == null ? NotFound() : Ok(result);
         }
     }
