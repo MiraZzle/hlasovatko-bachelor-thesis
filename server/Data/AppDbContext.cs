@@ -2,6 +2,7 @@
 using server.Entities;
 using server.Models;
 using server.Models.Activities;
+using server.Models.Answers;
 using server.Models.Auth;
 using server.Models.Auth.server.Models.Auth;
 using server.Models.Templates;
@@ -19,6 +20,7 @@ namespace server.Data
         public DbSet<ApiKey> ApiKeys { get; set; }
         public DbSet<Template> Templates { get; set; }
         public DbSet<TemplateSettings> TemplateSettings { get; set; }
+        public DbSet<Answer> Answers { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);

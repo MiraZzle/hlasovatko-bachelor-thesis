@@ -31,7 +31,6 @@
   <ItemGroup>
     <Folder Include="Factories\" />
     <Folder Include="Models\Analytics\" />
-    <Folder Include="Schemas\Activities\" />
     <Folder Include="Tests\" />
   </ItemGroup>
 

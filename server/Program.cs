@@ -6,6 +6,8 @@ using server.Auth;
 using server.Data;
 using server.Services;
 using System.Text;
+using server.Services.Analytics;
+using server.Services.Analytics.Processors;
 
 namespace server
 {
@@ -68,6 +70,14 @@ namespace server
             builder.Services.AddScoped<IActivityService, ActivityService>();
             builder.Services.AddScoped<ISessionService, SessionService>();
             builder.Services.AddScoped<ITemplateService, TemplateService>();
+            builder.Services.AddScoped<IAnswerService, AnswerService>();
+
+            // Register analytics processor
+            builder.Services.AddScoped<IAnalyticsProcessor, AnalyticsProcessor>();
+            builder.Services.AddScoped<IActivityResultProcessor, PollResultProcessor>();
+            builder.Services.AddScoped<IActivityResultProcessor, MultipleChoiceResultProcessor>();
+            builder.Services.AddScoped<IActivityResultProcessor, OpenEndedResultProcessor>();
+            builder.Services.AddScoped<IActivityResultProcessor, ScaleRatingResultProcessor>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
