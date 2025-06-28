@@ -8,7 +8,6 @@ namespace server.Controllers
 {
     [Route("api/v1/session")]
     [ApiController]
-    [Authorize(Policy = "AuthenticatedUser")]
     public class SessionController : ControllerBase
     {
         private readonly ISessionService _sessionService;
@@ -25,7 +24,24 @@ namespace server.Controllers
             return userId;
         }
 
+        [HttpGet("join/{joinCode}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetSessionByJoinCode(string joinCode) {
+            var session = await _sessionService.GetSessionByJoinCodeAsync(joinCode);
+            if (session == null)
+                return NotFound();
+            return Ok(new { id = session.Id, title = session.Title, mode = session.Mode });
+        }
+
+        [HttpGet("{sessionId:guid}/state")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetParticipantSessionState(Guid sessionId) {
+            var state = await _sessionService.GetParticipantSessionStateAsync(sessionId);
+            return state == null ? NotFound(new { message = "Session not found or is not active." }) : Ok(state);
+        }
+
         [HttpPost]
+        [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> CreateSession([FromBody] CreateSessionRequestDto request) {
             try {
                 var ownerId = GetCurrentUserId();
@@ -38,6 +54,7 @@ namespace server.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> GetAllSessions() {
             var ownerId = GetCurrentUserId();
             var sessions = await _sessionService.GetAllSessionsAsync(ownerId);
@@ -45,6 +62,7 @@ namespace server.Controllers
         }
 
         [HttpGet("template/{templateId:guid}")]
+        [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> GetSessionsByTemplate(Guid templateId) {
             var ownerId = GetCurrentUserId();
             var sessions = await _sessionService.GetSessionsByTemplateAsync(templateId, ownerId);
@@ -53,15 +71,14 @@ namespace server.Controllers
 
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetSessionById(Guid id) {
-            var ownerId = GetCurrentUserId();
-            var session = await _sessionService.GetSessionByIdAsync(id, ownerId);
+            var session = await _sessionService.GetSessionByIdAsync(id);
             return session == null ? NotFound() : Ok(session);
         }
 
         [HttpGet("{id:guid}/activities")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetSessionActivities(Guid id) {
-            var ownerId = GetCurrentUserId();
-            var activities = await _sessionService.GetSessionActivitiesAsync(id, ownerId);
+            var activities = await _sessionService.GetSessionActivitiesAsync(id);
 
             if (activities == null) {
                 return NotFound(new { message = "Session not found or you are not authorized to view its activities." });
@@ -71,6 +88,7 @@ namespace server.Controllers
         }
 
         [HttpPost("{id:guid}/start")]
+        [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> StartSession(Guid id) {
             var ownerId = GetCurrentUserId();
             var session = await _sessionService.StartSessionAsync(id, ownerId);
@@ -78,6 +96,7 @@ namespace server.Controllers
         }
 
         [HttpPost("{id:guid}/stop")]
+        [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> StopSession(Guid id) {
             var ownerId = GetCurrentUserId();
             var session = await _sessionService.StopSessionAsync(id, ownerId);
@@ -85,6 +104,7 @@ namespace server.Controllers
         }
 
         [HttpPost("{id:guid}/next")]
+        [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> NextActivity(Guid id) {
             var ownerId = GetCurrentUserId();
             var session = await _sessionService.NextActivityAsync(id, ownerId);

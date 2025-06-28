@@ -17,12 +17,12 @@ namespace server.Services
             _context = context;
         }
 
-        public async Task<SessionResponseDto?> GetSessionByIdAsync(Guid sessionId, Guid ownerId) {
+        public async Task<SessionResponseDto?> GetSessionByIdAsync(Guid sessionId) {
             var session = await _context.Sessions
                 .Include(s => s.Template)
                 .Include(s => s.Activities)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == sessionId && s.Template.OwnerId == ownerId);
+                .FirstOrDefaultAsync(s => s.Id == sessionId);
 
             return session == null ? null : MapSessionToDto(session);
         }
@@ -132,6 +132,32 @@ namespace server.Services
                 .FirstOrDefaultAsync(s => s.Id == sessionId && s.Template.OwnerId == ownerId);
         }
 
+        public async Task<SessionResponseDto?> GetSessionByJoinCodeAsync(string joinCode) {
+            var session = await _context.Sessions
+               .Include(s => s.Template)
+               .Include(s => s.Activities)
+               .AsNoTracking()
+               .FirstOrDefaultAsync(s => s.JoinCode == joinCode);
+
+            return session == null ? null : MapSessionToDto(session);
+        }
+
+        public async Task<ParticipantSessionStateDto?> GetParticipantSessionStateAsync(Guid sessionId) {
+            return await _context.Sessions
+                .Where(s => s.Id == sessionId)
+                .Select(s => new ParticipantSessionStateDto {
+                    SessionId = s.Id,
+                    Status = s.Status,
+                    CurrentActivityId = s.Activities
+                                         .OrderBy(a => a.Id)
+                                         .Skip(s.CurrentActivity ?? -1)
+                                         .Select(a => (Guid?)a.Id)
+                                         .FirstOrDefault(),
+                    ShowResults = s.Template.Settings.ResultsVisibleDefault
+                })
+                .FirstOrDefaultAsync();
+        }
+
         private async Task<string> GenerateUniqueJoinCode() {
             const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
             var random = new Random();
@@ -167,12 +193,12 @@ namespace server.Services
             };
         }
 
-        public async Task<IEnumerable<ActivityResponseDto>?> GetSessionActivitiesAsync(Guid sessionId, Guid ownerId) {
+        public async Task<IEnumerable<ActivityResponseDto>?> GetSessionActivitiesAsync(Guid sessionId) {
             var session = await _context.Sessions
                 .Include(s => s.Template)
                 .Include(s => s.Activities)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == sessionId && s.Template.OwnerId == ownerId);
+                .FirstOrDefaultAsync(s => s.Id == sessionId);
 
             if (session == null) {
                 return null;
