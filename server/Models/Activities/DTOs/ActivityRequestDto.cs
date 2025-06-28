@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace server.Models.Activities.DTOs
 {
@@ -14,8 +15,8 @@ namespace server.Models.Activities.DTOs
         [Required]
         public string ActivityType { get; set; } = string.Empty;
 
-        [Required] // change this to json
-        public string Definition { get; set; } = "{}";
+        [Required]
+        public JsonElement Definition { get; set; }
         public List<string> Tags { get; set; } = new();
     }
 }

@@ -40,5 +40,7 @@ namespace server.Entities
         public int? CurrentActivity { get; set; }
 
         public int TemplateVersion { get; set; } = 0;
+
+
     }
 }
