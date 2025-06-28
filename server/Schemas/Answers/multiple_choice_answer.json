@@ -10,8 +10,7 @@
       "type": "array",
       "minItems": 1,
       "items": {
-        "type": "string",
-        "format": "uuid"
+        "type": "string"
       },
       "uniqueItems": true
     }

@@ -7,8 +7,7 @@
   "properties": {
     "selectedOptionId": {
       "description": "The unique identifier of the single option selected by the user.",
-      "type": "string",
-      "format": "uuid"
+      "type": "string"
     }
   },
   "required": [ "selectedOptionId" ]
