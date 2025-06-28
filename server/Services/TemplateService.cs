@@ -46,11 +46,11 @@ namespace server.Services
 
             var newActivities = new List<Activity>();
             foreach (var req in dto.Definition) {
-                await _activityService.ValidateActivityDefinitionAsync(req.ActivityType, req.Definition);
+                await _activityService.ValidateActivityDefinitionAsync(req.ActivityType, req.Definition.ToString());
                 newActivities.Add(new Activity {
                     Title = req.Title,
                     ActivityType = req.ActivityType,
-                    Definition = req.Definition,
+                    Definition = req.Definition.ToString(),
                     Tags = req.Tags,
                 });
             }
@@ -66,11 +66,11 @@ namespace server.Services
         public async Task<TemplateResponseDto> CreateTemplateAsync(CreateTemplateRequestDto templateDto, Guid ownerId) {
             var activitiesForTemplate = new List<Activity>();
             foreach (var activityRequest in templateDto.Activities) {
-                await _activityService.ValidateActivityDefinitionAsync(activityRequest.ActivityType, activityRequest.Definition);
+                await _activityService.ValidateActivityDefinitionAsync(activityRequest.ActivityType, activityRequest.Definition.ToString());
                 activitiesForTemplate.Add(new Activity {
                     Title = activityRequest.Title,
                     ActivityType = activityRequest.ActivityType,
-                    Definition = activityRequest.Definition,
+                    Definition = activityRequest.Definition.ToString(),
                     Tags = activityRequest.Tags,
                 });
             }
