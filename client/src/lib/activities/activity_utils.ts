@@ -1,77 +1,82 @@
-import type { Activity } from './types.ts';
-import type { SubmitPayload } from './definition_types.ts';
+import { API_URL } from '$lib/config';
+import type { Activity, ActivityResult } from '$lib/activities/types';
+import type { SubmitPayload } from '$lib/activities/definition_types';
 
-export function getActivitiesFromSession(sessionId: string): Activity[] {
-	console.log(`Fetching activities for session ${sessionId}`);
-
-	return [
-		{
-			id: 'sact1',
-			type: 'poll',
-			title: 'Which topic should we cover next?',
-			definition: {
-				type: 'Poll',
-				options: [
-					{ id: 'o1', text: 'Topic A' },
-					{ id: 'o2', text: 'Topic B' }
-				]
-			}
-		},
-		{
-			id: 'sact2',
-			type: 'multiple_choice',
-			title: 'What is the powerhouse of the cell?',
-			definition: {
-				type: 'MultipleChoice',
-				options: [
-					{ id: 'm1', text: 'Nucleus' },
-					{ id: 'm2', text: 'Ribosome' },
-					{ id: 'm3', text: 'Mitochondrion' },
-					{ id: 'm4', text: 'Chloroplast' }
-				],
-				correctOptionId: 'm3',
-				allowMultiple: false
-			}
-		},
-		{
-			id: 'sact3',
-			type: 'scale_rating',
-			title: 'Rate your understanding (1-5)',
-			definition: {
-				type: 'ScaleRating',
-				min: 1,
-				max: 5,
-				minLabel: 'Confused',
-				maxLabel: 'Confident'
-			}
-		},
-		{
-			id: 'sact4',
-			type: 'open_ended',
-			title: 'Any remaining questions?',
-			definition: { type: 'OpenEnded' }
-		},
-		{
-			id: 'sact5',
-			type: 'custom_activity',
-			title: 'Custom Activity Format',
-			definition: { customField: 'value', structure: { nested: true } }
-		}
-	];
+interface ActivityResultDto {
+	activityRef: Activity;
+	results: unknown[];
 }
 
-export function gotoNextActivity(sessionId: string, currentActivityId: string): void {
-	console.log(`Going to next activity for session ${sessionId} from activity ${currentActivityId}`);
+/**
+ * Gets or creates a unique participant ID for the current browser session.
+ */
+export function getParticipantId(): string {
+	let participantId = sessionStorage.getItem('participantId');
+	if (!participantId) {
+		participantId = crypto.randomUUID();
+		sessionStorage.setItem('participantId', participantId);
+	}
+	return participantId;
 }
 
-export function submitActivityAnswer(payload: SubmitPayload): Promise<boolean> {
-	console.log(`Submitting answer for activity ${payload.activityId}: ${payload.value}`);
+/**
+ * Submits an answer for an activity.
+ */
+export async function submitAnswer(sessionId: string, payload: SubmitPayload): Promise<boolean> {
+	const participantId = getParticipantId();
+	let answerJson: object;
 
-	return new Promise((resolve) => {
-		// Simulate an API call to submit the answer
-		setTimeout(() => {
-			console.log(`Answer for activity ${payload.activityId} submitted successfully.`);
-			resolve(true);
-		}, 500);
+	// Construct the correct answer object based on the activity type
+	switch (payload.activityType) {
+		case 'poll':
+			answerJson = { selectedOptionId: payload.value };
+			break;
+		case 'multiple_choice':
+			answerJson = { selectedOptionIds: [payload.value] };
+			break;
+		case 'open_ended':
+			answerJson = { text: payload.value };
+			break;
+		case 'scale_rating':
+			answerJson = { value: payload.value };
+			break;
+		default:
+			console.error(`Unknown activity type for submission: ${payload.activityType}`);
+			return false;
+	}
+
+	const response = await fetch(`${API_URL}/api/v1/answer/${sessionId}`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+			activityId: payload.activityId,
+			participantId: participantId,
+			answerJson: answerJson
+		})
 	});
+
+	if (!response.ok) {
+		const error = await response.json();
+		console.error('Answer submission failed:', error.message);
+	}
+	return response.ok;
+}
+
+/**
+ * Fetches the aggregated results for a single activity.
+ */
+export async function getActivityResults(
+	sessionId: string,
+	activityId: string
+): Promise<ActivityResult | null> {
+	const response = await fetch(
+		`${API_URL}/api/v1/answer/session/${sessionId}/activity/${activityId}/results`
+	);
+	if (!response.ok) return null;
+	const dto: ActivityResultDto = await response.json();
+	return {
+		activityRef: dto.activityRef,
+		baseActivityType: dto.activityRef.type,
+		results: dto.results
+	};
 }

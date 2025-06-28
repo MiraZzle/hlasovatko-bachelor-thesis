@@ -12,23 +12,22 @@ export interface Activity {
 	type: StaticActivityType;
 	title: string;
 	definition: object;
+	tags?: string[];
 }
 
-export interface PredefinedActivity {
+export interface ActivityResponse {
 	id: string;
-	refActivity: Activity;
-	categories: string[];
+	title: string;
+	activityType: string;
+	definition: object;
+	tags: string[];
 }
 
 export interface NewActivityData {
 	title: string;
 	type: StaticActivityType;
 	definition: object;
-	categories: string[];
-}
-
-export interface ActivityType {
-	name: string;
+	tags: string[];
 }
 
 export interface ActivityResult {

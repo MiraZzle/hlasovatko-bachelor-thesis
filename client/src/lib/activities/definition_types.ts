@@ -1,3 +1,4 @@
+import type { StaticActivityType } from '$lib/activities/types';
 export interface MultipleChoiceDefinition {
 	options: { id: string; text: string }[];
 	correctOptionId?: string | string[];
@@ -20,4 +21,5 @@ export type OpenEndedActivityResult = string[];
 export type SubmitPayload = {
 	activityId: string;
 	value: string | string[] | number | null;
+	activityType: StaticActivityType;
 };
