@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using server.Utils;
 
 namespace server.Services
 {
@@ -23,13 +24,15 @@ namespace server.Services
         }
 
         public async Task<ActivityResponseDto> AddToBankAsync(ActivityRequestDto dto, Guid ownerId) {
-            await ValidateActivityDefinition(dto.ActivityType, dto.Definition);
+            // Re-serialize the JsonElement to a string for validation and storage.
+            var definitionJson = JsonSerializer.Serialize(dto.Definition);
+            await ValidateActivityDefinitionAsync(dto.ActivityType, definitionJson);
 
             var activity = new BankActivity {
                 OwnerId = ownerId,
                 Title = dto.Title,
                 ActivityType = dto.ActivityType,
-                Definition = dto.Definition,
+                Definition = definitionJson, // Save the stringified version
                 Tags = dto.Tags
             };
 
@@ -40,15 +43,13 @@ namespace server.Services
         }
 
         public async Task ValidateActivityDefinitionAsync(string activityType, string definitionJson) {
-            var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", $"{activityType}.json");
-            if (!File.Exists(schemaPath)) {
-                throw new Exception($"Schema for activity type '{activityType}' not found.");
-            }
-            var schema = await JsonSchema.FromJsonAsync(await File.ReadAllTextAsync(schemaPath));
-            var errors = schema.Validate(definitionJson);
-            if (errors.Any()) {
-                throw new Exception($"Invalid activity definition: {string.Join(", ", errors.Select(e => e.Path + ": " + e.Kind))}");
-            }
+            var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", "Activities", $"{activityType}.json");
+            await JsonSchemaValidator.ValidateAsync(definitionJson, schemaPath, "activity definition", _logger);
+        }
+
+        public async Task ValidateAnswerDefinitionAsync(string activityType, string answerJson) {
+            var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", "Answers", $"{activityType}_answer.json");
+            await JsonSchemaValidator.ValidateAsync(answerJson, schemaPath, "answer definition", _logger);
         }
 
         public async Task<IEnumerable<ActivityResponseDto>> GetBankAsync(Guid ownerId) {

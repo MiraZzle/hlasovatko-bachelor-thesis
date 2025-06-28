@@ -9,5 +9,6 @@ namespace server.Services
         Task<IEnumerable<ActivityResponseDto>> GetBankAsync(Guid ownerId);
         Task ValidateActivityDefinitionAsync(string activityType, string definition);
         ActivityResponseDto MapActivityToDto(IActivity activity);
+        Task ValidateAnswerDefinitionAsync(string activityType, string answerJson);
     }
 }
