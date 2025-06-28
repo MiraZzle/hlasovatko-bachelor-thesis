@@ -1,13 +1,20 @@
-import type { TimeFrame } from './types';
-import type { ActivityResult } from '../activities/types';
+import type { TimeFrame } from '$lib/analytics/types';
+import type { ActivityResult, StaticActivityType } from '$lib/activities/types';
+import { getToken } from '$lib/auth/auth';
+import { API_URL } from '$lib/config';
+import type { Activity } from '$lib/activities/types';
+interface ActivityResponseDto {
+	id: string;
+	title: string;
+	activityType: string;
+	definition: object;
+	tags: string[];
+}
 
-export function getSupportedTimeFrames() {}
-
-export function getSupportedExportFormats() {}
-
-export function exportAnalyticsByFormat() {}
-
-export function getAnalyticsData() {}
+interface ActivityResultDto {
+	activityRef: ActivityResponseDto;
+	results: unknown[];
+}
 
 export function getTotalResponses(timeFrame: TimeFrame): number {
 	console.log(`Fetching total responses for time frame: ${timeFrame}`);
@@ -22,97 +29,54 @@ export function getTotalNumberOfSessions(timeFrame: TimeFrame): number {
 	return 10;
 }
 
-export function getActivityResultsForSession(sessionId: string): ActivityResult[] {
-	console.log(`Fetching activity results for session ${sessionId}`);
+/**
+ * Fetches and processes the aggregated results for all activities in a given session.
+ * @param sessionId The ID of the session to get results for.
+ * @returns A promise that resolves to an array of ActivityResult objects.
+ */
+export async function getActivityResultsForSession(sessionId: string): Promise<ActivityResult[]> {
+	const token = getToken();
+	if (!token) {
+		console.error('Authentication token not found.');
+		return [];
+	}
 
-	return [
-		{
-			activityRef: {
-				id: 'sact1',
-				type: 'poll',
-				title: 'Which topic should we cover next?',
-				definition: {
-					type: 'Poll',
-					options: [
-						{ id: 'o1', text: 'Topic A' },
-						{ id: 'o2', text: 'Topic B' }
-					]
-				}
-			},
-			baseActivityType: 'poll',
-			results: [
-				{ id: 'o1', text: 'Topic A', count: 12 },
-				{ id: 'o2', text: 'Topic B', count: 6 }
-			]
-		},
-		{
-			activityRef: {
-				id: 'sact2',
-				type: 'multiple_choice',
-				title: 'What is the powerhouse of the cell?',
-				definition: {
-					type: 'MultipleChoice',
-					options: [
-						{ id: 'm1', text: 'Nucleus' },
-						{ id: 'm2', text: 'Ribosome' },
-						{ id: 'm3', text: 'Mitochondrion' }
-					],
-					correctOptionId: 'm3'
-				}
-			},
-			baseActivityType: 'multiple_choice',
-			results: [
-				{ id: 'm1', text: 'Nucleus', count: 2 },
-				{ id: 'm2', text: 'Ribosome', count: 1 },
-				{ id: 'm3', text: 'Mitochondrion', count: 16 }
-			]
-		},
-		{
-			activityRef: {
-				id: 'sact3',
-				type: 'scale_rating',
-				title: 'Rate your understanding (1-5)',
-				definition: {
-					type: 'ScaleRating',
-					min: 1,
-					max: 5,
-					minLabel: 'Confused',
-					maxLabel: 'Confident'
-				}
-			},
-			baseActivityType: 'scale_rating',
-			results: [
-				{ rating: 1, count: 0 },
-				{ rating: 2, count: 1 },
-				{ rating: 3, count: 5 },
-				{ rating: 4, count: 8 },
-				{ rating: 5, count: 3 }
-			]
-		},
-		{
-			activityRef: {
-				id: 'sact4',
-				type: 'open_ended',
-				title: 'Any remaining questions?',
-				definition: { type: 'OpenEnded' }
-			},
-			baseActivityType: 'open_ended',
-			results: [
-				'No questions.',
-				'Explain slide 10 again.',
-				'Can we have more examples?',
-				'None',
-				'What is the deadline?'
-			]
-		},
-		{
-			activityRef: {
-				id: 'sact5',
-				type: 'custom_activity',
-				title: 'Custom Activity Format',
-				definition: { customField: 'value', structure: { nested: true } }
-			},
-			results: []
+	try {
+		const response = await fetch(`${API_URL}/api/v1/answer/session/${sessionId}/results`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		if (!response.ok) {
+			const errorText = await response.text();
+			console.error(
+				`Failed to fetch activity results for session ${sessionId}:`,
+				response.status,
+				errorText
+			);
+			return [];
 		}
-	];
+
+		const resultsDto: ActivityResultDto[] = await response.json();
+		return resultsDto.map((dto) => {
+			const activity: Activity = {
+				id: dto.activityRef.id,
+				title: dto.activityRef.title,
+				type: dto.activityRef.activityType as StaticActivityType,
+				definition: dto.activityRef.definition,
+				tags: dto.activityRef.tags
+			};
+
+			return {
+				activityRef: activity,
+				baseActivityType: activity.type,
+				results: dto.results
+			};
+		});
+	} catch (err) {
+		console.error(`API error when fetching activity results for session ${sessionId}:`, err);
+		return [];
+	}
 }

@@ -10,11 +10,7 @@
 	import OpenEndedInput from './OpenEndedInput.svelte';
 	import ScaleRatingInput from './ScaleRatingInput.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
-
-	type SubmitPayload = {
-		activityId: string;
-		value: string | string[] | number | null;
-	};
+	import type { SubmitPayload } from '$lib/activities/definition_types';
 
 	let {
 		activity,
@@ -73,7 +69,8 @@
 
 		onSubmit?.({
 			activityId: activity.id,
-			value: value
+			value: value,
+			activityType: activity.type
 		});
 	}
 </script>

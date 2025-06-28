@@ -25,6 +25,8 @@ export async function addActivityToBank(activityData: {
 	const token = getToken();
 	if (!token) return null;
 
+	console.log('Adding activity to bank:', activityData);
+
 	try {
 		const res = await fetch(`${API_URL}/api/v1/activity-bank`, {
 			method: 'POST',
@@ -35,7 +37,7 @@ export async function addActivityToBank(activityData: {
 			body: JSON.stringify({
 				title: activityData.title,
 				activityType: activityData.type,
-				definition: JSON.stringify(activityData.definition),
+				definition: activityData.definition,
 				tags: activityData.tags
 			})
 		});
