@@ -1,5 +1,4 @@
 import { browser } from '$app/environment';
-import { goto } from '$app/navigation';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ url }) => {
@@ -8,11 +7,12 @@ export const load: LayoutLoad = async ({ url }) => {
 
 		if (token) {
 			console.log('JWT token found in URL, saving to local storage.');
-			localStorage.setItem('jwt_token', token);
+			localStorage.setItem('token', token);
+
 			const newUrl = new URL(url);
 			newUrl.searchParams.delete('token');
 
-			await goto(newUrl.toString(), { replaceState: true });
+			history.replaceState(history.state, '', newUrl);
 		}
 	}
 

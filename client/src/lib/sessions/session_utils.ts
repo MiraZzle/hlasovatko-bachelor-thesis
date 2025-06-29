@@ -4,6 +4,7 @@ import type { SessionMode } from '$lib/shared_types';
 import { API_URL } from '$lib/config';
 import type { Activity, ActivityResponse } from '$lib/activities/types';
 import type { SessionJoinInfo } from './types';
+import { getToken } from '$lib/auth/auth';
 
 // Lightweight session state for polling.
 export interface ParticipantSessionState {
@@ -42,7 +43,8 @@ function mapResponseToSession(dto: SessionResponseDto): Session {
 		joinCode: dto.joinCode,
 		activationDate: dto.activationDate,
 		mode: dto.mode,
-		participants: dto.participants
+		participants: dto.participants,
+		currentActivity: dto.currentActivity ?? undefined
 	};
 }
 
@@ -155,6 +157,78 @@ export async function getSessionInfoByJoinCode(joinCode: string): Promise<Sessio
 		};
 	} catch (err) {
 		console.error('API error fetching session info:', err);
+		return null;
+	}
+}
+
+/**
+ * Sends a request to start a session.
+ */
+export async function startSession(sessionId: string): Promise<Session | null> {
+	const token = getToken();
+	try {
+		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/start`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		});
+		if (!response.ok) {
+			throw new Error('Failed to start session');
+		}
+		const sessionDto: SessionResponseDto = await response.json();
+		return mapResponseToSession(sessionDto);
+	} catch (error) {
+		console.error('Start session error:', error);
+		return null;
+	}
+}
+
+/**
+ * Sends a request to stop a session.
+ */
+export async function stopSession(sessionId: string): Promise<Session | null> {
+	const token = getToken();
+	try {
+		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/stop`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		});
+		if (!response.ok) {
+			throw new Error('Failed to stop session');
+		}
+		const sessionDto: SessionResponseDto = await response.json();
+		return mapResponseToSession(sessionDto);
+	} catch (error) {
+		console.error('Stop session error:', error);
+		return null;
+	}
+}
+
+/**
+ * Sends a request to advance to the next activity.
+ */
+export async function nextActivity(sessionId: string): Promise<Session | null> {
+	const token = getToken();
+	try {
+		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/next`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		});
+		if (!response.ok) {
+			throw new Error('Failed to advance to next activity');
+		}
+		const sessionDto: SessionResponseDto = await response.json();
+		return mapResponseToSession(sessionDto);
+	} catch (error) {
+		console.error('Next activity error:', error);
 		return null;
 	}
 }

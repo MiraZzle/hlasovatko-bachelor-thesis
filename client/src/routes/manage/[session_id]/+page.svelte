@@ -2,81 +2,128 @@
 	/**
 	 * @file Page for presenting a live session, showing the current activity,
 	 * upcoming activities, and completed activities. Manager redirects to this page
-	 * handle teh session flow.
+	 * to handle the session flow.
 	 */
 
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
-	import { getActivityResultsForSession } from '$lib/analytics/analytics_utils';
+	import { getActivityResults } from '$lib/activities/activity_utils';
 	import type { ActivityResult, Activity } from '$lib/activities/types';
 	import Button from '$components/elements/typography/Button.svelte';
 	import ActivityItemDisplay from '$components/activities/display/ActivityItemDisplay.svelte';
 	import SessionAnalyticsItem from '$components/analytics/SessionAnalyticsItem.svelte';
-	import { getSessionById } from '$lib/sessions/session_utils';
+	import {
+		getSessionById,
+		nextActivity,
+		getActivitiesFromSession
+	} from '$lib/sessions/session_utils';
+	import type { Session } from '$lib/sessions/types';
+	import { get } from 'svelte/store';
 
 	const session_id = $page.params.session_id;
-	const sessionInfo = $derived(getSessionById(session_id));
-	let sessionCode = $derived(sessionInfo?.joinCode ?? 'N/A');
-	let allActivityResults = $state<ActivityResult[]>([]);
-	let currentIndex = $state(-1);
 
-	/**
-	 * Retrieves the current activity results based on the current index.
-	 * If the index is out of bounds, it returns null.
-	 */
-	function getCurrentActivityResults(): ActivityResult | null {
-		return allActivityResults[currentIndex] ?? null;
+	// state management
+	let session = $state<Session | null>(null);
+	let activities = $state<Activity[]>([]);
+	let currentIndex = $state(0);
+	let isLoading = $state(true);
+	let isAdvancing = $state(false);
+	let sessionFinished = $state(false);
+
+	// for displau
+	let currentActivityResult = $state<ActivityResult | null>(null);
+	let currentActivity = $state<Activity | null>(null);
+	let upcomingActivities = $state<Activity[]>([]);
+	let completedActivities = $state<Activity[]>([]);
+	let advanceButtonText = $state('Loading...');
+
+	// polling
+	let resultsPollTimeoutId: any;
+	const RESULTS_POLLING_INTERVAL = 3000; // we can tinker with this - perhaps lower it?
+	const JITTER_AMOUNT = 1000;
+
+	onMount(async () => {
+		await loadInitialData();
+	});
+
+	async function loadInitialData() {
+		isLoading = true;
+		try {
+			session = await getSessionById(session_id);
+			if (session) {
+				activities = await getActivitiesFromSession(session_id);
+				currentIndex = session.currentActivity ?? 0;
+			}
+		} catch (error) {
+			console.error('Failed to load initial data:', error);
+		} finally {
+			isLoading = false;
+		}
 	}
 
-	let currentActivityResult = $derived(getCurrentActivityResults());
-	let currentActivity = $derived<Activity | null>(currentActivityResult?.activityRef ?? null);
-	let upcomingActivities = $derived(
-		currentIndex < allActivityResults.length - 1 ? allActivityResults.slice(currentIndex + 1) : []
-	);
-	let completedActivities = $derived(
-		currentIndex > 0 ? allActivityResults.slice(0, currentIndex) : []
-	);
+	onDestroy(() => {
+		clearTimeout(resultsPollTimeoutId);
+	});
 
-	// Fetch the session data in result format on mount
-	onMount(() => {
-		allActivityResults = getActivityResultsForSession(session_id);
+	$effect(() => {
+		currentActivity = activities[currentIndex];
+
+		//update the left panel
+		upcomingActivities = activities.slice(currentIndex + 1);
+		completedActivities = activities.slice(0, currentIndex);
+
+		if (currentIndex >= activities.length - 1 && !isLoading) {
+			advanceButtonText = 'All Activities Complete';
+			sessionFinished = true;
+		} else {
+			advanceButtonText = 'Next Activity';
+		}
+
+		clearTimeout(resultsPollTimeoutId);
+		pollResultsWithJitter();
 	});
 
 	/**
-	 * Determines the text for the advance button based on the current index
-	 * and the total number of activities.
+	 * Polls the results of the current activity with a random jitter
 	 */
-	function getAdvanceButtonText(): string {
-		if (currentIndex === -1) return 'Start Session';
-		if (currentIndex < allActivityResults.length - 1) return 'Next Activity →';
-		return 'End Session';
+	async function pollResultsWithJitter(): Promise<void> {
+		if (!currentActivity) return;
+
+		currentActivityResult = await getActivityResults(session_id, currentActivity.id);
+
+		const jitter = Math.random() * JITTER_AMOUNT;
+		resultsPollTimeoutId = setTimeout(pollResultsWithJitter, RESULTS_POLLING_INTERVAL + jitter);
 	}
 
-	let advanceButtonText = $derived(getAdvanceButtonText());
-
 	/**
-	 * Advances the session to the next activity in the queue. If it's the end of
-	 * the queue, it handles the session end.
+	 * Advances to the next activity in the session.
 	 */
-	function advanceToNext(): void {
-		if (currentIndex < allActivityResults.length - 1) {
-			currentIndex++;
-		} else {
-			alert('Session has ended!');
+	async function advanceToNext(): Promise<void> {
+		if (isAdvancing || currentIndex >= activities.length - 1) return;
+		isAdvancing = true;
+
+		try {
+			const updatedSession = await nextActivity(session_id);
+			if (updatedSession) {
+				session = updatedSession;
+				currentIndex = updatedSession.currentActivity ?? currentIndex;
+			}
+		} catch (error) {
+			console.error('Error going to next session', error);
+			alert('An error occurred');
+		} finally {
+			isAdvancing = false;
 		}
 	}
 </script>
 
 <svelte:head>
-	<title>EngaGenie | Manage Session {sessionInfo?.title}</title>
+	<title>EngaGenie | Manage Session {session?.title}</title>
 </svelte:head>
 
 <div class="live-session-page">
 	<header class="live-session-page__top-bar">
-		<div class="live-session-page__session-info">
-			<span>Session Code: <strong>{sessionCode}</strong></span>
-		</div>
-		<Button variant="primary" onclick={advanceToNext}>
+		<Button variant="primary" onclick={advanceToNext} disabled={isAdvancing || sessionFinished}>
 			{advanceButtonText}
 		</Button>
 	</header>
@@ -87,7 +134,7 @@
 			<!-- Current Activity in the Queue -->
 			{#if currentActivity}
 				<div class="queue-section">
-					<h3 class="queue-section__title">Active Activity</h3>
+					<h3 class="queue-section__title">Current Activity</h3>
 					<div class="queue-item queue-item--active">
 						<span class="queue-item__index">{currentIndex + 1}</span>
 						<span class="queue-item__title">{currentActivity.title}</span>
@@ -98,27 +145,25 @@
 			<!-- Upcoming Activities -->
 			{#if upcomingActivities.length > 0}
 				<div class="queue-section">
-					<h3 class="queue-section__title">Up Next</h3>
+					<h3 class="queue-section__title">Upcoming</h3>
 					<div class="queue-list">
-						{#each upcomingActivities as result, i (result.activityRef.id)}
+						{#each upcomingActivities as activityItem, i}
 							<div class="queue-item queue-item--pending">
 								<span class="queue-item__index">{currentIndex + i + 2}</span>
-								<span class="queue-item__title">{result.activityRef.title}</span>
+								<span class="queue-item__title">{activityItem.title}</span>
 							</div>
 						{/each}
 					</div>
 				</div>
 			{/if}
 
-			<!-- Completed Activities -->
 			{#if completedActivities.length > 0}
 				<div class="queue-section">
 					<h3 class="queue-section__title">Completed</h3>
 					<div class="queue-list">
-						{#each completedActivities as result (result.activityRef.id)}
+						{#each completedActivities as activityItem}
 							<div class="queue-item queue-item--closed">
-								<span class="queue-item__icon">✓</span>
-								<span class="queue-item__title">{result.activityRef.title}</span>
+								<span class="queue-item__title">{activityItem.title}</span>
 							</div>
 						{/each}
 					</div>
@@ -135,7 +180,7 @@
 						<ActivityItemDisplay activity={currentActivity} />
 					{:else}
 						<div class="placeholder">
-							<p>Click "Start Session" to begin.</p>
+							<p>Click "Start Session" to begin</p>
 						</div>
 					{/if}
 				</div>
@@ -143,13 +188,13 @@
 
 			<!-- Analytics Display -->
 			<section class="content-card">
-				<h2 class="content-card__title">Live Analytics</h2>
+				<h2 class="content-card__title">Live Answers</h2>
 				<div class="content-card__body">
 					{#if currentActivityResult}
 						<SessionAnalyticsItem activityResult={currentActivityResult} />
 					{:else}
 						<div class="placeholder">
-							<p>Results will appear here when an activity is active.</p>
+							<p>Results will appear here when an activity is active</p>
 						</div>
 					{/if}
 				</div>
@@ -177,15 +222,6 @@
 			position: sticky;
 			top: 0;
 			z-index: 10;
-		}
-
-		&__session-info {
-			font-size: $font-size-md;
-			color: $color-text-secondary;
-			strong {
-				color: $color-text-primary;
-				font-weight: $font-weight-semibold;
-			}
 		}
 
 		&__main-grid {
@@ -250,14 +286,14 @@
 			color: $color-text-secondary;
 		}
 		&--active {
-			background-color: lighten($color-info, 35%);
-			border-color: $color-info;
+			background-color: #e8e7f5;
+			border-color: $color-primary-light;
+			color: $color-primary-dark;
 			font-weight: $font-weight-semibold;
-			color: darken($color-info, 20%);
 		}
 		&--closed {
 			background-color: $color-surface-alt;
-			color: $color-text-secondary;
+			color: $color-text-disabled;
 			.queue-item__title {
 				text-decoration: line-through;
 			}
@@ -268,11 +304,7 @@
 			font-weight: $font-weight-semibold;
 			flex-shrink: 0;
 		}
-		&__icon {
-			font-weight: $font-weight-bold;
-			color: $color-success;
-			flex-shrink: 0;
-		}
+
 		&__title {
 			white-space: nowrap;
 			overflow: hidden;

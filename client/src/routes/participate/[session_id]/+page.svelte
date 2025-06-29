@@ -19,6 +19,7 @@
 
 	const session_id = $page.params.session_id;
 
+	// state management
 	let sessionInfo: Session | null = $state(null);
 	let allActivities: Activity[] = $state([]);
 	let currentActivity: Activity | null = $state(null);
@@ -38,6 +39,7 @@
 	let hasSubmitted = $state(false);
 	let showResults = $state(true);
 
+	// polling intervals
 	const STATE_POLLING_INTERVAL = 3000;
 	const RESULTS_POLLING_INTERVAL = 5000;
 	const JITTER_AMOUNT = 1000; // Max random jitter in ms
@@ -46,7 +48,7 @@
 		sessionInfo = await getSessionById(session_id);
 
 		if (!sessionInfo) {
-			errorMessage = 'Session not found.';
+			errorMessage = 'Session not found';
 			isLoading = false;
 			return;
 		}
@@ -66,7 +68,6 @@
 	});
 
 	onDestroy(() => {
-		// Clear the timeouts when the component is destroyed
 		clearTimeout(statePollTimeoutId);
 		clearTimeout(resultsPollTimeoutId);
 	});
