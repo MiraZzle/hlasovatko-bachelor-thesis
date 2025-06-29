@@ -25,40 +25,30 @@ namespace server.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
             base.OnModelCreating(modelBuilder);
 
-            // Let EF Core handle most relationships by convention,
-            // we will only specify the delete behavior.
-
-            // --- Define Cascade Deletes ---
-
-            // When a Template is deleted, its child Sessions are also deleted.
             modelBuilder.Entity<Template>()
-                .HasMany<Session>() // A Template has many Sessions
-                .WithOne(s => s.Template) // A Session has one Template
+                .HasMany<Session>() 
+                .WithOne(s => s.Template)
                 .HasForeignKey(s => s.TemplateId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // When a Session is deleted, its child Activities are also deleted.
             modelBuilder.Entity<Session>()
                 .HasMany(s => s.Activities)
-                .WithOne() // Activity has no navigation property back to Session
+                .WithOne() 
                 .HasForeignKey("SessionId")
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // When an Activity is deleted, its child Answers are also deleted.
             modelBuilder.Entity<Activity>()
-                .HasMany<Answer>() // Activity has no navigation property to Answer
-                .WithOne(a => a.Activity) // Answer has a navigation property to Activity
+                .HasMany<Answer>() 
+                .WithOne(a => a.Activity)
                 .HasForeignKey(a => a.ActivityId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // When a Template is deleted, its Definition (Activities) are also deleted.
             modelBuilder.Entity<Template>()
                 .HasMany(t => t.Definition)
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // --- Unique Indexes ---
             modelBuilder.Entity<Session>()
                 .HasIndex(s => s.JoinCode)
                 .IsUnique();

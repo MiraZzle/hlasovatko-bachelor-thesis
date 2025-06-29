@@ -30,7 +30,6 @@
 
   <ItemGroup>
     <Folder Include="Factories\" />
-    <Folder Include="Models\Analytics\" />
     <Folder Include="Tests\" />
   </ItemGroup>
 

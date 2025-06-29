@@ -51,6 +51,14 @@ namespace server
                         errorCodesToAdd: null);
                 }));
 
+            builder.Services.AddDbContextFactory<AppDbContext>(options =>
+                options.UseNpgsql(connectionString, npgsqlOptions => {
+                    npgsqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(10),
+                        errorCodesToAdd: null);
+                }));
+
             // Setup CORS to allow frontend clients
             var clientUrl = builder.Configuration["CLIENT_URL"] ?? "http://localhost:3000";
             var managerUrl = builder.Configuration["MANAGER_URL"] ?? "http://localhost:3001";
@@ -71,6 +79,7 @@ namespace server
             builder.Services.AddScoped<ISessionService, SessionService>();
             builder.Services.AddScoped<ITemplateService, TemplateService>();
             builder.Services.AddScoped<IAnswerService, AnswerService>();
+            builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 
             // Register analytics processor
             builder.Services.AddScoped<IAnalyticsProcessor, AnalyticsProcessor>();
