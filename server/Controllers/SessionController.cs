@@ -40,6 +40,19 @@ namespace server.Controllers
             return state == null ? NotFound(new { message = "Session not found or is not active." }) : Ok(state);
         }
 
+        [HttpDelete("{id:guid}")]
+        [Authorize(Policy = "AuthenticatedUser")]
+        public async Task<IActionResult> DeleteSession(Guid id) {
+            var ownerId = GetCurrentUserId();
+            var success = await _sessionService.DeleteSessionAsync(id, ownerId);
+
+            if (!success) {
+                return NotFound(new { message = "Session not found or you do not have permission to delete it." });
+            }
+
+            return NoContent();
+        }
+
         [HttpPost]
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> CreateSession([FromBody] CreateSessionRequestDto request) {

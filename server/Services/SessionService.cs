@@ -27,6 +27,18 @@ namespace server.Services
             return session == null ? null : MapSessionToDto(session);
         }
 
+        public async Task<bool> DeleteSessionAsync(Guid sessionId, Guid ownerId) {
+            var session = await _context.Sessions
+                .Include(s => s.Template)
+                .FirstOrDefaultAsync(s => s.Id == sessionId && s.Template.OwnerId == ownerId);
+            if (session == null) {
+                return false;
+            }
+            _context.Sessions.Remove(session);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<IEnumerable<SessionResponseDto>> GetAllSessionsAsync(Guid ownerId) {
             var sessions = await _context.Sessions
                 .Include(s => s.Template)

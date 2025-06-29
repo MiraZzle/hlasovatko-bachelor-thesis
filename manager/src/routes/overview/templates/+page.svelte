@@ -11,6 +11,7 @@
 	import type { Template } from '$lib/templates/types';
 	import { createNewTemplate } from '$lib/templates/template_utils';
 	import { onMount } from 'svelte';
+	import { deleteTemplate } from '$lib/templates/template_utils';
 
 	// state management
 	let searchTerm = $state('');
@@ -82,6 +83,15 @@
 		);
 	}
 
+	async function handleDeleteTemplate(templateId: string): Promise<void> {
+		const success = await deleteTemplate(templateId);
+		if (success) {
+			templates = templates.filter((t) => t.id !== templateId);
+		} else {
+			alert('Failed to delete template.');
+		}
+	}
+
 	let filteredTemplates = $derived(getFilteredTemplates());
 </script>
 
@@ -102,7 +112,7 @@
 		bind:currentPage
 	>
 		<svelte:fragment slot="row" let:item>
-			<TemplateRow template={item} />
+			<TemplateRow template={item} onDelete={() => handleDeleteTemplate(item.id)} />
 		</svelte:fragment>
 	</DataTable>
 

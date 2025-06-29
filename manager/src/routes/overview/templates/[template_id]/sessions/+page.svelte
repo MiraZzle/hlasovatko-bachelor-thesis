@@ -10,6 +10,7 @@
 	import { getSessionsByTemplate } from '$lib/sessions/session_utils';
 	import type { Session } from '$lib/sessions/types';
 	import { onMount } from 'svelte';
+	import { deleteSession } from '$lib/sessions/session_utils';
 
 	const templateId = $derived(page.params.template_id);
 
@@ -48,6 +49,15 @@
 		});
 	}
 
+	async function handleDeleteSession(sessionId: string): Promise<void> {
+		let deleteSuccesful = await deleteSession(sessionId);
+		if (deleteSuccesful) {
+			sessionsForTemplate = sessionsForTemplate.filter((session) => session.id !== sessionId);
+		} else {
+			console.error('Failed to delete session with ID:', sessionId);
+		}
+	}
+
 	let filteredSessions = $derived(getFilteredSessions());
 </script>
 
@@ -66,7 +76,7 @@
 		bind:currentPage
 	>
 		<svelte:fragment slot="row" let:item>
-			<SessionRow session={item} />
+			<SessionRow session={item} onDelete={() => handleDeleteSession(item.id)} />
 		</svelte:fragment>
 	</DataTable>
 </div>

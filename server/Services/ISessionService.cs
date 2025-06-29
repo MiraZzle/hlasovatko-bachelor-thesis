@@ -5,6 +5,7 @@ namespace server.Services
 {
     public interface ISessionService
     {
+        Task<bool> DeleteSessionAsync(Guid sessionId, Guid ownerId);
         Task<SessionResponseDto?> GetSessionByIdAsync(Guid sessionId);
         Task<IEnumerable<SessionResponseDto>> GetAllSessionsAsync(Guid ownerId);
         Task<IEnumerable<SessionResponseDto>> GetSessionsByTemplateAsync(Guid templateId, Guid ownerId);

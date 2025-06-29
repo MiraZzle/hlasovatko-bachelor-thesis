@@ -15,6 +15,7 @@
 	import { onMount } from 'svelte';
 	import { getAllTemplates } from '$lib/templates/template_utils';
 	import { get } from 'svelte/store';
+	import { deleteSession } from '$lib/sessions/session_utils';
 
 	// state management
 	let isCreateSessionModalOpen = $state(false);
@@ -69,6 +70,15 @@
 		isCreateSessionModalOpen = false;
 	}
 
+	async function handleDeleteSession(sessionId: string): Promise<void> {
+		let deleteSuccesful = await deleteSession(sessionId);
+		if (deleteSuccesful) {
+			sessions = sessions.filter((session) => session.id !== sessionId);
+		} else {
+			console.error('Failed to delete session with ID:', sessionId);
+		}
+	}
+
 	async function handleCreateSessionSubmit(
 		templateId: string,
 		title: string,
@@ -104,7 +114,7 @@
 		newItemLabel="Add new Session"
 	>
 		<svelte:fragment slot="row" let:item>
-			<SessionRow session={item} />
+			<SessionRow session={item} onDelete={() => handleDeleteSession(item.id)} />
 		</svelte:fragment>
 	</DataTable>
 

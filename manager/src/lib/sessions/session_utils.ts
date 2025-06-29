@@ -227,3 +227,27 @@ export async function stopSession(sessionId: string): Promise<Session> {
 	const sessionDto: SessionResponseDto = await response.json();
 	return mapResponseToSession(sessionDto);
 }
+
+/**
+ * Deletes a session by its ID.
+ * @param sessionId The ID of the session to delete.
+ * @returns True on success, false otherwise.
+ */
+export async function deleteSession(sessionId: string): Promise<boolean> {
+	const token = getToken();
+	if (!token) return false;
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/session/${sessionId}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		return res.ok;
+	} catch (err) {
+		console.error('Delete session API error:', err);
+		return false;
+	}
+}
