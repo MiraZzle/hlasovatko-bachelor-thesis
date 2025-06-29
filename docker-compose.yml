@@ -53,6 +53,9 @@ services:
       - ConnectionStrings__DefaultConnection=Host=db;Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
       - Jwt__Key=${JWT_SECRET}
       - Jwt__Issuer=${JWT_ISSUER}
+      - A_USER_EMAIL=${A_USER_EMAIL}
+      - A_USER_PASSWORD=${A_USER_PASSWORD}
+      - A_USER_NAME=${A_USER_NAME}
 
   # PostgreSQL database
   db:

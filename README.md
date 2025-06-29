@@ -39,6 +39,11 @@ JWT_EXPIRATION=1h
 DB_USER=postgres
 DB_PASSWORD=1234
 DB_NAME=engagenie
+
+# Initial user login credentials - used for demonstration purposes
+A_USER_EMAIL=admin@example.com
+A_USER_PASSWORD=admin123456
+A_USER_NAME="Admin Veliky"
 ```
 
 Finally, run the following commands to build and start the application:
@@ -51,6 +56,7 @@ docker compose up
 The applications will be available at the following URLs:
 
 - **Manager (teacher):** [http://localhost/](https://www.google.com/search?q=http://localhost/)
+  > Demo: You can login with the A_USER_EMAIL and A_USER_PASSWORD credentials.
 - **Client (student):** [http://localhost/engage](https://www.google.com/search?q=http://localhost/engage)
 - **Backend API:** [http://localhost/api](https://www.google.com/search?q=http://localhost/api)
 - **Adminer (DB UI):** [http://localhost:8085](https://www.google.com/search?q=http://localhost:8085)

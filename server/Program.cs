@@ -13,7 +13,7 @@ namespace server
 {
     public class Program
     {
-        public static void Main(string[] args) {
+        public static async Task Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
 
             // Setup auth
@@ -100,6 +100,8 @@ namespace server
                     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                     dbContext.Database.Migrate();
                 }
+
+                await DataSeeder.SeedAdminUserAsync(app);
             }
             catch (Exception ex) {
                 var logger = app.Services.GetRequiredService<ILogger<Program>>();
