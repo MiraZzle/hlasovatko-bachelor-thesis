@@ -28,13 +28,14 @@ BACKEND_PORT=5000
 DB_PORT=5432
 ADMINER_PORT=8085
 
-VITE_BACKEND_URL=http://localhost/api
+VITE_BACKEND_URL=http://localhost/server
 VITE_MANAGER_URL=http://localhost/
 VITE_CLIENT_URL=http://localhost/engage
 
 #At least 16 characters
 JWT_SECRET=ABCDEFGHIJKLMNOPQRSTUVWXYZ
 JWT_EXPIRATION=1h
+JWT_ISSUER=http://localhost/server
 
 DB_USER=postgres
 DB_PASSWORD=1234
@@ -58,7 +59,7 @@ The applications will be available at the following URLs:
 - **Manager (teacher):** [http://localhost/](https://www.google.com/search?q=http://localhost/)
   > Demo: You can login with the A_USER_EMAIL and A_USER_PASSWORD credentials.
 - **Client (student):** [http://localhost/engage](https://www.google.com/search?q=http://localhost/engage)
-- **Backend API:** [http://localhost/api](https://www.google.com/search?q=http://localhost/api)
+- **Backend API:** [http://localhost/server](https://www.google.com/search?q=http://localhost/server)
 - **Adminer (DB UI):** [http://localhost:8085](https://www.google.com/search?q=http://localhost:8085)
 
 ## Contributing
