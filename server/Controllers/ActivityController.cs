@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using server.Models.Activities.DTOs;
 using server.Services;
 using System.Security.Claims;
+using server.Extensions;
 
 namespace server.Controllers
 {
@@ -17,17 +18,9 @@ namespace server.Controllers
             _activityService = activityService;
         }
 
-        private Guid GetCurrentUserId() {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId)) {
-                throw new InvalidOperationException("User ID could not be determined from token.");
-            }
-            return userId;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetActivityBank() {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var activities = await _activityService.GetBankAsync(ownerId);
             return Ok(activities);
         }
@@ -35,7 +28,7 @@ namespace server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToBank([FromBody] ActivityRequestDto request) {
             try {
-                var ownerId = GetCurrentUserId();
+                var ownerId = this.GetCurrentUserId();
                 var newActivity = await _activityService.AddToBankAsync(request, ownerId);
                 return CreatedAtAction(nameof(GetActivityBank), new { id = newActivity.Id }, newActivity);
             }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using server.Models.Sessions.DTOs;
 using server.Services;
 using System.Security.Claims;
+using server.Extensions;
 
 namespace server.Controllers
 {
@@ -14,14 +15,6 @@ namespace server.Controllers
 
         public SessionController(ISessionService sessionService) {
             _sessionService = sessionService;
-        }
-
-        private Guid GetCurrentUserId() {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId)) {
-                throw new InvalidOperationException("User ID could not be determined from the token.");
-            }
-            return userId;
         }
 
         [HttpGet("join/{joinCode}")]
@@ -43,7 +36,7 @@ namespace server.Controllers
         [HttpDelete("{id:guid}")]
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> DeleteSession(Guid id) {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var success = await _sessionService.DeleteSessionAsync(id, ownerId);
 
             if (!success) {
@@ -57,7 +50,7 @@ namespace server.Controllers
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> CreateSession([FromBody] CreateSessionRequestDto request) {
             try {
-                var ownerId = GetCurrentUserId();
+                var ownerId = this.GetCurrentUserId();
                 var session = await _sessionService.CreateSessionFromTemplateAsync(request, ownerId);
                 return CreatedAtAction(nameof(GetSessionById), new { id = session.Id }, session);
             }
@@ -69,7 +62,7 @@ namespace server.Controllers
         [HttpGet]
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> GetAllSessions() {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var sessions = await _sessionService.GetAllSessionsAsync(ownerId);
             return Ok(sessions);
         }
@@ -77,7 +70,7 @@ namespace server.Controllers
         [HttpGet("template/{templateId:guid}")]
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> GetSessionsByTemplate(Guid templateId) {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var sessions = await _sessionService.GetSessionsByTemplateAsync(templateId, ownerId);
             return Ok(sessions);
         }
@@ -103,7 +96,7 @@ namespace server.Controllers
         [HttpPost("{id:guid}/start")]
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> StartSession(Guid id) {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var session = await _sessionService.StartSessionAsync(id, ownerId);
             return session == null ? NotFound(new { message = "Session not found or already active." }) : Ok(session);
         }
@@ -111,7 +104,7 @@ namespace server.Controllers
         [HttpPost("{id:guid}/stop")]
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> StopSession(Guid id) {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var session = await _sessionService.StopSessionAsync(id, ownerId);
             return session == null ? NotFound(new { message = "Session not found or already finished." }) : Ok(session);
         }
@@ -119,7 +112,7 @@ namespace server.Controllers
         [HttpPost("{id:guid}/next")]
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> NextActivity(Guid id) {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var session = await _sessionService.NextActivityAsync(id, ownerId);
             return session == null ? NotFound(new { message = "Session not found, not active, or on the last activity." }) : Ok(session);
         }

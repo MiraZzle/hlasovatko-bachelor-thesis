@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using server.Models.Templates.DTOs;
 using server.Services;
 using System.Security.Claims;
+using server.Extensions;
 
 namespace server.Controllers
 {
@@ -17,14 +18,6 @@ namespace server.Controllers
             _templateService = templateService;
         }
 
-        private Guid GetCurrentUserId() {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId)) {
-                throw new InvalidOperationException("User ID could not be determined from token.");
-            }
-            return userId;
-        }
-
         [HttpPost]
         public async Task<IActionResult> CreateTemplate([FromBody] CreateTemplateRequestDto request) {
             if (!ModelState.IsValid) {
@@ -32,7 +25,7 @@ namespace server.Controllers
             }
 
             try {
-                var ownerId = GetCurrentUserId();
+                var ownerId = this.GetCurrentUserId();
                 var newTemplate = await _templateService.CreateTemplateAsync(request, ownerId);
                 return CreatedAtAction(nameof(GetTemplate), new { id = newTemplate.Id }, newTemplate);
             }
@@ -50,7 +43,7 @@ namespace server.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllTemplatesForUser() {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var templates = await _templateService.GetAllTemplatesForUserAsync(ownerId);
             return Ok(templates);
         }
@@ -60,7 +53,7 @@ namespace server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var updatedTemplate = await _templateService.UpdateTemplateAsync(id, request, ownerId);
 
             if (updatedTemplate == null) {
@@ -74,7 +67,7 @@ namespace server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var updatedTemplate = await _templateService.UpdateTemplateSettingsAsync(id, request, ownerId);
 
             if (updatedTemplate == null) {
@@ -86,7 +79,7 @@ namespace server.Controllers
 
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteTemplate(Guid id) {
-            var ownerId = GetCurrentUserId();
+            var ownerId = this.GetCurrentUserId();
             var success = await _templateService.DeleteTemplateAsync(id, ownerId);
 
             if (!success) {

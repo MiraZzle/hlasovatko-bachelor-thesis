@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using server.Models.Auth;
+using server.Extensions;
 
 namespace server.Controllers
 {
@@ -18,14 +19,6 @@ namespace server.Controllers
 
         public AuthController(IAuthService authService) {
             _authService = authService;
-        }
-
-        private Guid GetCurrentUserId() {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId)) {
-                throw new InvalidOperationException("User ID could not be determined from token.");
-            }
-            return userId;
         }
 
         [HttpPost("register")]
@@ -68,7 +61,7 @@ namespace server.Controllers
             }
 
             try {
-                var userId = GetCurrentUserId();
+                var userId = this.GetCurrentUserId();
                 var success = await _authService.ChangePasswordAsync(userId, request);
                 if (success) {
                     return Ok(new { message = "Password changed successfully." });

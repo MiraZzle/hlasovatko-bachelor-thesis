@@ -4,6 +4,7 @@ using server.Services;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using server.Extensions;
 
 namespace server.Controllers
 {
@@ -18,17 +19,9 @@ namespace server.Controllers
             _apiKeyService = apiKeyService;
         }
 
-        private Guid GetCurrentUserId() {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId)) {
-                throw new InvalidOperationException("User ID not found in token.");
-            }
-            return userId;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetKey() {
-            var userId = GetCurrentUserId();
+            var userId = this.GetCurrentUserId();
             var keyInfo = await _apiKeyService.GetKeyForUserAsync(userId);
 
             if (keyInfo == null) {
@@ -40,7 +33,7 @@ namespace server.Controllers
 
         [HttpPost("regenerate")]
         public async Task<IActionResult> RegenerateKey() {
-            var userId = GetCurrentUserId();
+            var userId = this.GetCurrentUserId();
             var newKey = await _apiKeyService.RegenerateKeyAsync(userId);
 
             return Ok(newKey);
