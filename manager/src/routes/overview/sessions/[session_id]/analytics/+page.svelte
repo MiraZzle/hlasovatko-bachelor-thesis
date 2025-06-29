@@ -6,9 +6,20 @@
 	import { page } from '$app/stores';
 	import SessionAnalyticsItem from '$components/analytics/SessionAnalyticsItem.svelte';
 	import { getActivityResultsForSession } from '$lib/analytics/analytics_utils';
+	import type { ActivityResult, StaticActivityType } from '$lib/activities/types';
+	import { onMount } from 'svelte';
 
-	let { session_id } = $page.params;
-	let activitiesWithResults = getActivityResultsForSession(session_id);
+	let session_id = $page.params.session_id;
+	let activitiesWithResults: ActivityResult[] = $state<ActivityResult[]>([]);
+
+	onMount(async () => {
+		try {
+			activitiesWithResults = await getActivityResultsForSession(session_id);
+			console.log('Loaded activity results:', activitiesWithResults);
+		} catch (error) {
+			console.error('Failed to load activity results:', error);
+		}
+	});
 </script>
 
 <svelte:head>

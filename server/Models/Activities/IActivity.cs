@@ -2,6 +2,10 @@
 {
     public interface IActivity
     {
-        string ActivityType { get; }
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public string ActivityType { get; set; }
+        public string Definition { get; set; }
+        public List<string> Tags { get; set; }
     }
 }

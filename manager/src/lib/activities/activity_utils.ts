@@ -1,206 +1,142 @@
-import type { PredefinedActivity, NewActivityData, ActivityType, Activity } from './types.ts';
+import type { ActivityResponse, ActivityType, Activity } from './types.ts';
+import { getToken } from '$lib/auth/auth';
+import { API_URL } from '$lib/config';
 
 export function getDefinedActivityTypes(): ActivityType[] {
-	return [{ name: 'Quiz' }, { name: 'Rating' }, { name: 'Word Cloud' }, { name: 'Poll' }];
+	return [
+		{ name: 'multiple_choice' },
+		{ name: 'poll' },
+		{ name: 'scale_rating' },
+		{ name: 'open_ended' }
+	];
 }
 
-export function registerNewActivity(newActivity: NewActivityData): PredefinedActivity {
-	console.log('Adding activity to bank:', newActivity);
+/**
+ * Adds a new activity to the user's Activity Bank.
+ * @param activityData The data for the new activity.
+ * @returns The newly created activity object, or null on failure.
+ */
+export async function addActivityToBank(activityData: {
+	title: string;
+	type: string;
+	definition: object;
+	tags: string[];
+}): Promise<Activity | null> {
+	const token = getToken();
+	if (!token) return null;
 
-	const activity: PredefinedActivity = {
-		id: crypto.randomUUID(),
-		refActivity: {
-			id: '1',
-			type: newActivity.type,
+	console.log('Adding activity to bank:', activityData);
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/activity-bank`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({
+				title: activityData.title,
+				activityType: activityData.type,
+				definition: activityData.definition,
+				tags: activityData.tags
+			})
+		});
+
+		if (!res.ok) {
+			console.error('Failed to create activity:', res.statusText);
+			return null;
+		}
+
+		const newActivity = await res.json();
+		return {
+			id: newActivity.id,
 			title: newActivity.title,
-			definition: newActivity.definition
-		},
-		categories: newActivity.categories
-	};
-
-	return activity;
+			type: newActivity.activityType,
+			definition: newActivity.definition,
+			tags: newActivity.tags
+		};
+	} catch (err) {
+		console.error('Create activity API error:', err);
+		return null;
+	}
 }
 
-export function getAllActivitiesFromBank(): PredefinedActivity[] {
-	return [
-		{
-			id: 'ab0',
-			refActivity: {
-				id: 'ab1',
-				type: 'poll',
-				title: 'Physics Brainstorm Kick-off',
-				definition: {
-					type: 'Poll',
-					options: [
-						{ id: 'o1', text: 'Classical Mechanics' },
-						{ id: 'o2', text: 'Quantum Mechanics' },
-						{ id: 'o3', text: 'Thermodynamics' },
-						{ id: 'o4', text: 'Electromagnetism' }
-					]
-				}
-			},
-			categories: ['Physics', 'Event']
-		},
-		{
-			id: 'ab1',
-			refActivity: {
-				id: 'ab2',
-				type: 'scale_rating',
-				title: 'How well did you understand the lecture on Thermodynamics?',
-				definition: {
-					type: 'ScaleRating',
-					min: 1,
-					max: 5,
-					minLabel: 'Not at all',
-					maxLabel: 'Completely'
-				}
-			},
-			categories: ['Event', 'Feedback', 'Physics']
-		},
-		{
-			id: 'ab2',
-			refActivity: {
-				id: 'ab4',
-				type: 'multiple_choice',
-				title: 'What is the first law of thermodynamics?',
-				definition: {
-					type: 'MultipleChoice',
-					options: [
-						{ id: 'm1', text: 'Energy cannot be created or destroyed.' },
-						{ id: 'm2', text: 'The entropy of an isolated system always increases.' },
-						{
-							id: 'm3',
-							text: 'The entropy of a system approaches a constant value as the temperature approaches absolute zero.'
-						}
-					],
-					correctOptionId: 'm1',
-					allowMultiple: false
-				}
-			},
-			categories: ['Physics', 'Definitions']
-		},
-		{
-			id: 'ab3',
-			refActivity: {
-				id: 'ab5',
-				type: 'open_ended',
-				title: 'In your own words, what is entropy?',
-				definition: {
-					type: 'OpenEnded'
-				}
-			},
-			categories: ['Physics', 'Concept']
-		},
-		{
-			id: 'ab4',
-			refActivity: {
-				id: 'ab6',
-				type: 'poll',
-				title: 'What topic should the next lecture focus on?',
-				definition: {
-					type: 'Poll',
-					options: [
-						{ id: 'o1', text: 'Special Relativity' },
-						{ id: 'o2', text: 'Particle Physics' },
-						{ id: 'o3', text: 'Cosmology' }
-					]
-				}
-			},
-			categories: ['Planning']
-		},
-		{
-			id: 'ab5',
-			refActivity: {
-				id: 'ab7',
-				type: 'multiple_choice',
-				title: 'Which of the following is a noble gas?',
-				definition: {
-					type: 'MultipleChoice',
-					options: [
-						{ id: 'm1', text: 'Oxygen' },
-						{ id: 'm2', text: 'Helium' },
-						{ id: 'm3', text: 'Nitrogen' },
-						{ id: 'm4', text: 'Carbon' }
-					],
-					correctOptionId: 'm2',
-					allowMultiple: false
-				}
-			},
-			categories: ['Chemistry', 'Definitions']
+/**
+ * Fetches all activities from the logged-in user's "Activity Bank".
+ * @returns A promise that resolves to an array of activities.
+ */
+export async function getActivityBank(): Promise<Activity[]> {
+	const token = getToken();
+	if (!token) return [];
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/activity-bank`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		if (!res.ok) {
+			console.error('Failed to fetch activity bank:', res.statusText);
+			return [];
 		}
-	];
+
+		const activities = await res.json();
+		return activities.map((act: ActivityResponse) => ({
+			id: act.id,
+			title: act.title,
+			type: act.activityType,
+			definition: act.definition,
+			tags: act.tags
+		}));
+	} catch (err) {
+		console.error('Get activity bank API error:', err);
+		return [];
+	}
 }
 
-export function createActivity(data: NewActivityData): void {
-	const newActivity: PredefinedActivity = {
-		id: crypto.randomUUID(), // Generate a unique ID for the new activity
-		refActivity: {
-			id: '1',
-			type: data.type,
-			title: data.title,
-			definition: data.definition
-		},
-		categories: data.categories
-	};
+/**
+ * Fetches all activities for a given session.
+ * @param sessionId The ID of the session.
+ * @returns A promise that resolves to an array of activities.
+ */
+export async function getActivitiesFromSession(sessionId: string): Promise<Activity[]> {
+	const token = getToken();
+	if (!token) {
+		console.error('Authentication token not found.');
+		return [];
+	}
 
-	console.log('Successfully added activity:', newActivity);
-}
+	try {
+		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/activities`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
 
-export function getActivitiesFromSession(sessionId: string): Activity[] {
-	console.log(`Fetching activities for session ${sessionId}`);
-
-	return [
-		{
-			id: 'sact1',
-			type: 'poll',
-			title: 'Which topic should we cover next?',
-			definition: {
-				type: 'Poll',
-				options: [
-					{ id: 'o1', text: 'Topic A' },
-					{ id: 'o2', text: 'Topic B' }
-				]
-			}
-		},
-		{
-			id: 'sact2',
-			type: 'multiple_choice',
-			title: 'What is the powerhouse of the cell?',
-			definition: {
-				type: 'MultipleChoice',
-				options: [
-					{ id: 'm1', text: 'Nucleus' },
-					{ id: 'm2', text: 'Ribosome' },
-					{ id: 'm3', text: 'Mitochondrion' },
-					{ id: 'm4', text: 'Chloroplast' }
-				],
-				correctOptionId: 'm3',
-				allowMultiple: false
-			}
-		},
-		{
-			id: 'sact3',
-			type: 'scale_rating',
-			title: 'Rate your understanding (1-5)',
-			definition: {
-				type: 'ScaleRating',
-				min: 1,
-				max: 5,
-				minLabel: 'Confused',
-				maxLabel: 'Confident'
-			}
-		},
-		{
-			id: 'sact4',
-			type: 'open_ended',
-			title: 'Any remaining questions?',
-			definition: { type: 'OpenEnded' }
-		},
-		{
-			id: 'sact5',
-			type: 'custom_activity',
-			title: 'Custom Activity Format',
-			definition: { customField: 'value', structure: { nested: true } }
+		if (!response.ok) {
+			const errorText = await response.text();
+			console.error(
+				`Failed to fetch activities for session ${sessionId}:`,
+				response.status,
+				errorText
+			);
+			return [];
 		}
-	];
+
+		const activitiesFromApi = await response.json();
+
+		return activitiesFromApi.map((activity: ActivityResponse) => ({
+			id: activity.id,
+			title: activity.title,
+			type: activity.activityType,
+			definition: activity.definition,
+			tags: activity.tags
+		}));
+	} catch (err) {
+		console.error(`API error when fetching activities for session ${sessionId}:`, err);
+		return [];
+	}
 }

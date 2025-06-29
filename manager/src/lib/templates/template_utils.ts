@@ -1,248 +1,274 @@
 import type { Template, TemplateSettingsDTO } from '$lib/templates/types';
+import type { Activity } from '$lib/activities/types';
+import { getToken } from '$lib/auth/auth';
+import { API_URL } from '$lib/config';
+import type { SessionMode } from '$lib/shared_types';
+import type { StaticActivityType } from '$lib/activities/types';
 
-export function getTemplateById(templateId: string): Template {
-	console.log(`Fetching template with ID: ${templateId}`);
-	return {
-		id: 'template_b7c2f8e1-a9d5-4b8e-8e4f-1a2b3c4d5e6f',
-		ownerId: 'user_a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d',
-		version: 1,
-		dateCreated: '2025-06-18T08:45:00.000Z',
-		settings: {
-			title: 'Live Mid-Term Review Session',
-			sessionPacing: 'student-paced',
-			resultsVisibleDefault: true,
-			tags: ['Interactive', 'Review']
-		},
-		definition: [
-			{
-				id: 'act1',
-				type: 'poll',
-				title: 'Which topic is most challenging?',
-				definition: {
-					type: 'Poll',
-					options: [
-						{ id: 'o1', text: 'Newtonian Mechanics' },
-						{ id: 'o2', text: 'Thermodynamics' },
-						{ id: 'o3', text: 'Electromagnetism' }
-					]
-				}
-			},
-			{
-				id: 'act2',
-				type: 'multiple_choice',
-				title: 'Which planet has the strongest gravitational pull?',
-				definition: {
-					type: 'MultipleChoice',
-					options: [
-						{ id: 'm1', text: 'Mars' },
-						{ id: 'm2', text: 'Earth' },
-						{ id: 'm3', text: 'Jupiter' }
-					],
-					correctOptionId: 'm3'
-				}
-			},
-			{
-				id: 'act3',
-				type: 'scale_rating',
-				title: 'How confident are you about the upcoming exam?',
-				definition: {
-					type: 'ScaleRating',
-					min: 1,
-					max: 5,
-					minLabel: 'Not at all',
-					maxLabel: 'Very confident'
-				}
-			},
-			{
-				id: 'act4',
-				type: 'open_ended',
-				title: 'What are your remaining questions?',
-				definition: {
-					type: 'OpenEnded',
-					placeholder: 'Enter your questions here...'
-				}
-			}
-		]
-	};
-}
-
-export function getAvailableBaseTemplates() {
-	return [
-		{ id: 't41585', title: 'Quiz 1' },
-		{ id: 't41586', title: 'Quiz 2' },
-		{ id: 't41587', title: 'Poll' },
-		{ id: 't41588', title: 'Midterm Review' }
-	];
-}
-
-export function getAllTemplates(): Template[] {
-	return [
-		{
-			id: 't41585',
-			definition: [],
-			ownerId: 'user_alpha_123',
-			version: 1.0,
-			dateCreated: '2025-06-15T10:00:00Z',
-			settings: {
-				title: 'Weekly Team Retrospective',
-				tags: ['meeting', 'agile', 'team-sync'],
-				sessionPacing: 'teacher-paced',
-				resultsVisibleDefault: false
-			}
-		},
-		{
-			id: 't41586',
-			definition: [],
-			ownerId: 'user_beta_456',
-			version: 1.0,
-			dateCreated: '2025-06-16T11:30:00Z',
-			settings: {
-				title: 'New Feature Brainstorm',
-				tags: ['ideation', 'product', 'creative'],
-				sessionPacing: 'student-paced',
-				resultsVisibleDefault: true
-			}
-		},
-		{
-			id: 't41587',
-			definition: [],
-			ownerId: 'user_alpha_123',
-			version: 1.0,
-			dateCreated: '2025-06-17T09:00:00Z',
-			settings: {
-				title: 'Daily Stand-up',
-				tags: ['daily', 'check-in', 'agile'],
-				sessionPacing: 'teacher-paced',
-				resultsVisibleDefault: true
-			}
-		},
-		{
-			id: 't41588',
-			definition: [],
-			ownerId: 'user_gamma_789',
-			version: 1.0,
-			dateCreated: '2025-05-20T14:00:00Z',
-			settings: {
-				title: 'Quarterly Planning Workshop',
-				tags: ['planning', 'strategy', 'workshop'],
-				sessionPacing: 'student-paced',
-				resultsVisibleDefault: false
-			}
-		},
-		{
-			id: 't41589',
-			definition: [],
-			ownerId: 'user_beta_456',
-			version: 1.0,
-			dateCreated: '2025-06-01T16:45:00Z',
-			settings: {
-				title: 'User Feedback Review',
-				tags: ['ux', 'feedback', 'research'],
-				sessionPacing: 'teacher-paced',
-				resultsVisibleDefault: true
-			}
-		}
-	];
-}
-
-export function getTemplateSettingsById(templateId: string): Promise<TemplateSettingsDTO> {
-	// Simulate fetching settings for a specific template
-	console.log(`Fetching settings for template ${templateId}...`);
-
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			const settings: TemplateSettingsDTO = {
-				sessionPacing: 'teacher-paced',
-				resultsVisibleDefault: true,
-				title: `Template ${templateId}`,
-				tags: ['Example', 'Physics 101']
-			};
-			resolve(settings);
-		}, 500);
-	});
-}
-
-export function updateTemplateSettings(
-	templateId: string,
-	settings: TemplateSettingsDTO
-): Promise<boolean> {
-	console.log(`Updating settings for template ${templateId}...`, settings);
-
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			console.log(`Settings for template ${templateId} updated successfully.`);
-			resolve(true);
-		}, 100);
-	});
-}
-
-export function createNewTemplate(title: string, baseTemplateId?: string): Promise<Template> {
-	console.log(`Creating new template with title: ${title}`);
-	console.log(`Base template ID: ${baseTemplateId}`);
-
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			const newTemplate: Template = {
-				id: `t${Math.random().toString(16).substring(2, 8)}`,
-				definition: [],
-				ownerId: 'user_default',
-				version: 1.0,
-				dateCreated: new Date().toISOString(),
-				settings: {
-					title,
-					sessionPacing: 'student-paced',
-					resultsVisibleDefault: true,
-					tags: []
-				}
-			};
-			console.log(`New template created with ID: ${newTemplate.id}`);
-			resolve(newTemplate);
-		}, 1000);
-	});
+/**
+ * Defines the shape of the Template object as it comes from the backend API.
+ */
+interface TemplateResponse {
+	id: string;
+	title: string;
+	tags: string[];
+	sessionPacing: SessionMode;
+	resultsVisibleDefault: boolean;
+	dateCreated: string;
+	definition: ActivityResponse[];
 }
 
 /**
- * Updates a template on the server via an API call.
- * @param templateId The ID of the template to update.
- * @param templateData The full template object with the new data.
- * @returns {Promise<boolean>} True if the update was successful, otherwise throws an error.
+ * Defines the shape of an Activity within a Template response.
  */
-export async function updateTemplate(templateId: string, templateData: Template): Promise<boolean> {
-	console.log(`Updating template ${templateId} with data:`, templateData);
+interface ActivityResponse {
+	id: string;
+	title: string;
+	activityType: string;
+	definition: object;
+	tags: string[];
+}
 
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			// Simulate a successful update
-			console.log(`Template ${templateId} updated successfully.`);
-			resolve(true);
-		}, 3000);
-	});
+/**
+ * Maps a TemplateResponse from the backend to the frontend Template type.
+ * @param t - The template response object from the API.
+ * @returns A frontend-compatible Template object.
+ */
+function mapResponseToTemplate(t: TemplateResponse): Template {
+	return {
+		id: t.id,
+		ownerId: '', // Not provided by the API, can be added if needed
+		version: 1, // Not provided by the API, can be added if needed
+		dateCreated: t.dateCreated,
+		settings: {
+			title: t.title,
+			tags: t.tags,
+			sessionPacing: t.sessionPacing,
+			resultsVisibleDefault: t.resultsVisibleDefault
+		},
+		definition: t.definition
+			? t.definition.map((act) => ({
+					id: act.id,
+					title: act.title,
+					type: act.activityType as StaticActivityType,
+					definition: act.definition,
+					tags: act.tags
+				}))
+			: []
+	};
+}
 
-	// This is where you would make your real API call
+/**
+ * Updates an entire template, including its settings and full definition.
+ * @param templateId The ID of the template to update.
+ * @param template The full template object with the new data.
+ * @returns The updated template object, or null on failure.
+ */
+export async function updateTemplate(
+	templateId: string,
+	template: Template
+): Promise<Template | null> {
+	const token = getToken();
+	if (!token) return null;
+
+	// Map the frontend Template object to the backend's UpdateTemplateDto shape
+	const updateDto = {
+		settings: template.settings,
+		definition: template.definition.map((act) => ({
+			title: act.title,
+			activityType: act.type,
+			definition: JSON.stringify(act.definition),
+			tags: act.tags || []
+		}))
+	};
+
 	try {
-		// Using a placeholder API endpoint
-		const response = await fetch(`/api/templates/${templateId}`, {
-			method: 'PUT', // or 'POST'
+		const res = await fetch(`${API_URL}/api/v1/template/${templateId}`, {
+			method: 'PUT',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
 			},
-			body: JSON.stringify(templateData)
+			body: JSON.stringify(updateDto)
 		});
 
-		if (!response.ok) {
-			// If the server responds with an error status (4xx, 5xx), throw an error
-			const errorData = await response.json();
-			throw new Error(
-				errorData.message || `Failed to update template. Server status: ${response.status}`
-			);
+		if (!res.ok) {
+			console.error(`Failed to update template ${templateId}:`, res.statusText);
+			return null;
 		}
 
-		// You could return response.json() if the server sends back the updated object
-		console.log('Template updated successfully on the server.');
-		return true;
-	} catch (error) {
-		console.error('API call to update template failed:', error);
-		// Re-throw the error so the component can catch it and display a message
-		throw error;
+		const updatedTemplate: TemplateResponse = await res.json();
+		return mapResponseToTemplate(updatedTemplate);
+	} catch (err) {
+		console.error('Update template API error:', err);
+		return null;
+	}
+}
+
+/**
+ * Fetches all templates created by the logged-in user.
+ * @returns A promise that resolves to an array of simplified template objects.
+ */
+export async function getAllTemplates(): Promise<Template[]> {
+	const token = getToken();
+	if (!token) return [];
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/template`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		if (!res.ok) {
+			console.error('Failed to fetch templates:', res.statusText);
+			return [];
+		}
+
+		const templates: TemplateResponse[] = await res.json();
+		return templates.map(mapResponseToTemplate);
+	} catch (err) {
+		console.error('Get all templates API error:', err);
+		return [];
+	}
+}
+
+/**
+ * Fetches a single, complete template by its ID.
+ * @param templateId The ID of the template to fetch.
+ * @returns A promise that resolves to the template object, or null if not found.
+ */
+export async function getTemplateById(templateId: string): Promise<Template | null> {
+	const token = getToken();
+	if (!token) return null;
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/template/${templateId}`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		if (!res.ok) {
+			console.error(`Failed to fetch template ${templateId}:`, res.statusText);
+			return null;
+		}
+
+		const templateData: TemplateResponse = await res.json();
+		return mapResponseToTemplate(templateData);
+	} catch (err) {
+		console.error(`Get template by ID API error:`, err);
+		return null;
+	}
+}
+
+/**
+ * Creates a new template.
+ * @param settings The settings for the new template.
+ * @param activities A list of full activity objects to be included in the template.
+ * @returns The newly created template object, or null on failure.
+ */
+export async function createNewTemplate(
+	settings: TemplateSettingsDTO,
+	activities: Activity[]
+): Promise<Template | null> {
+	const token = getToken();
+	if (!token) return null;
+
+	const activityDtos = activities.map((act) => ({
+		title: act.title,
+		activityType: act.type,
+		definition: JSON.stringify(act.definition),
+		tags: act.tags || []
+	}));
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/template`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({
+				title: settings.title,
+				tags: settings.tags,
+				sessionPacing: settings.sessionPacing,
+				resultsVisibleDefault: settings.resultsVisibleDefault,
+				activities: activityDtos
+			})
+		});
+
+		if (!res.ok) {
+			console.error('Failed to create new template:', res.statusText);
+			return null;
+		}
+
+		const newTemplate: TemplateResponse = await res.json();
+		return mapResponseToTemplate(newTemplate);
+	} catch (err) {
+		console.error('Create template API error:', err);
+		return null;
+	}
+}
+
+/**
+ * Updates the settings of an existing template.
+ * @param templateId The ID of the template to update.
+ * @param settings The new settings for the template.
+ * @returns The updated template object, or null on failure.
+ */
+export async function updateTemplateSettings(
+	templateId: string,
+	settings: TemplateSettingsDTO
+): Promise<Template | null> {
+	const token = getToken();
+	if (!token) return null;
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/template/${templateId}/settings`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify(settings)
+		});
+
+		if (!res.ok) {
+			console.error(`Failed to update settings for template ${templateId}:`, res.statusText);
+			return null;
+		}
+
+		const updatedTemplate: TemplateResponse = await res.json();
+		return mapResponseToTemplate(updatedTemplate);
+	} catch (err) {
+		console.error('Update template settings API error:', err);
+		return null;
+	}
+}
+
+/**
+ * Deletes a template by its ID.
+ * @param templateId The ID of the template to delete.
+ * @returns True on success, false otherwise.
+ */
+export async function deleteTemplate(templateId: string): Promise<boolean> {
+	const token = getToken();
+	if (!token) return false;
+
+	try {
+		const res = await fetch(`${API_URL}/api/v1/template/${templateId}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
+
+		return res.ok;
+	} catch (err) {
+		console.error('Delete template API error:', err);
+		return false;
 	}
 }

@@ -9,6 +9,8 @@
 	import { page } from '$app/state';
 	import { getSessionsByTemplate } from '$lib/sessions/session_utils';
 	import type { Session } from '$lib/sessions/types';
+	import { onMount } from 'svelte';
+	import { deleteSession } from '$lib/sessions/session_utils';
 
 	const templateId = $derived(page.params.template_id);
 
@@ -25,7 +27,12 @@
 		{ key: 'id', label: 'Actions', sortable: false }
 	];
 
-	let sessionsForTemplate = $derived<Session[]>(getSessionsByTemplate(templateId));
+	let sessionsForTemplate = $state<Session[]>([]);
+
+	// Fetch sessions for the template when the component mounts
+	onMount(async () => {
+		sessionsForTemplate = await getSessionsByTemplate(templateId);
+	});
 
 	/**
 	Filter sessions based on search term.
@@ -42,6 +49,15 @@
 		});
 	}
 
+	async function handleDeleteSession(sessionId: string): Promise<void> {
+		let deleteSuccesful = await deleteSession(sessionId);
+		if (deleteSuccesful) {
+			sessionsForTemplate = sessionsForTemplate.filter((session) => session.id !== sessionId);
+		} else {
+			console.error('Failed to delete session with ID:', sessionId);
+		}
+	}
+
 	let filteredSessions = $derived(getFilteredSessions());
 </script>
 
@@ -51,7 +67,7 @@
 
 <div class="sessions-overview-page">
 	<DataTable
-		title="Session for Template {templateId}"
+		title="Sessions based on this template"
 		searchPlaceholder="Search sessions by title, code..."
 		items={filteredSessions}
 		{columns}
@@ -60,7 +76,7 @@
 		bind:currentPage
 	>
 		<svelte:fragment slot="row" let:item>
-			<SessionRow session={item} />
+			<SessionRow session={item} onDelete={() => handleDeleteSession(item.id)} />
 		</svelte:fragment>
 	</DataTable>
 </div>

@@ -98,7 +98,7 @@
 		try {
 			let success = await changePassword(currentPassword, newPassword);
 			if (!success) {
-				passwordUpdateError = 'Current password is incorrect.';
+				passwordUpdateError = 'Password change failed. Please check your current password.';
 				isUpdatingPassword = false;
 				return;
 			} else {

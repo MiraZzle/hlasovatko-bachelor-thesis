@@ -10,11 +10,14 @@
 	import { getAllTemplates } from '$lib/templates/template_utils';
 	import type { Template } from '$lib/templates/types';
 	import { createNewTemplate } from '$lib/templates/template_utils';
+	import { onMount } from 'svelte';
+	import { deleteTemplate } from '$lib/templates/template_utils';
 
 	// state management
 	let searchTerm = $state('');
 	let currentPage = $state(1);
-	let templates = $state<Template[]>(getAllTemplates());
+	let templates = $state<Template[]>([]);
+	let isLoading = $state(true);
 
 	// define columns for datatable
 	const columns: ColumnHeader<Template>[] = [
@@ -28,6 +31,12 @@
 	let newTemplateName = $state('');
 	let deriveFromTemplateId = $state<string>('none');
 
+	onMount(async () => {
+		isLoading = true;
+		templates = await getAllTemplates();
+		isLoading = false;
+	});
+
 	function openCreateModal(): void {
 		newTemplateName = '';
 		deriveFromTemplateId = 'none';
@@ -38,14 +47,23 @@
 		isCreateModalOpen = false;
 	}
 
-	async function handleCreateTemplateSubmit(data: {
-		name: string;
-		deriveFromId: string;
-	}): Promise<void> {
+	async function handleCreateTemplateSubmit(data: { name: string }): Promise<void> {
 		console.log('Creating template (from page):', data);
-		const newTemplate: Template = await createNewTemplate(data.name, data.deriveFromId);
-		templates.push(newTemplate);
-		templates = templates;
+		const newTemplate = await createNewTemplate(
+			{
+				title: data.name,
+				tags: [],
+				sessionPacing: 'teacher-paced',
+				resultsVisibleDefault: true
+			},
+			[]
+		);
+
+		if (newTemplate) {
+			templates.push(newTemplate);
+		} else {
+			alert('Failed to create template.');
+		}
 	}
 
 	function handleCreateNewTemplate(): void {
@@ -63,6 +81,15 @@
 				t.id.toLowerCase().includes(lowerSearch) ||
 				t.settings!.tags?.some((tag) => tag.toLowerCase().includes(lowerSearch))
 		);
+	}
+
+	async function handleDeleteTemplate(templateId: string): Promise<void> {
+		const success = await deleteTemplate(templateId);
+		if (success) {
+			templates = templates.filter((t) => t.id !== templateId);
+		} else {
+			alert('Failed to delete template.');
+		}
 	}
 
 	let filteredTemplates = $derived(getFilteredTemplates());
@@ -85,7 +112,7 @@
 		bind:currentPage
 	>
 		<svelte:fragment slot="row" let:item>
-			<TemplateRow template={item} />
+			<TemplateRow template={item} onDelete={() => handleDeleteTemplate(item.id)} />
 		</svelte:fragment>
 	</DataTable>
 

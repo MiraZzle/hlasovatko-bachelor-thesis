@@ -7,22 +7,27 @@
 	import Select from '$components/elements/typography/Select.svelte';
 	import ActivityCard from '$components/dashboard/ActivityCard.svelte';
 	import AddActivityModal from '$components/elements/modals/AddActivityModal.svelte';
-	import type { PredefinedActivity, NewActivityData } from '$lib/activities/types';
+	import type { NewActivityData, Activity } from '$lib/activities/types';
 	import {
-		getAllActivitiesFromBank,
 		getDefinedActivityTypes,
-		registerNewActivity
+		addActivityToBank,
+		getActivityBank
 	} from '$lib/activities/activity_utils';
 	import type { SelectOption } from '$lib/shared_types';
 	import ActivityDetailModal from '$components/elements/modals/ActivityDetailModal.svelte';
+	import { onMount } from 'svelte';
 
-	let activities = $state<PredefinedActivity[]>(getAllActivitiesFromBank());
+	let activities = $state<Activity[]>([]);
 	let isCreateActivityModalOpen = $state(false);
 	let selectedCategory = $state('all');
 	let selectedActivityType = $state('all');
 	let isDetailModalOpen = $state(false);
-	let selectedActivityForDetail = $state<PredefinedActivity | null>(null);
+	let selectedActivityForDetail = $state<Activity | null>(null);
 	let fileInputRef: HTMLInputElement | null = null;
+
+	onMount(async () => {
+		activities = await getActivityBank();
+	});
 
 	/**
 	 * Gets all unique categories from activities
@@ -32,7 +37,7 @@
 	function getCategoryOptions(): SelectOption[] {
 		const categories = new Set<string>();
 		activities.forEach((activity) => {
-			activity.categories?.forEach((cat) => categories.add(cat));
+			activity.tags?.forEach((cat) => categories.add(cat));
 		});
 		const options = Array.from(categories).map((cat) => ({ value: cat, label: cat }));
 		return [{ value: 'all', label: 'All Categories' }, ...options];
@@ -64,9 +69,18 @@
 	function closeCreateActivityModal(): void {
 		isCreateActivityModalOpen = false;
 	}
-	function handleAddActivitySubmit(data: NewActivityData): void {
-		activities.push(registerNewActivity(data));
+	async function handleAddActivitySubmit(data: NewActivityData): Promise<void> {
+		let newActivityDef = await addActivityToBank(data);
+		if (!newActivityDef) {
+			console.error('Failed to add new activity to bank.');
+			return;
+		}
+		activities.push(newActivityDef);
 		activities = activities;
+	}
+
+	async function getActivities() {
+		return await getActivityBank();
 	}
 
 	function closeDetailModal(): void {
@@ -120,13 +134,11 @@
 	 * Filters activities based on selected category and activity type
 	 * @returns Filtered array of activities
 	 */
-	function getFilteredActivities(): PredefinedActivity[] {
+	function getFilteredActivities(): Activity[] {
 		return activities.filter((activity) => {
-			const categoryMatch =
-				selectedCategory === 'all' || activity.categories?.includes(selectedCategory);
+			const categoryMatch = selectedCategory === 'all' || activity.tags?.includes(selectedCategory);
 			const typeMatch =
-				selectedActivityType === 'all' ||
-				activity.refActivity.type.toLowerCase() === selectedActivityType;
+				selectedActivityType === 'all' || activity.type.toLowerCase() === selectedActivityType;
 			return categoryMatch && typeMatch;
 		});
 	}

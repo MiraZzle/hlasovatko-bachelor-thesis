@@ -1,132 +1,206 @@
 <script lang="ts">
 	/**
-	 * @file A test page to demonstrate the usage of the ActivityInputItem component.
-	 * It loads a list of activities and allows a user to cycle through them,
-	 * submitting an answer for each one.
+	 * @file Client participation page.
+	 * Implements the full flow for both student- and teacher-paced sessions.
 	 */
-	import { onMount } from 'svelte';
-	import { getActivitiesFromSession } from '$lib/activities/activity_utils';
-	import type { Activity } from '$lib/activities/types';
-	import ActivityInputItem from '$components/activities/input/ActivityInputItem.svelte';
-	import Button from '$components/elements/typography/Button.svelte';
-	import SessionAnalyticsItem from '$components/analytics/SessionAnalyticsItem.svelte';
-	import type { ActivityResult } from '$lib/activities/types';
-	import { getActivityResultsForSession } from '$lib/analytics/analytics_utils';
-	import type { SubmitPayload } from '$lib/activities/definition_types';
-	import { submitActivityAnswer } from '$lib/activities/activity_utils';
-	import type { Session } from '$lib/sessions/types';
-	import { getSessionById } from '$lib/sessions/session_utils';
-	import { getSessionSettings } from '$lib/sessions/session_utils';
+	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
+	import { getActivityResults, submitAnswer } from '$lib/activities/activity_utils';
+	import type { Activity, ActivityResult } from '$lib/activities/types';
+	import type { SubmitPayload } from '$lib/activities/definition_types';
+	import ActivityInputItem from '$components/activities/input/ActivityInputItem.svelte';
+	import SessionAnalyticsItem from '$components/analytics/SessionAnalyticsItem.svelte';
+	import Button from '$components/elements/typography/Button.svelte';
+	import { getSessionById } from '$lib/sessions/session_utils';
+	import type { Session } from '$lib/sessions/types';
+	import { getActivitiesFromSession, getSessionState } from '$lib/sessions/session_utils';
+	import type { ParticipantSessionState } from '$lib/sessions/session_utils';
+	import type { StaticActivityType } from '$lib/activities/types';
 
 	const session_id = $page.params.session_id;
-	let allActivities = $state<Activity[]>([]);
-	let allActivityResults = $state<ActivityResult[]>([]);
-	let currentIndex = $state(0);
-	let sessionInfo = $state<Session | null>(getSessionById(session_id));
-	let sessionSettings = $state(getSessionSettings(session_id));
 
-	// Map to store submited answers
-	let submittedAnswers = $state<Record<string, any>>({});
+	// state management
+	let sessionInfo: Session | null = $state(null);
+	let allActivities: Activity[] = $state([]);
+	let currentActivity: Activity | null = $state(null);
+	let currentResults: ActivityResult | null = $state(null);
 
-	// Flag to check if session allows participants to see answers - defaults to true
-	let participantAnswersAllowed = $state(sessionSettings.allowParticipantAnswers ?? true);
+	let studentPacedIndex = $state(0);
+	let sessionState: ParticipantSessionState | null = $state(null);
 
-	// State to control the visibility of the results
-	let revealAnswers = $state(false);
+	let submittedAnswers = $state<Record<string, boolean>>({});
+	let isLoading = $state(true);
+	let errorMessage: string | null = $state(null);
 
-	// Fetch all necessary data on mount
-	onMount(() => {
-		allActivities = getActivitiesFromSession('mock_session_id');
-		allActivityResults = getActivityResultsForSession('mock_session_id');
+	let statePollTimeoutId: any;
+	let resultsPollTimeoutId: any;
+
+	let isStudentPaced = $state(false);
+	let hasSubmitted = $state(false);
+	let showResults = $state(true);
+
+	// polling intervals
+	const STATE_POLLING_INTERVAL = 3000;
+	const RESULTS_POLLING_INTERVAL = 5000;
+	const JITTER_AMOUNT = 1000; // Max random jitter in ms
+
+	onMount(async () => {
+		sessionInfo = await getSessionById(session_id);
+
+		if (!sessionInfo) {
+			errorMessage = 'Session not found';
+			isLoading = false;
+			return;
+		}
+
+		isStudentPaced = sessionInfo!.mode === 'student-paced';
+
+		allActivities = await getActivitiesFromSession(session_id);
+		isLoading = false;
+
+		if (!isStudentPaced) {
+			pollStateWithJitter();
+		}
+
+		if (sessionState) {
+			showResults = sessionState.showResults;
+		}
 	});
 
-	const currentActivity = $derived(allActivities[currentIndex]);
-	const hasSubmitted = $derived(currentActivity?.id in submittedAnswers);
+	onDestroy(() => {
+		clearTimeout(statePollTimeoutId);
+		clearTimeout(resultsPollTimeoutId);
+	});
 
-	// Dynamically find the current activity result based on the current activity - we get all answers at once
-	const currentActivityResult = $derived(
-		allActivityResults.find((result) => result.activityRef.id === currentActivity?.id) ?? null
-	);
+	$effect(() => {
+		if (currentActivity) {
+			hasSubmitted = submittedAnswers[currentActivity.id] ?? false;
+		} else {
+			hasSubmitted = false;
+		}
+	});
+
+	$effect(() => {
+		if (isLoading || !sessionInfo) return;
+
+		let activeId: string | undefined | null;
+		if (isStudentPaced) {
+			activeId = allActivities[studentPacedIndex]?.id;
+		} else {
+			activeId = sessionState?.currentActivityId;
+		}
+
+		currentActivity = allActivities.find((a) => a.id === activeId) ?? null;
+
+		if (currentActivity) {
+			submittedAnswers[currentActivity.id] = submittedAnswers[currentActivity.id] || false;
+		}
+	});
+
+	$effect(() => {
+		clearTimeout(resultsPollTimeoutId);
+		currentResults = null;
+
+		if (showResults && currentActivity && sessionInfo) {
+			if (isStudentPaced && !hasSubmitted) return;
+			pollResultsWithJitter();
+		}
+	});
 
 	/**
-	 * Advances to the next activity in the list and resets the state.
+	 * Fetches the session state
 	 */
-	function goToNextActivity(): void {
-		if (currentIndex < allActivities.length - 1) {
-			currentIndex++;
-			revealAnswers = false; // Hide results for the new activity
-		} else {
-			alert("You've reached the end of the activities!");
-		}
+	async function pollStateWithJitter() {
+		sessionState = await getSessionState(session_id);
+
+		const jitter = Math.random() * JITTER_AMOUNT;
+		statePollTimeoutId = setTimeout(pollStateWithJitter, STATE_POLLING_INTERVAL + jitter);
 	}
 
 	/**
-	 * Handles the submission of an activity answer.
-	 * @param payload - The payload containing the activity ID and submit value
+	 * Fetches activity results
 	 */
-	async function handleActivitySubmit(payload: SubmitPayload): Promise<void> {
-		await submitActivityAnswer(payload);
+	async function pollResultsWithJitter() {
+		if (currentActivity) {
+			currentResults = await getActivityResults(session_id, currentActivity.id);
+		}
 
-		submittedAnswers[payload.activityId] = payload.value;
-		revealAnswers = true; // Show results after submission
+		const jitter = Math.random() * JITTER_AMOUNT;
+		resultsPollTimeoutId = setTimeout(pollResultsWithJitter, RESULTS_POLLING_INTERVAL + jitter);
+	}
+
+	async function handleActivitySubmit(payload: SubmitPayload) {
+		const fullPayload: SubmitPayload = {
+			...payload,
+			activityType: currentActivity!.type as StaticActivityType
+		};
+
+		const success = await submitAnswer(session_id, fullPayload);
+		if (success) {
+			submittedAnswers = { ...submittedAnswers, [payload.activityId]: true };
+		} else {
+			alert('Error submitting answer.');
+		}
+	}
+
+	function goToNext() {
+		if (studentPacedIndex < allActivities.length - 1) studentPacedIndex++;
 	}
 </script>
 
 <svelte:head>
-	<title>EngaGenie | Participate</title>
+	<title>Participate | {sessionInfo?.title ?? 'Session'}</title>
 </svelte:head>
 
 <div class="participate-page">
-	<header class="participate-page__header">
-		<h1 class="participate-page__title">Activity Participation</h1>
-	</header>
-
-	<main class="participate-page__main">
-		{#if currentActivity}
-			<ActivityInputItem
-				activity={currentActivity}
-				onSubmit={handleActivitySubmit}
-				disabled={hasSubmitted}
-			/>
-		{:else}
-			<p>Loading activities...</p>
-		{/if}
-	</main>
-
-	{#if hasSubmitted}
-		<div class="participate-page__results-control">
-			{#if revealAnswers && currentActivityResult && participantAnswersAllowed}
-				<div class="participate-page__results-display">
-					<SessionAnalyticsItem activityResult={currentActivityResult} />
-				</div>
+	{#if isLoading}
+		<p>Joining session...</p>
+	{:else if errorMessage}
+		<div class="error-message">{errorMessage}</div>
+	{:else if sessionInfo}
+		<header class="participate-page__header">
+			<h1 class="participate-page__title">{sessionInfo.title}</h1>
+			{#if isStudentPaced}
+				<p>Activity {studentPacedIndex + 1} of {allActivities.length}</p>
 			{/if}
-		</div>
-	{/if}
+		</header>
 
-	<footer class="participate-page__footer">
-		<div class="participate-page__navigation">
-			<span>Activity {currentIndex + 1} of {allActivities.length}</span>
-			<Button onclick={goToNextActivity} disabled={currentIndex >= allActivities.length - 1}>
-				Next Activity →
-			</Button>
-		</div>
+		<main class="participate-page__main">
+			{#if currentActivity}
+				<ActivityInputItem
+					activity={currentActivity}
+					disabled={hasSubmitted}
+					onSubmit={handleActivitySubmit}
+				/>
+			{:else}
+				<p>Waiting for the host to start the next activity...</p>
+			{/if}
+		</main>
 
-		<!-- Debug -->
-		<!--
-		{#if Object.keys(submittedAnswers).length > 0}
-			<div class="participate-page__results-viewer">
-				<h3>Your Submitted Answers</h3>
-				<pre>{JSON.stringify(submittedAnswers, null, 2)}</pre>
+		{#if hasSubmitted && showResults}
+			<div class="results-display">
+				{#if currentResults}
+					<SessionAnalyticsItem activityResult={currentResults} />
+				{:else}
+					<p>Loading results...</p>
+				{/if}
 			</div>
 		{/if}
-		-->
-	</footer>
+
+		{#if isStudentPaced}
+			<footer class="participate-page__footer">
+				<Button onclick={goToNext} disabled={studentPacedIndex >= allActivities.length - 1}
+					>Next</Button
+				>
+			</footer>
+		{/if}
+	{/if}
 </div>
 
 <style lang="scss">
 	.participate-page {
-		max-width: 768px;
+		max-width: $container-max-width-sm;
+		width: 100%;
 		margin: 2rem auto;
 		padding: 2rem;
 		font-family: sans-serif;
@@ -149,53 +223,11 @@
 			}
 		}
 
-		&__results-control {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			gap: 1.5rem;
-			padding: 1.5rem;
-			border: 1px dashed #ccc;
-			border-radius: 8px;
-			background-color: #fafafa;
-		}
-
-		&__results-display {
-			width: 100%;
-		}
-
 		&__footer {
 			margin-top: 1rem;
 			display: flex;
 			flex-direction: column;
 			gap: 1.5rem;
-		}
-
-		&__navigation {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			padding: 1rem;
-			background-color: #f8f9fa;
-			border-radius: 8px;
-		}
-
-		&__results-viewer {
-			background-color: #2d2d2d;
-			color: #f1f1f1;
-			border-radius: 8px;
-			padding: 1rem;
-
-			h3 {
-				margin: 0 0 1rem;
-				border-bottom: 1px solid #444;
-				padding-bottom: 0.5rem;
-			}
-
-			pre {
-				white-space: pre-wrap;
-				word-wrap: break-word;
-			}
 		}
 	}
 </style>

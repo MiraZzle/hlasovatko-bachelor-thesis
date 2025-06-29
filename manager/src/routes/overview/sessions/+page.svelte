@@ -10,17 +10,21 @@
 	import type { Session } from '$lib/sessions/types';
 	import { getAllSessions } from '$lib/sessions/session_utils';
 	import type { TemplateStub } from '$lib/templates/types';
-	import { getAvailableBaseTemplates } from '$lib/templates/template_utils';
 	import { createNewSession } from '$lib/sessions/session_utils';
 	import type { SessionMode } from '$lib/shared_types';
+	import { onMount } from 'svelte';
+	import { getAllTemplates } from '$lib/templates/template_utils';
+	import { get } from 'svelte/store';
+	import { deleteSession } from '$lib/sessions/session_utils';
 
 	// state management
 	let isCreateSessionModalOpen = $state(false);
 	let searchTerm = $state('');
 	let currentPage = $state(1);
 
-	let availableTemplates = $state<TemplateStub[]>(getAvailableBaseTemplates());
-	let sessions = $state<Session[]>(getAllSessions());
+	let availableTemplates = $state<TemplateStub[]>([]);
+	let sessions = $state<Session[]>([]);
+	let isLoading = $state(true);
 
 	// Define columns for the DataTable
 	const columns: ColumnHeader<Session>[] = [
@@ -31,13 +35,29 @@
 		{ key: 'id', label: 'Actions', sortable: false }
 	];
 
+	// Fetch data when the component mounts
+	onMount(async () => {
+		isLoading = true;
+		const [templatesData, sessionsData] = await Promise.all([getAllTemplates(), getAllSessions()]);
+
+		// Map the full Template objects to TemplateStub objects for the modal
+		availableTemplates = templatesData.map((t) => ({
+			id: t.id,
+			title: t.settings?.title ?? 'Untitled Template'
+		}));
+
+		sessions = sessionsData;
+		isLoading = false;
+	});
+
 	// Filters sessions based on search term
 	function getFilteredSessions(): Session[] {
 		return sessions.filter((session) => {
 			const lowerSearch = searchTerm.toLowerCase();
 			return (
 				session.title.toLowerCase().includes(lowerSearch) ||
-				session.templateID.toLowerCase().includes(lowerSearch)
+				session.joinCode?.toLowerCase().includes(lowerSearch) ||
+				session.status.toLowerCase().includes(lowerSearch)
 			);
 		});
 	}
@@ -48,6 +68,15 @@
 
 	function closeCreateSessionModal(): void {
 		isCreateSessionModalOpen = false;
+	}
+
+	async function handleDeleteSession(sessionId: string): Promise<void> {
+		let deleteSuccesful = await deleteSession(sessionId);
+		if (deleteSuccesful) {
+			sessions = sessions.filter((session) => session.id !== sessionId);
+		} else {
+			console.error('Failed to delete session with ID:', sessionId);
+		}
 	}
 
 	async function handleCreateSessionSubmit(
@@ -75,7 +104,7 @@
 <div class="sessions-overview-page">
 	<DataTable
 		title="My Sessions"
-		searchPlaceholder="Search sessions by title, code..."
+		searchPlaceholder="Search sessions by title, code, status..."
 		items={filteredSessions}
 		{columns}
 		noResultsMessage="You haven't run any sessions yet."
@@ -85,7 +114,7 @@
 		newItemLabel="Add new Session"
 	>
 		<svelte:fragment slot="row" let:item>
-			<SessionRow session={item} />
+			<SessionRow session={item} onDelete={() => handleDeleteSession(item.id)} />
 		</svelte:fragment>
 	</DataTable>
 

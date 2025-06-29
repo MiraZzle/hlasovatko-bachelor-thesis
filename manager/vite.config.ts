@@ -14,6 +14,11 @@ export default defineConfig({
 	server: {
 		port: 3000
 	},
+	preview: {
+		port: 3001,
+		host: true,
+		allowedHosts: ['manager', 'localhost']
+	},
 	test: {
 		workspace: [
 			{

@@ -3,7 +3,7 @@
 	 * @file Reusable component for displaying a predefined activity card.
 	 * Renders the activity type, title, and associated tags.
 	 */
-	import type { PredefinedActivity } from '$lib/activities/types';
+	import type { Activity } from '$lib/activities/types';
 
 	let {
 		activity,
@@ -11,17 +11,17 @@
 			console.log('Activity card clicked:', id);
 		}
 	}: {
-		activity: PredefinedActivity;
+		activity: Activity;
 		onclick?: (id: string) => void;
 	} = $props();
 </script>
 
 <button type="button" class="activity-card" onclick={() => onclick(activity.id)}>
-	<div class="activity-card__type">{activity.refActivity.type}</div>
-	<p class="activity-card__question">{activity.refActivity.title}</p>
+	<div class="activity-card__type">{activity.type}</div>
+	<p class="activity-card__question">{activity.title}</p>
 	<div class="activity-card__footer">
 		<div class="activity-card__tags">
-			{#each activity.categories as tag (tag)}
+			{#each activity.tags! as tag (tag)}
 				<span class="activity-card__tag">{tag}</span>
 			{/each}
 		</div>

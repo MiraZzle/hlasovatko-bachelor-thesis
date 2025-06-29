@@ -1,19 +1,24 @@
-﻿using System.Text.Json;
+﻿using server.Models.Auth;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models.Activities
 {
-    [JsonPolymorphic(TypeDiscriminatorPropertyName = "ActivityType")]
-    [JsonDerivedType(typeof(QuizActivity), "Quiz")]
-    public abstract class Activity : IActivity {
+    public class Activity : IActivity
+    {
         [Key]
-        public Guid ActivityId { get; set; } = Guid.NewGuid();
-        public string ActivityName { get; set; } = string.Empty;
-        public abstract string ActivityType { get; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        public static Activity Create(JsonElement definition) {
-            return ActivityFactory.CreateActivity(definition);
-        }
+        [Required]
+        public string Title { get; set; } = string.Empty;
+
+        [Required]
+        public string ActivityType { get; set; } = string.Empty;
+
+        [Required]
+        [Column(TypeName = "jsonb")]
+        public string Definition { get; set; } = "{}";
+
+        public List<string> Tags { get; set; } = new();
     }
 }

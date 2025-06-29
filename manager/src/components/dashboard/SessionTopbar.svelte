@@ -3,12 +3,12 @@
 	 * @file Reusable component for displaying the top bar of a session.
 	 * Provides actions to start/stop the session and share it with participants.
 	 */
-	import { goto } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
-	import { startSession, stopSession } from '$lib/functions/session_actions';
+	import { startSession, stopSession } from '$lib/sessions/session_utils';
 	import ShareSessionModal from '$components/elements/modals/ShareSessionModal.svelte';
 	import { getManageSessionLink, getParticipateSessionLink } from '$lib/router/external_routes';
-	import { get } from 'svelte/store';
+	import type { SessionStatus } from '$lib/sessions/types';
 
 	let {
 		sessionId,
@@ -18,17 +18,40 @@
 	}: {
 		sessionId: string;
 		sessionTitle: string;
-		sessionStatus: 'Active' | 'Inactive' | 'Finished';
+		sessionStatus: SessionStatus;
 		joinCode: string;
 	} = $props();
 
 	let isShareModalOpen = $state(false);
+	let isLoading = $state(false);
 	let participateUrl = $state(getParticipateSessionLink(sessionId));
 	let manageUrl = $state(getManageSessionLink(sessionId));
 
-	function handleStartSession(): void {
-		isShareModalOpen = true;
-		startSession(sessionId);
+	async function handleStartSession(): Promise<void> {
+		isLoading = true;
+		try {
+			await startSession(sessionId);
+			isShareModalOpen = true;
+			await invalidateAll(); // rerefresh the session data
+		} catch (error: any) {
+			console.error('Failed to start session:', error);
+			alert(error.message);
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	async function handleStopSession(): Promise<void> {
+		isLoading = true;
+		try {
+			await stopSession(sessionId);
+			await invalidateAll();
+		} catch (error: any) {
+			console.error('Failed to stop session:', error);
+			alert(error.message);
+		} finally {
+			isLoading = false;
+		}
 	}
 </script>
 
@@ -38,12 +61,17 @@
 </span>
 <div class="session-layout__topbar-spacer"></div>
 
-{#if sessionStatus == 'Active'}
-	<Button variant="danger" onclick={() => stopSession(sessionId)}
-		>Stop Session {sessionStatus}</Button
-	>
-{:else if sessionStatus == 'Inactive'}
-	<Button variant="primary" onclick={handleStartSession}>Start Session</Button>
+{#if sessionStatus.toLowerCase() === 'active'}
+	<Button variant="danger" onclick={handleStopSession} disabled={isLoading}>
+		{isLoading ? 'Stopping...' : 'Stop Session'}
+	</Button>
+	<Button variant="outline" onclick={() => (isShareModalOpen = true)} disabled={isLoading}>
+		Share Session
+	</Button>
+{:else if sessionStatus.toLowerCase() === 'inactive' || sessionStatus.toLowerCase() === 'planned'}
+	<Button variant="primary" onclick={handleStartSession} disabled={isLoading}>
+		{isLoading ? 'Starting...' : 'Start Session'}
+	</Button>
 {/if}
 
 <ShareSessionModal
@@ -75,7 +103,8 @@
 		text-transform: uppercase;
 		white-space: nowrap;
 		flex-shrink: 0;
-		&--inactive {
+		&--inactive,
+		&--planned {
 			background-color: $color-surface-alt;
 			color: $color-text-secondary;
 		}

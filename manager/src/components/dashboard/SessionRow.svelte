@@ -66,7 +66,7 @@
 <tr class="session-row">
 	<td class="session-row__cell session-row__cell--title-code">
 		<span class="session-row__title">{session.title}</span>
-		<span class="session-row__code">({session.templateID})</span>
+		<span class="session-row__code">({session.joinCode})</span>
 	</td>
 
 	<td class="session-row__cell session-row__cell--date">{formattedDate}</td>

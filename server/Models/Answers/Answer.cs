@@ -1,20 +1,29 @@
-﻿using System;
+﻿using server.Models.Activities;
+using server.Models.Sessions;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace server.Models.Answers
 {
-    [JsonPolymorphic(TypeDiscriminatorPropertyName = "AnswerType")]
-    [JsonDerivedType(typeof(QuizAnswer), "Quiz")]
-    public abstract class Answer
+    public class Answer
     {
         [Key]
-        public Guid AnswerId { get; set; } = Guid.NewGuid();
-        public Guid SessionId { get; set; }
-        public Guid ActivityId { get; set; }
-        public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        [JsonIgnore]
-        public virtual string AnswerType { get; }
+        [Required]
+        public Guid ActivityId { get; set; }
+
+        [ForeignKey("ActivityId")]
+        public Activity Activity { get; set; } = null!;
+
+        [Required]
+        public Guid ParticipantId { get; set; }
+
+        [Required]
+        [Column(TypeName = "jsonb")]
+        public string AnswerJson { get; set; } = "{}";
+
+        [Required]
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }
 }

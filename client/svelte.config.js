@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const isProd = process.env.NODE_ENV === 'production';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -32,6 +33,9 @@ const config = {
 			$layouts: './src/layouts',
 			$scripts: './src/scripts',
 			$types: './src/lib/types'
+		},
+		paths: {
+			base: isProd ? '/engage' : ''
 		}
 	}
 };

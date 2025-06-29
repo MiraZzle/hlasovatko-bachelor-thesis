@@ -15,11 +15,11 @@
 	import type { Template } from '$lib/templates/types';
 	import { updateTemplate } from '$lib/templates/template_utils';
 	import type { Activity } from '$lib/activities/types';
-	import { getAllActivitiesFromBank } from '$lib/activities/activity_utils';
 	import AddFromBankModal from '$components/elements/modals/AddFromBankModal.svelte';
+	import { getActivityBank } from '$lib/activities/activity_utils';
 
 	let template_id = $page.params.template_id;
-	let activitiesFromBank = getAllActivitiesFromBank();
+	let activitiesFromBank = $state<Activity[]>([]);
 
 	// State management
 	let viewMode = $state<'json' | 'visual'>('visual'); // default to visual mode
@@ -42,6 +42,7 @@
 	 * Load the template definition when the component mounts
 	 */
 	onMount(async () => {
+		activitiesFromBank = await getActivityBank();
 		isLoading = true;
 		error = null;
 		try {
@@ -176,13 +177,14 @@
 		error = null;
 
 		try {
-			const updatedTemplateObject = JSON.parse(templateJsonString);
-			const success = await updateTemplate(template_id, updatedTemplateObject);
-			if (!success) {
+			const updatedTemplateObject: Template = JSON.parse(templateJsonString);
+			const result = await updateTemplate(template_id, updatedTemplateObject);
+
+			if (!result) {
 				throw new Error('Server returned an error on save.');
 			}
 
-			templateDefinition = updatedTemplateObject;
+			templateDefinition = result;
 			saveSuccessMessage = 'Template saved successfully!';
 			setTimeout(() => (saveSuccessMessage = null), 3000);
 		} catch (err) {

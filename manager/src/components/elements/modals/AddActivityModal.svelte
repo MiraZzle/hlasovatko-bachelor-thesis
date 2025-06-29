@@ -80,7 +80,7 @@
 				title: title.trim(),
 				type: selectedActivityType,
 				definition: JSON.parse(activityDefinition),
-				categories: categories
+				tags: categories
 			});
 			requestClose();
 		} catch (err) {
