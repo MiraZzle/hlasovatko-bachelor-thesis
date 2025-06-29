@@ -1,4 +1,4 @@
-<img src="./docs/images/engagenie-logo.png" height="80">
+<img src="./docs/images/engagenie-logo.png" height="70">
 
 ![Version Badge](https://img.shields.io/badge/version-1.0.0-blue?style=flat)
 ![Contributors Badge](https://img.shields.io/badge/contributors-1-green?style=flat)
