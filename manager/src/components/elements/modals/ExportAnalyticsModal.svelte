@@ -6,19 +6,16 @@
 	import ModalDialog from '$components/elements/modals/ModalDialog.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
-
-	type ExportFormat = 'csv' | 'xlsx' | 'json';
+	import type { ExportFormat } from '$lib/analytics/types';
 
 	type Props = {
 		open?: boolean;
-		timeFrameLabel?: string;
 		onclose?: () => void;
 		onExport?: (format: ExportFormat) => void | Promise<void>;
 	};
 
 	let {
 		open = $bindable(false),
-		timeFrameLabel = 'the selected period',
 		onclose = () => {
 			open = false;
 		},
@@ -32,7 +29,6 @@
 
 	const formatOptions: { value: ExportFormat; label: string }[] = [
 		{ value: 'csv', label: 'CSV' },
-		{ value: 'xlsx', label: 'Excel (XLSX)' },
 		{ value: 'json', label: 'JSON' }
 	];
 
@@ -74,7 +70,7 @@
 <ModalDialog bind:open {onclose} width="sm" {titleId} {descriptionId}>
 	<h2 id={titleId} class="export-analytics-modal__title">Global Analytics Overview</h2>
 	<p id={descriptionId} class="export-analytics-modal__description">
-		Export your sessions statistics from {timeFrameLabel}.
+		Export your all time statistics.
 	</p>
 
 	<form onsubmit={handleSubmit} class="export-analytics-modal__form">

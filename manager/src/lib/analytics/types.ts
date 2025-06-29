@@ -1,7 +1,7 @@
-export type TimeFrame = '7d' | '30d' | '90d' | 'all';
-export type ExportFormat = 'csv' | 'json' | 'xlsx';
+export type ExportFormat = 'csv' | 'json';
 
-export interface AnalyticsData {
-	timeFrame: TimeFrame;
-	exportFormat: ExportFormat;
+export interface Statistics {
+	totalSessions: number;
+	totalActivities: number;
+	mostCommonActivityType: string;
 }

@@ -3,40 +3,26 @@
 	 * @file Global Analytics Overview page
 	 * This page provides an overview of global analytics across all sessions.
 	 */
-	import Select from '$components/elements/typography/Select.svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import StatCard from '$components/dashboard/StatCard.svelte';
 	import ExportAnalyticsModal from '$components/elements/modals/ExportAnalyticsModal.svelte';
-	import {
-		getTotalNumberOfSessions,
-		getMostPopularActivityType,
-		getTotalResponses
-	} from '$lib/analytics/analytics_utils';
-	import type { TimeFrame } from '$lib/analytics/types';
+	import { getStatistics, exportStatistics } from '$lib/analytics/analytics_utils';
+	import { onMount } from 'svelte';
+	import type { Statistics } from '$lib/analytics/types';
+	import type { ExportFormat } from '$lib/analytics/types';
+	import { API_URL } from '$lib/config';
 
 	let isExportModalOpen = $state(false);
-	let selectedTimeFrame = $state<TimeFrame>('7d');
-	const timeFrameOptions: { value: TimeFrame; label: string }[] = [
-		{ value: '7d', label: '7 days' },
-		{ value: '30d', label: '30 days' },
-		{ value: '90d', label: '90 days' },
-		{ value: 'all', label: 'All time' }
-	];
+	let statistics: Statistics | null = $state(null);
 
-	/*
-	 * Calculates global metrics based on the selected time frame.
-	 */
-	function getGlobalMetrics() {
-		return {
-			sessions: getTotalNumberOfSessions(selectedTimeFrame),
-			activity: getMostPopularActivityType(selectedTimeFrame),
-			answers: getTotalResponses(selectedTimeFrame)
-		};
-	}
-
-	function handleTimeFrameChange(event: Event & { currentTarget: HTMLSelectElement }) {
-		console.log('Time frame changed to:', selectedTimeFrame);
-	}
+	onMount(async () => {
+		try {
+			statistics = await getStatistics();
+		} catch (error) {
+			console.error('Failed to fetch statistics:', error);
+			alert('Failed to load statistics. Please try again later.');
+		}
+	});
 
 	function openExportModal(): void {
 		isExportModalOpen = true;
@@ -46,20 +32,18 @@
 		isExportModalOpen = false;
 	}
 
-	function handleExportSubmit(format: string): void {
-		console.log(
-			`Exporting statistics for time frame '${selectedTimeFrame}' in format '${format}'...`
-		);
-		alert(`Exporting ${format}... (Placeholder)`);
+	async function handleExportSubmit(format: string): Promise<void> {
+		try {
+			await exportStatistics(format as ExportFormat);
+			alert('Export successful!');
+		} catch (error) {
+			alert(
+				`Failed to export statistics: ${error instanceof Error ? error.message : 'Unknown error'}`
+			);
+		} finally {
+			closeExportModal();
+		}
 	}
-
-	function getCurrentTimeFrameLabel(): string {
-		const option = timeFrameOptions.find((opt) => opt.value === selectedTimeFrame);
-		return option ? `the last ${option.label.toLowerCase()}` : 'the selected period';
-	}
-
-	let currentTimeFrameLabel = $derived(getCurrentTimeFrameLabel());
-	let globalMetrics = $derived(getGlobalMetrics());
 </script>
 
 <svelte:head>
@@ -73,42 +57,40 @@
 	</header>
 
 	<div class="analytics-page__controls">
-		<Select
-			label="Time Frame"
-			options={timeFrameOptions}
-			bind:value={selectedTimeFrame}
-			onchange={handleTimeFrameChange}
-			ariaLabel="Select time frame for analytics"
-		/>
 		<Button variant="outline" onclick={openExportModal}>Export</Button>
 	</div>
 
-	<div class="analytics-page__stats-grid">
-		<StatCard title="Total Sessions">
-			<p class="analytics-page__stat-value">{globalMetrics.sessions}</p>
-		</StatCard>
+	{#if !statistics}
+		<p>Loading statistics...</p>
+	{:else}
+		<div class="analytics-page__stats-grid">
+			<StatCard title="Total sessions">
+				<p class="analytics-page__stat-value">{statistics!.totalSessions}</p>
+			</StatCard>
 
-		<StatCard title="Total Responses">
-			<p class="analytics-page__stat-value">{globalMetrics.answers}</p>
-		</StatCard>
+			<StatCard title="Total activities">
+				<p class="analytics-page__stat-value">{statistics!.totalActivities}</p>
+			</StatCard>
 
-		<StatCard title="Most Popular Activity Type">
-			<p class="analytics-page__stat-value">{globalMetrics.activity}</p>
-		</StatCard>
-	</div>
+			<StatCard title="Most popular activity type">
+				<p class="analytics-page__stat-value">{statistics!.mostCommonActivityType}</p>
+			</StatCard>
+		</div>
+	{/if}
 
 	<section class="analytics-page__raw-data">
-		<h2 class="raw-data__title">Need raw data?</h2>
+		<h2 class="raw-data__title">Need more control?</h2>
 		<p class="raw-data__text">
-			Use the public API. <a href="/docs/api" target="_blank" rel="noopener noreferrer"
-				>[Read the Docs]</a
+			Use the public API. <a
+				href="{API_URL}/swagger/index.html"
+				target="_blank"
+				rel="noopener noreferrer">[Read the Docs]</a
 			>
 		</p>
 	</section>
 
 	<ExportAnalyticsModal
 		bind:open={isExportModalOpen}
-		timeFrameLabel={currentTimeFrameLabel}
 		onclose={closeExportModal}
 		onExport={handleExportSubmit}
 	/>

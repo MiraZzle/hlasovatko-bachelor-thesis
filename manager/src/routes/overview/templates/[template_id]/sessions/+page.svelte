@@ -67,7 +67,7 @@
 
 <div class="sessions-overview-page">
 	<DataTable
-		title="Session for Template {templateId}"
+		title="Sessions based on this template"
 		searchPlaceholder="Search sessions by title, code..."
 		items={filteredSessions}
 		{columns}
