@@ -1,23 +1,25 @@
-# EngaGenie
+<img src="./docs/images/engagenie-logo.png" height="80">
 
-This repository contains the code and project files for my bachelor thesis — a real-time classroom engagement platform.
+![Version Badge](https://img.shields.io/badge/version-1.0.0-blue?style=flat)
+![Contributors Badge](https://img.shields.io/badge/contributors-1-green?style=flat)
+![License Badge](https://img.shields.io/badge/license-MIT-red?style=flat)
 
----
+## About
 
-## Cloning the Repository
+A real-time classroom engagement platform for improving and enriching the interaction between teachers and students. The frontend is built using [Svelte](https://svelte.dev/) and [TypeScript](https://www.typescriptlang.org/). The backend is powered by [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) and [C#](https://learn.microsoft.com/en-us/dotnet/csharp/). The platform uses a [PostgreSQL](https://www.postgresql.org/) database, which can be managed with [Adminer](https://www.adminer.org/).
+
+## Running Locally
+
+To run the project locally, you will need [Docker](https://www.docker.com/products/docker-desktop/) and [Docker Compose](https://docs.docker.com/compose/).
+
+First, clone the repository:
 
 ```bash
 git clone https://github.com/MiraZzle/hlasovatko-bachelor-thesis.git
 cd hlasovatko-bachelor-thesis
 ```
 
----
-
-## How to Run
-
-Requires [Docker](https://www.docker.com/products/docker-desktop/) and [Docker Compose](https://docs.docker.com/compose/).
-
-### 1. Create `.env` file in the root
+Next, create a `.env` file in the root of the project with the following content (or just rename the file `.env.example` to `.env`):
 
 ```env
 CLIENT_PORT=3000
@@ -39,47 +41,26 @@ DB_PASSWORD=1234
 DB_NAME=engagenie
 ```
 
-### 2. Run
+Finally, run the following commands to build and start the application:
 
 ```bash
 docker compose build --no-cache
 docker compose up
 ```
 
-- Manager (teacher): [http://localhost/](http://localhost/)
-- Client (student): [http://localhost/engage](http://localhost/engage)
-- Backend API: [http://localhost/api](http://localhost/api)
-- Adminer (DB UI): [http://localhost:8085](http://localhost:8085)
+The applications will be available at the following URLs:
 
-> All traffic goes through NGINX reverse proxy on port **80**.
-> Login credentials for testing:
-> Email: test@example.com
-> Password: 1234
+- **Manager (teacher):** [http://localhost/](https://www.google.com/search?q=http://localhost/)
+- **Client (student):** [http://localhost/engage](https://www.google.com/search?q=http://localhost/engage)
+- **Backend API:** [http://localhost/api](https://www.google.com/search?q=http://localhost/api)
+- **Adminer (DB UI):** [http://localhost:8085](https://www.google.com/search?q=http://localhost:8085)
 
-## Password: 1234
+## Contributing
 
-## PostgreSQL Management
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-You can inspect the database with Adminer:
+## License
 
-- Go to: [http://localhost:8085](http://localhost:8085)
-- Login:
+[MIT](/LICENSE.md)
 
-  - System: PostgreSQL
-  - Server: `db`
-  - User: `postgres`
-  - Password: `1234`
-  - Database: `engagenie`
-
----
-
-## Documentation
-
-See the full project wiki: [GitHub Wiki](https://github.com/MiraZzle/hlasovatko-bachelor-thesis/wiki)
-
----
-
-## Thesis
-
-The thesis is written in LaTeX and available on Overleaf:
-[Overleaf Project](https://www.overleaf.com/read/ghkpfkxdbsyv#629916)
+Made by [MiraZzle](https://github.com/MiraZzle)
