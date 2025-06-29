@@ -65,6 +65,9 @@
 	<Button variant="danger" onclick={handleStopSession} disabled={isLoading}>
 		{isLoading ? 'Stopping...' : 'Stop Session'}
 	</Button>
+	<Button variant="outline" onclick={() => (isShareModalOpen = true)} disabled={isLoading}>
+		Share Session
+	</Button>
 {:else if sessionStatus.toLowerCase() === 'inactive' || sessionStatus.toLowerCase() === 'planned'}
 	<Button variant="primary" onclick={handleStartSession} disabled={isLoading}>
 		{isLoading ? 'Starting...' : 'Start Session'}
