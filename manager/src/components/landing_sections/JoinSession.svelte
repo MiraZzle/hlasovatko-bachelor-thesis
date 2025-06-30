@@ -2,7 +2,6 @@
 	/**
 	 * @file JoinSession component for allowing users to join a session using a game code.
 	 */
-	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import { getParticipateSessionLinkWithCode } from '$lib/router/external_routes';
@@ -14,7 +13,6 @@
 		if (!gameCode.trim()) {
 			return;
 		}
-
 		try {
 			const participateLink = await getParticipateSessionLinkWithCode(gameCode);
 			window.location.href = participateLink;

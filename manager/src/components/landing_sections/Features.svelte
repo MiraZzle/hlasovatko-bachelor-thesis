@@ -19,24 +19,21 @@
 				<span slot="question">Multiple Choice</span>
 				<div slot="answer">
 					<p>
-						Ask single- or multiple-answer questions to check understanding in real-time. Ideal for
+						Ask single or multiple-answer questions to check understanding in real-time. Ideal for
 						concept checks, quick assessments, or sparking discussion.
 					</p>
 				</div>
 			</AccordionItem>
 
 			<AccordionItem>
-				<span slot="question">Polls and Opinions</span>
+				<span slot="question">Polls</span>
 				<div slot="answer">
-					<p>
-						Quickly collect opinions or check understanding using simple polls. Choose from
-						predefined options or allow open-ended voting.
-					</p>
+					<p>Quickly collect opinions or check understanding using simple polls.</p>
 				</div>
 			</AccordionItem>
 
 			<AccordionItem>
-				<span slot="question">Live Rating Scales</span>
+				<span slot="question">Rating Scales</span>
 				<div slot="answer">
 					<p>
 						Let students rate topics, confidence, or preferences on a numeric or Likert scale. Ideal
@@ -48,10 +45,7 @@
 			<AccordionItem>
 				<span slot="question">Open-ended Reflections</span>
 				<div slot="answer">
-					<p>
-						Collect qualitative feedback or critical thinking responses from students. Support
-						pre-lecture prompts or follow-up reflections.
-					</p>
+					<p>Collect qualitative feedback or critical thinking responses from students.</p>
 				</div>
 			</AccordionItem>
 
@@ -59,8 +53,8 @@
 				<span slot="question">Session-based Control for Teachers</span>
 				<div slot="answer">
 					<p>
-						Manage a sequence of activities in real-time. Control pacing, activate or skip
-						questions, and monitor participation live without needing to log in again.
+						Manage a sequence of activities in real-time. Control pacing and monitor participation
+						in near real-time.
 					</p>
 				</div>
 			</AccordionItem>

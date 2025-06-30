@@ -23,8 +23,8 @@
 			icon={OpenSourceIcon}
 		/>
 		<BenefitCard
-			title="Privacy & Accessibility First"
-			description="Privacy-respecting by design. No tracking, no accounts, and anonymous participation."
+			title="Privacy First"
+			description="Privacy-respecting by design. No personal data tracking and anonymous participation."
 			icon={PrivacyIcon}
 		/>
 	</div>

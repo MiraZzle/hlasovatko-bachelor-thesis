@@ -1,7 +1,6 @@
 <script lang="ts">
 	/**
 	 * @file Navbar component for the landing page.
-	 * Provides navigation links and a toggleable menu for mobile view.
 	 */
 	import Button from '$components/elements/typography/Button.svelte';
 	import { GITHUB_URL } from '$lib/config';
@@ -12,7 +11,6 @@
 		isMenuOpen = !isMenuOpen;
 	}
 
-	// Close the menu when a navigation link is clicked
 	function handleNavLinkClick(): void {
 		if (isMenuOpen) {
 			isMenuOpen = false;
@@ -20,7 +18,6 @@
 	}
 
 	function handleLogin(): void {
-		console.log('Log In clicked');
 		window.location.href = '/login';
 	}
 </script>
@@ -48,10 +45,10 @@
 			<nav class="navbar__nav">
 				<ul class="navbar__list">
 					<li class="navbar__item">
-						<a href="#features" class="navbar__link" onclick={handleNavLinkClick}>Activities</a>
+						<a href="#features" class="navbar__link" onclick={handleNavLinkClick}>Features</a>
 					</li>
 					<li class="navbar__item">
-						<a href="/discovery" class="navbar__link" onclick={handleNavLinkClick}>Usecases</a>
+						<a href="/guide" class="navbar__link" onclick={handleNavLinkClick}>Guide</a>
 					</li>
 					<li class="navbar__item">
 						<a

@@ -20,10 +20,7 @@
 					<a href={GITHUB_URL} class="app-footer__link" target="_blank" rel="noopener">GitHub</a>
 				</li>
 				<li class="app-footer__item">
-					<a href="mailto:you@example.com" class="app-footer__link">Contact</a>
-				</li>
-				<li class="app-footer__item">
-					<a href="/terms" class="app-footer__link">Privacy Policy</a>
+					<a href="mailto:matej@foukalma.cz" class="app-footer__link">Contact</a>
 				</li>
 			</ul>
 		</div>
