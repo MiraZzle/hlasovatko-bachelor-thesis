@@ -17,9 +17,3 @@ export interface Session {
 	currentActivity?: number;
 	templateDefinition?: Template;
 }
-
-export interface SessionMetrics {
-	participants: number;
-	activitiesRun: number;
-	answersReceived: number;
-}

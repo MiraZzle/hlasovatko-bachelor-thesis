@@ -7,9 +7,8 @@
 	import { onMount } from 'svelte';
 	import Button from '$components/elements/typography/Button.svelte';
 	import StatCard from '$components/dashboard/StatCard.svelte';
-	import { getSessionById, getSessionMetrics } from '$lib/sessions/session_utils';
+	import { getSessionById } from '$lib/sessions/session_utils';
 	import { getParticipateSessionLink, getManageSessionLink } from '$lib/router/external_routes';
-	import type { SessionMetrics } from '$lib/sessions/types';
 
 	type SessionDetails = {
 		title: string;
@@ -19,12 +18,12 @@
 		joinCode?: string;
 		manageLink: string;
 		participateLink: string;
+		activationDate?: string;
 	};
 
 	let session_id = $page.params.session_id;
 
 	let sessionDetails: SessionDetails | null = $state(null);
-	let sessionMetrics: SessionMetrics | null = $state(null);
 	let isLoading = $state(true);
 	let error: string | null = $state(null);
 	let notification = $state('');
@@ -48,11 +47,9 @@
 					createdDate: sessionInfo.created,
 					joinCode: sessionInfo.joinCode,
 					manageLink: getManageSessionLink(session_id),
-					participateLink: getParticipateSessionLink(session_id)
+					participateLink: getParticipateSessionLink(session_id),
+					activationDate: sessionInfo.activationDate
 				};
-
-				// Fetch metrics (currently mocked)
-				sessionMetrics = getSessionMetrics(session_id);
 			} catch (err: any) {
 				console.error('Failed to load session details:', err);
 				error = err.message || 'An unknown error occurred.';
@@ -120,6 +117,12 @@
 					<dd class="info-card__definition">
 						{new Date(sessionDetails.createdDate).toLocaleString()}
 					</dd>
+					{#if sessionDetails.status.toLowerCase() === 'planned' && sessionDetails.activationDate}
+						<dt class="info-card__term">Planned for:</dt>
+						<dd class="info-card__definition">
+							{new Date(sessionDetails.activationDate).toLocaleString()}
+						</dd>
+					{/if}
 				</dl>
 			</div>
 			<div class="info-card info-card--join">
@@ -145,21 +148,6 @@
 				</div>
 			</div>
 		</section>
-
-		<section class="session-overview-page__section">
-			<h2 class="session-overview-page__title">Key Metrics</h2>
-			<div class="metrics-grid">
-				<StatCard title="Participants">
-					<span class="metrics-grid__value">{sessionMetrics!.participants}</span>
-				</StatCard>
-				<StatCard title="Activities Run">
-					<span class="metrics-grid__value">{sessionMetrics!.activitiesRun}</span>
-				</StatCard>
-				<StatCard title="Answers Received">
-					<span class="metrics-grid__value">{sessionMetrics!.answersReceived}</span>
-				</StatCard>
-			</div>
-		</section>
 	</div>
 {:else}
 	<div class="session-not-found">
@@ -181,14 +169,6 @@
 			display: grid;
 			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 			gap: $spacing-lg;
-		}
-
-		&__title {
-			font-size: $font-size-xl;
-			font-weight: $font-weight-semibold;
-			margin-bottom: $spacing-md;
-			color: $color-text-primary;
-			grid-column: 1 / -1;
 		}
 	}
 
@@ -265,22 +245,6 @@
 				background-color: $color-surface-alt;
 				color: $color-primary;
 			}
-		}
-	}
-
-	.metrics-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-		gap: $spacing-lg;
-		grid-column: 1 / -1;
-
-		&__value {
-			font-size: $font-size-3xl;
-			font-weight: $font-weight-bold;
-			color: $color-text-primary;
-			display: block;
-			text-align: center;
-			margin-top: $spacing-sm;
 		}
 	}
 

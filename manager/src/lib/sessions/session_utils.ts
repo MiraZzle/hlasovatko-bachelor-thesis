@@ -1,4 +1,4 @@
-import type { Session, SessionMetrics, SessionStatus } from '$lib/sessions/types';
+import type { Session, SessionStatus } from '$lib/sessions/types';
 import type { SessionMode } from '$lib/shared_types';
 import { API_URL } from '$lib/config';
 import { getToken } from '$lib/auth/auth';
@@ -18,6 +18,7 @@ interface SessionResponseDto {
 	mode: SessionMode;
 	participants: number;
 	currentActivity?: number;
+	createdAt?: string;
 }
 
 /**
@@ -32,7 +33,7 @@ function mapResponseToSession(dto: SessionResponseDto): Session {
 		templateID: dto.templateId,
 		templateVersion: dto.templateVersion.toString(),
 		status: dto.status,
-		created: dto.activationDate || new Date().toISOString(),
+		created: dto.createdAt || new Date().toISOString(),
 		joinCode: dto.joinCode,
 		activationDate: dto.activationDate,
 		mode: dto.mode,
@@ -65,21 +66,6 @@ export async function getSessionById(sessionID: string): Promise<Session | null>
 
 	const sessionDto: SessionResponseDto = await response.json();
 	return mapResponseToSession(sessionDto);
-}
-
-/**
- * Returns metrics about a session.
- * @param sessionID The ID of the session.
- * @returns Mocked session metrics.
- */
-export function getSessionMetrics(sessionID: string): SessionMetrics {
-	console.log(`Fetching metrics for session with ID: ${sessionID}`);
-
-	return {
-		participants: 28,
-		activitiesRun: 3,
-		answersReceived: 15
-	};
 }
 
 /**
