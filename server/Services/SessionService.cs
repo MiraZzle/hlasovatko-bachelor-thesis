@@ -70,14 +70,18 @@ namespace server.Services
                 throw new Exception("Template not found or you do not have permission to access it.");
             }
 
+            // check if session is planned and format the date
+            DateTime? setDate = request.ActivationDate.HasValue
+                ? DateTime.SpecifyKind(request.ActivationDate.Value, DateTimeKind.Utc)
+                : null;
+
             var session = new Session {
                 Title = !string.IsNullOrEmpty(request.Title) ? request.Title : template.Settings.Title,
                 TemplateId = template.Id,
                 TemplateVersion = template.Version,
                 Status = request.ActivationDate.HasValue ? SessionStatus.Planned : SessionStatus.Inactive,
                 JoinCode = await GenerateUniqueJoinCode(),
-                ActivationDate = request.ActivationDate,
-                Mode = request.Mode ?? SessionMode.TeacherPaced,
+                ActivationDate = setDate,
                 CurrentActivity = null
             };
 
@@ -196,6 +200,7 @@ namespace server.Services
                 Mode = session.Mode,
                 Participants = session.Participants,
                 CurrentActivity = session.CurrentActivity,
+                CreatedAt = session.Created,
                 Activities = session.Activities?.Select(a => new ActivityResponseDto {
                     Id = a.Id,
                     Title = a.Title,
