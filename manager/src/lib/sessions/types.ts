@@ -17,3 +17,9 @@ export interface Session {
 	currentActivity?: number;
 	templateDefinition?: Template;
 }
+
+export interface SessionJoinInfo {
+	id: string;
+	title: string;
+	mode: SessionMode;
+}

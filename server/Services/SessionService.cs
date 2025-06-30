@@ -75,6 +75,10 @@ namespace server.Services
                 ? DateTime.SpecifyKind(request.ActivationDate.Value, DateTimeKind.Utc)
                 : null;
 
+            // log session mode
+            Console.WriteLine($"Creating session with mode: {request.Mode}");
+
+
             var session = new Session {
                 Title = !string.IsNullOrEmpty(request.Title) ? request.Title : template.Settings.Title,
                 TemplateId = template.Id,
@@ -82,7 +86,8 @@ namespace server.Services
                 Status = request.ActivationDate.HasValue ? SessionStatus.Planned : SessionStatus.Inactive,
                 JoinCode = await GenerateUniqueJoinCode(),
                 ActivationDate = setDate,
-                CurrentActivity = null
+                CurrentActivity = null,
+                Mode = request.Mode ?? template.Settings.SessionPacing,
             };
 
             session.Activities = template.Definition.Select(activity => new Activity {

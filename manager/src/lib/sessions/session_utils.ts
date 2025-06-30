@@ -2,6 +2,7 @@ import type { Session, SessionStatus } from '$lib/sessions/types';
 import type { SessionMode } from '$lib/shared_types';
 import { API_URL } from '$lib/config';
 import { getToken } from '$lib/auth/auth';
+import type { SessionJoinInfo } from '$lib/sessions/types';
 
 /**
  * Interface for the Session Data Transfer Object from the backend.
@@ -66,6 +67,30 @@ export async function getSessionById(sessionID: string): Promise<Session | null>
 
 	const sessionDto: SessionResponseDto = await response.json();
 	return mapResponseToSession(sessionDto);
+}
+
+/**
+ * Fetches the basic session info (ID, title, mode) using the join code.
+ * This is the FIRST call a participant makes.
+ */
+export async function getSessionInfoByJoinCode(joinCode: string): Promise<SessionJoinInfo | null> {
+	try {
+		const response = await fetch(`${API_URL}/api/v1/session/join/${joinCode}`);
+		if (!response.ok) {
+			return null;
+		}
+		const dto: SessionJoinInfo = await response.json();
+
+		// Manually map the DTO to the frontend type for type safety.
+		return {
+			id: dto.id,
+			title: dto.title,
+			mode: dto.mode
+		};
+	} catch (err) {
+		console.error('API error fetching session info:', err);
+		return null;
+	}
 }
 
 /**

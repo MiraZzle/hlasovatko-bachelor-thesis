@@ -192,7 +192,7 @@
 	</section>
 
 	<section class="profile-page__section profile-card">
-		<h2 class="profile-card__title">Change Password</h2>
+		<h2 class="profile-card__title">Change password</h2>
 		<form class="profile-card__form" onsubmit={handleChangePassword}>
 			{#if passwordUpdateError}
 				<p class="profile-card__message profile-card__message--error">{passwordUpdateError}</p>
@@ -209,7 +209,7 @@
 				disabled={isUpdatingPassword}
 			/>
 			<Input
-				label="New Password"
+				label="New Password (6+ characters)"
 				id="new-password"
 				type="password"
 				bind:value={newPassword}

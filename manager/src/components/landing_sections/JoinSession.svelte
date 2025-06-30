@@ -9,14 +9,19 @@
 
 	let gameCode = $state('');
 
-	function handleJoinSession(event: SubmitEvent): void {
+	async function handleJoinSession(event: SubmitEvent): Promise<void> {
 		event.preventDefault();
 		if (!gameCode.trim()) {
-			console.warn('Game code is empty');
 			return;
 		}
-		const participateLink = getParticipateSessionLinkWithCode(gameCode);
-		window.location.href = participateLink;
+
+		try {
+			const participateLink = await getParticipateSessionLinkWithCode(gameCode);
+			window.location.href = participateLink;
+		} catch (err) {
+			alert('Failed to join session: ' + err);
+			return;
+		}
 	}
 </script>
 
