@@ -23,7 +23,6 @@
 	let selectedActivityType = $state('all');
 	let isDetailModalOpen = $state(false);
 	let selectedActivityForDetail = $state<Activity | null>(null);
-	let fileInputRef: HTMLInputElement | null = null;
 
 	onMount(async () => {
 		activities = await getActivityBank();
@@ -79,40 +78,8 @@
 		activities = activities;
 	}
 
-	async function getActivities() {
-		return await getActivityBank();
-	}
-
 	function closeDetailModal(): void {
 		isDetailModalOpen = false;
-	}
-
-	function triggerImport(): void {
-		if (fileInputRef) {
-			fileInputRef.value = '';
-		}
-		fileInputRef?.click();
-	}
-
-	/*
-	 * Handles file selection for importing activities from JSON
-	 * Validates the selected file type and logs the file details
-	 */
-	async function handleFileSelected(event: Event): Promise<void> {
-		const target = event.target as HTMLInputElement;
-		const files = target.files;
-
-		if (files && files.length > 0) {
-			const file = files[0];
-			console.log('Selected file:', file.name, file.type, file.size);
-
-			if (!file.name.toLowerCase().endsWith('.json') && file.type !== 'application/json') {
-				alert('Please select a valid JSON file (.json).');
-				return;
-			}
-		} else {
-			console.log('No file selected.');
-		}
 	}
 
 	/**
@@ -156,16 +123,6 @@
 	<div class="activity-bank-page__controls">
 		<div class="activity-bank-page__actions">
 			<Button variant="primary" onclick={openCreateActivityModal}>Create Activity</Button>
-			<Button variant="outline" onclick={triggerImport}>Import from JSON</Button>
-			<input
-				type="file"
-				accept=".json,application/json"
-				bind:this={fileInputRef}
-				onchange={handleFileSelected}
-				style="display: none;"
-				aria-hidden="true"
-				tabindex="-1"
-			/>
 		</div>
 		<div class="activity-bank-page__filters">
 			<Select

@@ -9,6 +9,7 @@
 	import ToggleSwitch from '../ToggleSwitch.svelte';
 	import type { SessionMode } from '$lib/shared_types';
 	import type { TemplateStub } from '$lib/templates/types';
+	import DatePicker from '$components/elements/typography/DatePicker.svelte';
 
 	let {
 		open = $bindable(false),
@@ -37,7 +38,7 @@
 	} = $props();
 
 	let selectedTemplateId = $state<string>('');
-	let sessionTitle = $state('');
+	let sessionTitle = $state<string>('');
 	let isSubmitting = $state(false);
 	let activationDate = $state<string>(''); // For YYYY-MM-DD format from <input type="date">
 	let sessionMode = $state<SessionMode>('teacher-paced');
@@ -62,14 +63,15 @@
 
 	// Auto-fill session title based on selected template
 	$effect(() => {
-		if (selectedTemplateId && selectedTemplateId !== '') {
+		if (selectedTemplateId) {
 			const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
-			if (selectedTemplate && sessionTitle === '') {
+			if (selectedTemplate) {
 				sessionTitle = selectedTemplate.title;
 			}
+		} else {
+			sessionTitle = '';
 		}
 	});
-
 	// Reset form fields when modal opens
 	$effect(() => {
 		if (open) {
@@ -78,6 +80,7 @@
 			isSubmitting = false;
 			activationDate = todayString;
 			sessionMode = 'teacher-paced';
+			planSession = false;
 		}
 	});
 
@@ -101,6 +104,7 @@
 		}
 		if (isSubmitting) return;
 
+		console.log('Date:', activationDate);
 		isSubmitting = true;
 		try {
 			const finalTitle =
@@ -168,12 +172,12 @@
 		</div>
 
 		{#if planSession}
-			<Input
-				label="Activation Date *"
-				id="activation-date-modal"
+			<DatePicker
+				id="activation-date-picker-modal"
 				bind:value={activationDate}
-				required
 				disabled={isSubmitting}
+				required
+				label="Activation Date *"
 			/>
 		{/if}
 

@@ -8,6 +8,7 @@ using server.Services;
 using System.Text;
 using server.Services.Analytics;
 using server.Services.Analytics.Processors;
+using server.Services.Background;
 
 namespace server
 {
@@ -88,6 +89,9 @@ namespace server
             builder.Services.AddScoped<IActivityResultProcessor, OpenEndedResultProcessor>();
             builder.Services.AddScoped<IActivityResultProcessor, ScaleRatingResultProcessor>();
 
+            // Background services
+            builder.Services.AddHostedService<SessionActivationService>();
+
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -101,6 +105,7 @@ namespace server
                     dbContext.Database.Migrate();
                 }
 
+                // Seed initial data - for demo
                 await DataSeeder.SeedAdminUserAsync(app);
             }
             catch (Exception ex) {

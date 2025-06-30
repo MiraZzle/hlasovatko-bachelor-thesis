@@ -10,12 +10,10 @@
 	<div class="page-container github-cta__container">
 		<h2 class="github-cta__title">Thinking of Using EngaGenie at Your Institution?</h2>
 		<p class="github-cta__description">
-			EngaGenie is open-source and designed for flexibility. Explore the code, contribute, or deploy
-			your own instance.
+			EngaGenie is open-source and designed for further customization. Explore the code, contribute,
+			or deploy your own instance.
 		</p>
-		<Button variant="secondary" onclick={() => window.open(GITHUB_URL, '_blank')}>
-			View on GitHub
-		</Button>
+		<Button variant="secondary" href={GITHUB_URL}>View on GitHub</Button>
 	</div>
 </section>
 

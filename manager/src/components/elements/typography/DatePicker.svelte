@@ -1,41 +1,41 @@
 <script lang="ts">
 	/**
-	 * @file Input component for creating a styled input field.
+	 * @file A simple date picker component
 	 */
+
 	let {
-		type = 'text',
-		name = '',
-		id = '',
-		placeholder = '',
 		value = $bindable(''),
-		required = false,
+		label = '',
+		id = '',
 		disabled = false,
-		label = null,
-		ariaLabel = null,
-		oninput,
-		onkeydown,
-		class: customClass = ''
+		required = false,
+		min = new Date()
 	}: {
-		type?: 'text' | 'email' | 'password' | 'number';
-		name?: string;
-		id?: string;
-		placeholder?: string;
 		value?: string;
-		required?: boolean;
+		label?: string;
+		id?: string;
 		disabled?: boolean;
-		label?: string | null;
-		ariaLabel?: string | null;
-		oninput?: (event: Event & { currentTarget: HTMLInputElement }) => void;
-		onkeydown?: (event: KeyboardEvent & { currentTarget: HTMLInputElement }) => void;
-		class?: string;
+		required?: boolean;
+		min?: Date;
 	} = $props();
 
 	// target for label
 	const defaultId = `input-${Math.random().toString(36).substring(2, 9)}`;
 	let currentId = id || defaultId;
+	const today = new Date();
 
-	// dynamic class based on props
-	let inputClasses = `input-wrapper__input ${customClass}`.trim();
+	/**
+	 * Formats a Date object into a string to use in the date input.
+	 * @param {Date} date The date to format.
+	 * @returns {string} The formatted date string (YYYY-MM-DD).
+	 */
+	function getLocalDateString(date: Date): string {
+		const localDate = new Date(date);
+		localDate.setMinutes(localDate.getMinutes() - localDate.getTimezoneOffset());
+		return localDate.toISOString().slice(0, 10);
+	}
+
+	const minDateString = $derived(min ? getLocalDateString(min) : '');
 </script>
 
 <div class="input-wrapper">
@@ -45,18 +45,13 @@
 		</label>
 	{/if}
 	<input
-		class={inputClasses}
-		bind:value
-		{type}
-		{name}
+		type="date"
+		class="input-wrapper__input"
 		id={currentId}
-		{placeholder}
-		{required}
+		bind:value
 		{disabled}
-		aria-label={ariaLabel || label}
-		{oninput}
-		{onkeydown}
-		aria-invalid={required && value === ''}
+		{required}
+		min={minDateString}
 	/>
 </div>
 
@@ -81,6 +76,7 @@
 			font-size: $font-size-md;
 			color: $color-text-primary;
 			transition: border-color $transition-duration-fast $transition-timing-function;
+			box-sizing: border-box;
 
 			&::placeholder {
 				color: $color-text-disabled;
@@ -97,6 +93,11 @@
 				background-color: $color-surface-alt;
 				cursor: not-allowed;
 				opacity: 0.7;
+			}
+
+			&::-webkit-calendar-picker-indicator {
+				cursor: pointer;
+				filter: invert(0.5);
 			}
 		}
 	}

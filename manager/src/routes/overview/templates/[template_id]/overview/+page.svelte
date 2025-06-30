@@ -34,9 +34,6 @@
 	let isSaving = $state(false);
 	let saveSuccessMessage = $state<string | null>(null);
 
-	// File input state
-	let fileInputRef: HTMLInputElement | null = null;
-
 	/*
 	 * Lifecycle hooks
 	 * Load the template definition when the component mounts
@@ -73,41 +70,6 @@
 			}
 		}
 	});
-
-	/*
-	 * Function to trigger the file input click event
-	 */
-	function triggerFileInput(): void {
-		fileInputRef?.click();
-	}
-
-	/*
-	 * Reads the selected JSON file and updates the template definition
-	 */
-	function handleFileSelect(event: Event): void {
-		// Prevent default behavior
-		const target = event.target as HTMLInputElement;
-		const file = target.files?.[0];
-		if (!file) return;
-
-		error = null;
-		isLoading = true;
-
-		// Read the file as text
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			try {
-				const content = e.target?.result as string;
-				templateDefinition = JSON.parse(content);
-			} catch (err) {
-				error = `Error reading file: ${err instanceof Error ? err.message : 'Invalid JSON'}`;
-			} finally {
-				isLoading = false;
-			}
-		};
-		reader.readAsText(file);
-		if (target) target.value = '';
-	}
 
 	/*
 	 * Toggles between JSON and visual view modes
@@ -203,15 +165,6 @@
 <div class="template-overview-page">
 	<header class="template-overview-page__header">
 		<div class="template-overview-page__file-loader">
-			<input
-				type="file"
-				accept=".json,application/json"
-				bind:this={fileInputRef}
-				onchange={handleFileSelect}
-				hidden
-				id="template-file-input"
-			/>
-			<Button variant="outline" onclick={triggerFileInput}>Import/Replace JSON</Button>
 			<Button onclick={() => (isModalOpen = true)}>Add from Bank</Button>
 		</div>
 		<div class="template-overview-page__view-toggle">

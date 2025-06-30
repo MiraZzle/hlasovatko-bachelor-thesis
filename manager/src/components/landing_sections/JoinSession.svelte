@@ -2,21 +2,24 @@
 	/**
 	 * @file JoinSession component for allowing users to join a session using a game code.
 	 */
-	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import { getParticipateSessionLinkWithCode } from '$lib/router/external_routes';
 
 	let gameCode = $state('');
 
-	function handleJoinSession(event: SubmitEvent): void {
+	async function handleJoinSession(event: SubmitEvent): Promise<void> {
 		event.preventDefault();
 		if (!gameCode.trim()) {
-			console.warn('Game code is empty');
 			return;
 		}
-		const participateLink = getParticipateSessionLinkWithCode(gameCode);
-		window.location.href = participateLink;
+		try {
+			const participateLink = await getParticipateSessionLinkWithCode(gameCode);
+			window.location.href = participateLink;
+		} catch (err) {
+			alert('Failed to join session: ' + err);
+			return;
+		}
 	}
 </script>
 

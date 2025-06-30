@@ -18,8 +18,8 @@ export interface Session {
 	templateDefinition?: Template;
 }
 
-export interface SessionMetrics {
-	participants: number;
-	activitiesRun: number;
-	answersReceived: number;
+export interface SessionJoinInfo {
+	id: string;
+	title: string;
+	mode: SessionMode;
 }

@@ -21,5 +21,6 @@ namespace server.Models.Sessions.DTOs
         public int? CurrentActivity { get; set; }
         public Guid TemplateId { get; set; }
         public int TemplateVersion { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

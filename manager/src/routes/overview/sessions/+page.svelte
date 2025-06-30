@@ -31,7 +31,7 @@
 		{ key: 'title', label: 'Title', sortable: true },
 		{ key: 'created', label: 'Created', sortable: true },
 		{ key: 'status', label: 'Status', sortable: true },
-		{ key: 'participants', label: 'Participants', sortable: true },
+		{ key: 'participants', label: 'Answers', sortable: true },
 		{ key: 'id', label: 'Actions', sortable: false }
 	];
 

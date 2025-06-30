@@ -1,7 +1,8 @@
-import type { Session, SessionMetrics, SessionStatus } from '$lib/sessions/types';
+import type { Session, SessionStatus } from '$lib/sessions/types';
 import type { SessionMode } from '$lib/shared_types';
 import { API_URL } from '$lib/config';
 import { getToken } from '$lib/auth/auth';
+import type { SessionJoinInfo } from '$lib/sessions/types';
 
 /**
  * Interface for the Session Data Transfer Object from the backend.
@@ -18,6 +19,7 @@ interface SessionResponseDto {
 	mode: SessionMode;
 	participants: number;
 	currentActivity?: number;
+	createdAt?: string;
 }
 
 /**
@@ -32,7 +34,7 @@ function mapResponseToSession(dto: SessionResponseDto): Session {
 		templateID: dto.templateId,
 		templateVersion: dto.templateVersion.toString(),
 		status: dto.status,
-		created: dto.activationDate || new Date().toISOString(),
+		created: dto.createdAt || new Date().toISOString(),
 		joinCode: dto.joinCode,
 		activationDate: dto.activationDate,
 		mode: dto.mode,
@@ -68,18 +70,27 @@ export async function getSessionById(sessionID: string): Promise<Session | null>
 }
 
 /**
- * Returns metrics about a session.
- * @param sessionID The ID of the session.
- * @returns Mocked session metrics.
+ * Fetches the basic session info (ID, title, mode) using the join code.
+ * This is the FIRST call a participant makes.
  */
-export function getSessionMetrics(sessionID: string): SessionMetrics {
-	console.log(`Fetching metrics for session with ID: ${sessionID}`);
+export async function getSessionInfoByJoinCode(joinCode: string): Promise<SessionJoinInfo | null> {
+	try {
+		const response = await fetch(`${API_URL}/api/v1/session/join/${joinCode}`);
+		if (!response.ok) {
+			return null;
+		}
+		const dto: SessionJoinInfo = await response.json();
 
-	return {
-		participants: 28,
-		activitiesRun: 3,
-		answersReceived: 15
-	};
+		// Manually map the DTO to the frontend type for type safety.
+		return {
+			id: dto.id,
+			title: dto.title,
+			mode: dto.mode
+		};
+	} catch (err) {
+		console.error('API error fetching session info:', err);
+		return null;
+	}
 }
 
 /**

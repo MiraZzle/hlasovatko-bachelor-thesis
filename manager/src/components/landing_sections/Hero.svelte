@@ -2,15 +2,7 @@
 	/**
 	 * @file Hero section for the landing page.
 	 */
-	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
-
-	function handleGetStarted(): void {
-		goto('/about');
-	}
-	function handleCreateSessions(): void {
-		goto('/overview/sessions');
-	}
 </script>
 
 <section class="hero-section">
@@ -22,8 +14,8 @@
 			A university-focused interactive platform for quizzes, polls, live Q&A sessions.
 		</p>
 		<div class="hero-section__actions">
-			<Button variant="secondary" onclick={handleGetStarted}>Get Started</Button>
-			<Button variant="primary" onclick={handleCreateSessions}>Create Session</Button>
+			<Button variant="secondary" href="/guide">Get Started</Button>
+			<Button variant="primary" href="/login">Create Session</Button>
 		</div>
 	</div>
 </section>
