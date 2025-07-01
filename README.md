@@ -56,11 +56,24 @@ docker compose up
 
 The applications will be available at the following URLs:
 
-- **Manager (teacher):** [http://localhost/](https://www.google.com/search?q=http://localhost/)
+- **Manager (teacher):** [http://localhost/](http://localhost)
   > Demo: You can login with the A_USER_EMAIL and A_USER_PASSWORD credentials.
-- **Client (student):** [http://localhost/engage](https://www.google.com/search?q=http://localhost/engage)
-- **Backend API:** [http://localhost/server](https://www.google.com/search?q=http://localhost/server)
-- **Adminer (DB UI):** [http://localhost:8085](https://www.google.com/search?q=http://localhost:8085)
+- **Client (student):** [http://localhost/engage](http://localhost/engage)
+- **Backend API:** [http://localhost/server](http://localhost/server)
+- **Adminer (DB UI):** [http://localhost:8085](http://localhost:8085)
+
+## Testing
+
+This project uses [xUnit](https://xunit.net/) for Server unit testing.
+
+> [!WARNING]
+> You must have the [.NET CLI](https://learn.microsoft.com/en-us/dotnet/core/tools/) installed to run tests from the command line.
+
+To run all tests, navigate to `server.Tests` directory and use:
+
+```bash
+dotnet test
+```
 
 ## Contributing
 
@@ -68,6 +81,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 
-[MIT](/LICENSE.md)
+This project is licensed under the [MIT License](/LICENSE.md).
 
-Made by [MiraZzle](https://github.com/MiraZzle)
+Made by [Matěj Foukal](https://github.com/MiraZzle), supervised by [Mgr. Petr Škoda, Ph.D](https://github.com/skodapetr)

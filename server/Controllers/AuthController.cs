@@ -73,6 +73,7 @@ namespace server.Controllers
         /// <summary>
         /// Changes the password for authenticated user.
         /// </summary>
+        /// <returns>
         /// 200 OK if the password was changed successfully.<br/>
         /// 400 Bad Request if the change fails or input is invalid.
         /// </returns>

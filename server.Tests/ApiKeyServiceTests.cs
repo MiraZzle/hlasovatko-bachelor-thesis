@@ -21,7 +21,7 @@ namespace server.Tests
             // Arrange
             using var context = new AppDbContext(_dbOptions);
             var apiKeyService = new ApiKeyService(context);
-            var user = new User { Id = Guid.NewGuid(), Email = "apikey@example.com", Name = "API User", PasswordHash = "somehash" };
+            var user = new User { Id = Guid.NewGuid(), Email = "apikey@example.com", Name = "Neopatrny Pan", PasswordHash = "somehash" };
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
@@ -39,7 +39,7 @@ namespace server.Tests
             // Arrange
             using var context = new AppDbContext(_dbOptions);
             var apiKeyService = new ApiKeyService(context);
-            var user = new User { Id = Guid.NewGuid(), Email = "getuser@example.com", Name = "GetUser", PasswordHash = "anotherhash" };
+            var user = new User { Id = Guid.NewGuid(), Email = "getuser@example.com", Name = "Chci Jmeno", PasswordHash = "anotherhash" };
             context.Users.Add(user);
             await context.SaveChangesAsync();
             var newApiKey = await apiKeyService.RegenerateKeyAsync(user.Id);

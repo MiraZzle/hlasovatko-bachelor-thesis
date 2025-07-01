@@ -122,7 +122,15 @@
             401 Unauthorized if authentication fails.
             </returns>
         </member>
-        <!-- Badly formed XML comment ignored for member "M:server.Controllers.AuthController.ChangePassword(server.Models.Auth.DTOs.ChangePasswordRequestDto)" -->
+        <member name="M:server.Controllers.AuthController.ChangePassword(server.Models.Auth.DTOs.ChangePasswordRequestDto)">
+            <summary>
+            Changes the password for authenticated user.
+            </summary>
+            <returns>
+            200 OK if the password was changed successfully.<br/>
+            400 Bad Request if the change fails or input is invalid.
+            </returns>
+        </member>
         <member name="T:server.Controllers.SessionController">
             <summary>
             Controller for managing sessions.

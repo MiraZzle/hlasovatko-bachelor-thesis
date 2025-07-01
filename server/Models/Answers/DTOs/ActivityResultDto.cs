@@ -11,11 +11,11 @@ namespace server.Models.Answers.DTOs
         /// <summary>
         /// Reference to the activity, including its metadata and definition.
         /// </summary>
-        public ActivityResponseDto ActivityRef { get; set; }
+        public required ActivityResponseDto ActivityRef { get; set; }
 
         /// <summary>
         /// The aggregated results for the activity, represented as a JSON object.
         /// </summary>
-        public JsonElement Results { get; set; }
+        public required JsonElement Results { get; set; }
     }
 }
