@@ -8,6 +8,9 @@ using server.Extensions;
 
 namespace server.Controllers
 {
+    /// <summary>
+    /// Controller for any kind of stats.
+    /// </summary>
     [ApiController]
     [Route("api/v1/statistics")]
     [Authorize(Policy = "AuthenticatedUser")]
@@ -19,6 +22,12 @@ namespace server.Controllers
             _statisticsService = statisticsService;
         }
 
+        /// <summary>
+        /// Retrieves overall statistics for the authenticated user.
+        /// </summary>
+        /// <returns>
+        /// 200 OK with a StatisticsDto obj containing the users statistics.
+        /// </returns>
         [HttpGet]
         [Produces("application/json")]
         public async Task<IActionResult> GetStatistics() {
@@ -27,6 +36,16 @@ namespace server.Controllers
             return Ok(stats);
         }
 
+        /// <summary>
+        /// Exports the users statistics in specified format.
+        /// </summary>
+        /// <param name="format">
+        /// The export format: <c>csv</c> or <c>json</c> (case-insensitive).
+        /// </param>
+        /// <returns>
+        /// 200 OK with a file containing the statistics in the requested format.<br/>
+        /// 400 Bad Request if the format is invalid.
+        /// </returns>
         [HttpGet("export")]
         public async Task<IActionResult> ExportStatistics([FromQuery] string format) {
             var userId = this.GetCurrentUserId();
