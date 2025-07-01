@@ -9,6 +9,8 @@ namespace server.Services.Analytics.Processors
 
         public JsonElement Process(string activityDefinition, List<Answer> answers) {
             var pollDef = JsonDocument.Parse(activityDefinition).RootElement;
+
+            // Build a dictionary of option ID -> option data with count set to 0
             var options = pollDef.GetProperty("options").EnumerateArray()
                                  .ToDictionary(opt => opt.GetProperty("id").GetString()!,
                                                opt => new { id = opt.GetProperty("id").GetString(), text = opt.GetProperty("text").GetString(), count = 0 });
@@ -17,6 +19,7 @@ namespace server.Services.Analytics.Processors
                 var answerDoc = JsonDocument.Parse(answer.AnswerJson).RootElement;
                 if (answerDoc.TryGetProperty("selectedOptionIds", out var idsElement)) {
                     var ids = idsElement.EnumerateArray().Select(e => e.GetString());
+                    // For each selected option increment its count
                     foreach (var selectedId in ids) {
                         if (selectedId != null && options.ContainsKey(selectedId)) {
                             var current = options[selectedId];

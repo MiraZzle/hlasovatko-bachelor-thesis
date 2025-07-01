@@ -95,8 +95,8 @@ namespace server.Data
                             new { id = "3", text = "Excel macros" },
                             new { id = "4", text = "Blood, sweat, and tears" }
                         },
-                        correctAnswer = new[] { "1" },
-                        allowMultiple = false
+                        correctOptionId = new[] { "1" },
+                        allowMultipleAnswers = false
                     })
                 },
 
@@ -114,8 +114,8 @@ namespace server.Data
                             new { id = "3", text = "CSS" },
                             new { id = "4", text = "Markdown" }
                         },
-                        correctAnswer = new[] { "2" },
-                        allowMultiple = false
+                        correctOptionId = new[] { "2" },
+                        allowMultipleAnswers = false
                     })
                 },
                 new ActivityRequestDto
@@ -140,8 +140,7 @@ namespace server.Data
                             new { id = "1", text = "Reading slides and lecture notes" },
                             new { id = "2", text = "Solving past exams" },
                             new { id = "3", text = "Group study sessions" }
-                        },
-                        allowMultiple = false
+                        }
                     })
                 },
                 new ActivityRequestDto
@@ -155,6 +154,24 @@ namespace server.Data
                         max = 10,
                         minLabel = "Not Confident At All",
                         maxLabel = "SQL Wizard"
+                    })
+                },
+                new ActivityRequestDto
+                {
+                    Title = "Which of these books must a good Matfyz student read?",
+                    ActivityType = "multiple_choice",
+                    Tags = new List<string> { "matfyz", "books", "sample" },
+                    Definition = ToJsonElement(new
+                    {
+                        options = new[]
+                        {
+                            new { id = "1", text = "The Art of Computer Programming" },
+                            new { id = "2", text = "How to Make Friends and Segfault People" },
+                            new { id = "3", text = "Clean Code but Every Variable is Named 'data'" },
+                            new { id = "4", text = "Learn Git the Harder Way (and Still Fail to Merge)" }
+                        },
+                        correctOptionId = new[] { "1", "2", "3", "4" },
+                        allowMultipleAnswers = true
                     })
                 }
             };
