@@ -4,6 +4,10 @@ using server.Models.Enums;
 
 namespace server.Utils
 {
+    /// <summary>
+    /// My custom JSON converter for the SessionStatus enum.
+    /// Serializes <see cref="SessionStatus"/> values as lowercase strings.
+    /// </summary>
     public class SessionStatusJsonConverter : JsonConverter<SessionStatus>
     {
         public override SessionStatus Read(

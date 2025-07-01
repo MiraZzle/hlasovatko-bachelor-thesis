@@ -3,7 +3,12 @@ using System.Text.Json.Serialization;
 using server.Models.Enums;
 
 namespace server.Utils
-{
+{    
+    /// <summary>
+    /// My custom JSON converter for the SessionMode enum.
+    /// Serializes <see cref="SessionMode"/> values as kebab-case strings 
+    /// ("teacher-paced" or "student-paced") and deserializes them back to the corresponding enum values.
+    /// </summary>
     public class SessionModeJsonConverter : JsonConverter<SessionMode>
     {
         public override SessionMode Read(
