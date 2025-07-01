@@ -28,30 +28,30 @@
 	const mcDef = $derived(activity.definition as MultipleChoiceDefinition);
 	const srDef = $derived(activity.definition as ScaleRatingDefinition);
 
+	function getInitialValue(act: Activity) {
+		switch (act.type) {
+			case 'multiple_choice':
+			case 'poll':
+				const mcDef = act.definition as MultipleChoiceDefinition;
+				return mcDef?.allowMultipleAnswers ? [] : null;
+			case 'open_ended':
+				return ''; // Initialize as an empty string, not null
+			case 'scale_rating':
+			default:
+				return null;
+		}
+	}
+
 	// Holds user answer
-	let value: string | string[] | number | null = $state(null);
+	let value: string | string[] | number | null = $state(getInitialValue(activity));
 
 	/**
 	 * Effect that resets the value based on the activity type.
 	 * This is necessary to ensure that the input is cleared when the activity changes.
 	 */
 	$effect(() => {
-		// Trigger effect when activity changes
 		const _ = activity.id;
-
-		switch (activity.type) {
-			case 'multiple_choice':
-			case 'poll':
-				value = mcDef?.allowMultipleAnswers ? [] : null;
-				break;
-			case 'open_ended':
-				value = '';
-				break;
-			case 'scale_rating':
-			default:
-				value = null;
-				break;
-		}
+		value = getInitialValue(activity);
 	});
 
 	// Checks if the current value is valid for submission

@@ -45,31 +45,54 @@
 	const JITTER_AMOUNT = 1000; // Max random jitter in ms
 
 	onMount(async () => {
-		sessionInfo = await getSessionById(session_id);
+		try {
+			sessionInfo = await getSessionById(session_id);
 
-		if (!sessionInfo) {
-			errorMessage = 'Session not found';
+			if (!sessionInfo) {
+				errorMessage = 'Session not found';
+				isLoading = false;
+				return;
+			}
+
+			isStudentPaced = sessionInfo!.mode === 'student-paced';
+
+			try {
+				allActivities = await getActivitiesFromSession(session_id);
+				console.log('These are the activities:', allActivities);
+				console.log(allActivities.length);
+			} catch (error) {
+				console.error('Failed to fetch activities:', error);
+				errorMessage = 'Could not load activities for this session.';
+				isLoading = false;
+				return;
+			}
+
+			if (isStudentPaced) {
+				sessionState = await getSessionState(session_id);
+			} else {
+				pollStateWithJitter();
+			}
+
+			if (sessionState) {
+				showResults = sessionState.showResults;
+			}
+		} catch (error) {
+			console.error('Failed to initialize session:', error);
+			errorMessage = 'Could not load the session.';
+		} finally {
 			isLoading = false;
-			return;
-		}
-
-		isStudentPaced = sessionInfo!.mode === 'student-paced';
-
-		allActivities = await getActivitiesFromSession(session_id);
-		isLoading = false;
-
-		if (!isStudentPaced) {
-			pollStateWithJitter();
-		}
-
-		if (sessionState) {
-			showResults = sessionState.showResults;
 		}
 	});
 
 	onDestroy(() => {
 		clearTimeout(statePollTimeoutId);
 		clearTimeout(resultsPollTimeoutId);
+	});
+
+	$effect(() => {
+		if (sessionState) {
+			showResults = sessionState.showResults;
+		}
 	});
 
 	$effect(() => {
@@ -81,8 +104,9 @@
 	});
 
 	$effect(() => {
-		if (isLoading || !sessionInfo) return;
-
+		if (isLoading || !sessionInfo || allActivities.length === 0) {
+			return;
+		}
 		let activeId: string | undefined | null;
 		if (isStudentPaced) {
 			activeId = allActivities[studentPacedIndex]?.id;
@@ -110,7 +134,7 @@
 	/**
 	 * Fetches the session state
 	 */
-	async function pollStateWithJitter() {
+	async function pollStateWithJitter(): Promise<void> {
 		sessionState = await getSessionState(session_id);
 
 		const jitter = Math.random() * JITTER_AMOUNT;
@@ -120,7 +144,7 @@
 	/**
 	 * Fetches activity results
 	 */
-	async function pollResultsWithJitter() {
+	async function pollResultsWithJitter(): Promise<void> {
 		if (currentActivity) {
 			currentResults = await getActivityResults(session_id, currentActivity.id);
 		}
@@ -129,7 +153,7 @@
 		resultsPollTimeoutId = setTimeout(pollResultsWithJitter, RESULTS_POLLING_INTERVAL + jitter);
 	}
 
-	async function handleActivitySubmit(payload: SubmitPayload) {
+	async function handleActivitySubmit(payload: SubmitPayload): Promise<void> {
 		const fullPayload: SubmitPayload = {
 			...payload,
 			activityType: currentActivity!.type as StaticActivityType
