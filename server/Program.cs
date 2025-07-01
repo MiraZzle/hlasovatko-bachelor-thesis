@@ -5,10 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using server.Auth;
 using server.Data;
 using server.Services;
-using System.Text;
 using server.Services.Analytics;
 using server.Services.Analytics.Processors;
 using server.Services.Background;
+using System.Reflection;
+using System.Text;
 
 namespace server
 {
@@ -94,7 +95,12 @@ namespace server
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+                options.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
+            });
 
             var app = builder.Build();
 
