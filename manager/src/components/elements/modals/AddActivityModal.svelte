@@ -10,6 +10,7 @@
 	import type { SelectOption } from '$lib/shared_types';
 	import type { NewActivityData } from '$lib/activities/types';
 	import type { StaticActivityType } from '$lib/activities/types';
+	import { toast } from '$lib/stores/toast_store';
 
 	let {
 		open = $bindable(false),
@@ -56,14 +57,14 @@
 	 */
 	async function handleSubmit(): Promise<void> {
 		if (!title.trim() || !selectedActivityType) {
-			alert('Please provide a title and select an activity type.');
+			toast.show('Please provide a title and select an activity type.', 'error');
 			return;
 		}
 		if (activityDefinition.trim()) {
 			try {
 				JSON.parse(activityDefinition);
 			} catch (e) {
-				alert('Activity definition does not seem to be valid JSON.');
+				toast.show('Activity definition does not seem to be valid JSON.', 'error');
 				return;
 			}
 		}
@@ -85,7 +86,10 @@
 			requestClose();
 		} catch (err) {
 			console.error('Error adding activity:', err);
-			alert(`Failed to add activity: ${err instanceof Error ? err.message : 'Unknown error'}`);
+			toast.show(
+				`Failed to add activity: ${err instanceof Error ? err.message : 'Unknown error'}`,
+				'error'
+			);
 		} finally {
 			isSubmitting = false;
 		}

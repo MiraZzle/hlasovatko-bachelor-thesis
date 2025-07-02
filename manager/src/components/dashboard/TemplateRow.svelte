@@ -7,6 +7,7 @@
 	import { tick } from 'svelte';
 	import type { Template } from '$lib/templates/types';
 	import { formatDate } from '$lib/functions/utils';
+	import { toast } from '$lib/stores/toast_store';
 
 	let {
 		template,
@@ -37,6 +38,7 @@
 	function handleDelete(event: MouseEvent): void {
 		event.stopPropagation();
 		onDelete(template.id);
+		toast.show(`Template "${template.settings!.title}" deleted.`, 'info');
 		isMenuOpen = false;
 	}
 

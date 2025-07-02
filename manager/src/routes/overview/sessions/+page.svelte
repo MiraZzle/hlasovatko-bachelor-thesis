@@ -16,6 +16,7 @@
 	import { getAllTemplates } from '$lib/templates/template_utils';
 	import { get } from 'svelte/store';
 	import { deleteSession } from '$lib/sessions/session_utils';
+	import { toast } from '$lib/stores/toast_store';
 
 	// state management
 	let isCreateSessionModalOpen = $state(false);
@@ -75,7 +76,7 @@
 		if (deleteSuccesful) {
 			sessions = sessions.filter((session) => session.id !== sessionId);
 		} else {
-			console.error('Failed to delete session with ID:', sessionId);
+			toast.show('Failed to delete session.', 'error');
 		}
 	}
 
@@ -89,8 +90,9 @@
 			const session = await createNewSession(templateId, title, activationDate, sessionMode);
 			sessions.push(session);
 			sessions = sessions;
+			toast.show(`Session "${session.title}" created successfully!`, 'success');
 		} catch (error) {
-			console.error('Session creation failed:', error);
+			toast.show('Failed to create session.', 'error');
 		}
 	}
 

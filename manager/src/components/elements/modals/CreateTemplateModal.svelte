@@ -7,6 +7,7 @@
 	import Input from '$components/elements/typography/Input.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
 	import type { Template } from '$lib/templates/types';
+	import { toast } from '$lib/stores/toast_store';
 
 	let {
 		open = $bindable(false),
@@ -49,7 +50,7 @@
 	 */
 	async function handleSubmit(): Promise<void> {
 		if (!name.trim()) {
-			alert('Please enter a template name.');
+			toast.show('Please enter a template name.', 'error');
 			return;
 		}
 		if (isSubmitting) return;
@@ -60,7 +61,10 @@
 			requestClose();
 		} catch (err) {
 			console.error('Error during template creation:', err);
-			alert(`Failed to create template: ${err instanceof Error ? err.message : 'Unknown error'}`);
+			toast.show(
+				`Failed to create template: ${err instanceof Error ? err.message : 'Unknown error'}`,
+				'error'
+			);
 		} finally {
 			isSubmitting = false;
 		}

@@ -7,6 +7,7 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Select from '$components/elements/typography/Select.svelte';
 	import type { ExportFormat } from '$lib/analytics/types';
+	import { toast } from '$lib/stores/toast_store';
 
 	type Props = {
 		open?: boolean;
@@ -51,7 +52,10 @@
 			requestClose();
 		} catch (err) {
 			console.error('Error during export:', err);
-			alert(`Failed to export statistics: ${err instanceof Error ? err.message : 'Unknown error'}`);
+			toast.show(
+				`Failed to export statistics: ${err instanceof Error ? err.message : 'Unknown error'}`,
+				'error'
+			);
 		} finally {
 			isSubmitting = false;
 		}

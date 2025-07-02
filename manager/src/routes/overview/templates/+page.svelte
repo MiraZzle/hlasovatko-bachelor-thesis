@@ -12,6 +12,7 @@
 	import { createNewTemplate } from '$lib/templates/template_utils';
 	import { onMount } from 'svelte';
 	import { deleteTemplate } from '$lib/templates/template_utils';
+	import { toast } from '$lib/stores/toast_store';
 
 	// state management
 	let searchTerm = $state('');
@@ -60,9 +61,10 @@
 		);
 
 		if (newTemplate) {
+			toast.show(`Template "${newTemplate.settings!.title}" created successfully!`, 'success');
 			templates.push(newTemplate);
 		} else {
-			alert('Failed to create template.');
+			toast.show('Failed to create template.', 'error');
 		}
 	}
 
@@ -88,7 +90,7 @@
 		if (success) {
 			templates = templates.filter((t) => t.id !== templateId);
 		} else {
-			alert('Failed to delete template.');
+			toast.show('Failed to delete template.', 'error');
 		}
 	}
 

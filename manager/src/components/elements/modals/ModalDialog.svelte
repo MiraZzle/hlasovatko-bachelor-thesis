@@ -107,7 +107,7 @@
 				aria-label="Close dialog"
 				type="button"
 			>
-				<span aria-hidden="true">❌</span>
+				<span aria-hidden="true">&times;</span>
 			</button>
 
 			<div class="modal-dialog__content">
@@ -179,6 +179,7 @@
 			z-index: 1;
 			height: $font-size-3xl;
 			width: $font-size-3xl;
+			font-size: $font-size-4xl;
 
 			&:hover {
 				color: $color-text-primary;

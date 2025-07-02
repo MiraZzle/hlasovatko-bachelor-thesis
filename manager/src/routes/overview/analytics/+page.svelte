@@ -11,6 +11,7 @@
 	import type { Statistics } from '$lib/analytics/types';
 	import type { ExportFormat } from '$lib/analytics/types';
 	import { API_URL } from '$lib/config';
+	import { toast } from '$lib/stores/toast_store';
 
 	let isExportModalOpen = $state(false);
 	let statistics: Statistics | null = $state(null);
@@ -20,7 +21,10 @@
 			statistics = await getStatistics();
 		} catch (error) {
 			console.error('Failed to fetch statistics:', error);
-			alert('Failed to load statistics. Please try again later.');
+			toast.show(
+				`Failed to load statistics: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				'error'
+			);
 		}
 	});
 
@@ -35,10 +39,11 @@
 	async function handleExportSubmit(format: string): Promise<void> {
 		try {
 			await exportStatistics(format as ExportFormat);
-			alert('Export successful!');
+			toast.show('Export successful!', 'success');
 		} catch (error) {
-			alert(
-				`Failed to export statistics: ${error instanceof Error ? error.message : 'Unknown error'}`
+			toast.show(
+				`Failed to export statistics: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				'error'
 			);
 		} finally {
 			closeExportModal();
