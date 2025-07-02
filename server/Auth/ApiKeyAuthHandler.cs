@@ -20,6 +20,7 @@ namespace server.Auth
             _apiKeyService = apiKeyService;
         }
 
+        // Custom auth logic
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
             // Check if request has the API key header
             if (!Request.Headers.TryGetValue(ApiKeyHeaderName, out var apiKeyHeaderValues)) {

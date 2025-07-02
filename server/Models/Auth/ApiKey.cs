@@ -6,7 +6,9 @@
 
     namespace server.Models.Auth
     {
-        
+        /// <summary>
+        /// ApiKey entity representing an API key for a user.
+        /// </summary>
         public class ApiKey
         {
             [Key]
@@ -24,6 +26,9 @@
             [Required]
             public string PartialKey { get; set; } = string.Empty;
 
+            /// <summary>
+            /// Flag indicating whether the API key is enabled or disabled.
+            /// </summary>
             public bool IsEnabled { get; set; } = true;
             public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
             public DateTime? LastUsedDate { get; set; }

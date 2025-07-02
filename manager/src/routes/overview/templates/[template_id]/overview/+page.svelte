@@ -17,6 +17,7 @@
 	import type { Activity } from '$lib/activities/types';
 	import AddFromBankModal from '$components/elements/modals/AddFromBankModal.svelte';
 	import { getActivityBank } from '$lib/activities/activity_utils';
+	import { toast } from '$lib/stores/toast_store';
 
 	let template_id = $page.params.template_id;
 	let activitiesFromBank = $state<Activity[]>([]);
@@ -108,13 +109,13 @@
 		updateTemplate(templateDefinition!.id, templateDefinition!)
 			.then((success) => {
 				if (success) {
-					alert('Template updated successfully!');
+					toast.show('Template updated successfully!', 'success');
 				} else {
 					// Revert optimistic update on failure
 					templateDefinition!.definition = templateDefinition!.definition.filter(
 						(act) => !newActivities.includes(act)
 					);
-					alert('Failed to update template.');
+					toast.show('Failed to update template.', 'error');
 				}
 			})
 			.catch((error) => {
@@ -122,7 +123,7 @@
 					(act) => !newActivities.includes(act)
 				);
 				console.error('Error updating template:', error);
-				alert('An error occurred while updating the template.');
+				toast.show('An error occurred while updating the template.', 'error');
 			});
 	}
 

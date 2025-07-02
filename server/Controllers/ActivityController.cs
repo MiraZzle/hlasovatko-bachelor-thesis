@@ -7,6 +7,9 @@ using server.Extensions;
 
 namespace server.Controllers
 {
+    /// <summary>
+    /// Controller for handling activity bank operations.
+    /// </summary>
     [Route("api/v1/activity-bank")]
     [ApiController]
     [Authorize(Policy = "AuthenticatedUser")]
@@ -18,6 +21,10 @@ namespace server.Controllers
             _activityService = activityService;
         }
 
+        /// <summary>
+        /// Retrieves the all activities in the activity bank for the current user.
+        /// </summary>
+        /// <returns> All activities in the bank if succesful. </returns>
         [HttpGet]
         public async Task<IActionResult> GetActivityBank() {
             var ownerId = this.GetCurrentUserId();
@@ -25,8 +32,12 @@ namespace server.Controllers
             return Ok(activities);
         }
 
+        /// <summary>
+        /// Adds a new activity to the current user's activity bank.
+        /// </summary>
         [HttpPost]
-        public async Task<IActionResult> AddToBank([FromBody] ActivityRequestDto request) {
+        public async Task<IActionResult> AddToBank(
+            [FromBody] ActivityRequestDto request) {
             try {
                 var ownerId = this.GetCurrentUserId();
                 var newActivity = await _activityService.AddToBankAsync(request, ownerId);

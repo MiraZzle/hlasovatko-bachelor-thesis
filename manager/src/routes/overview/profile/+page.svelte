@@ -11,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import { getInitials } from '$lib/functions/utils';
 	import type { User } from '$lib/auth/types';
+	import { toast } from '$lib/stores/toast_store';
 
 	type CurrentUser = User & {
 		initials: string;
@@ -126,13 +127,13 @@
 	 */
 	async function copyApiKey(): Promise<void> {
 		if (!currentUser.apiKey) {
-			alert('Full API key is not available. Please regenerate it first.');
+			toast.show('Full API key is not available. Please regenerate it first.', 'info');
 			return;
 		}
 
 		copySuccessMessage = null;
 		if (!navigator.clipboard) {
-			alert('Clipboard API not available in this browser.');
+			toast.show('Clipboard API not available in this browser.', 'error');
 			return;
 		}
 		try {
@@ -143,8 +144,7 @@
 				copySuccessMessage = null;
 			}, 2500);
 		} catch (err) {
-			console.error('Failed to copy API Key:', err);
-			alert('Failed to copy API Key to clipboard.');
+			toast.show('Failed to copy API Key to clipboard.', 'error');
 		}
 	}
 
@@ -161,7 +161,7 @@
 			currentUser.partialApiKey = await getPartialApiKey();
 			isApiKeyVisible = true;
 
-			alert('API Key regenerated successfully! Copy it now – it will not be shown again.');
+			toast.show('API Key regenerated! Copy it now – it will not be shown again!', 'info');
 		} catch (e) {
 			apiKeyError = 'API key regeneration failed. Please try again.';
 		} finally {

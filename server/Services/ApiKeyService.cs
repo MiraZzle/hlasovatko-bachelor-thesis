@@ -50,7 +50,7 @@ namespace server.Services
 
         public async Task<ApiKeyDto?> GetKeyForUserAsync(Guid userId) {
             var apiKey = await _context.ApiKeys
-                .AsNoTracking() // Read-only query for better performance
+                .AsNoTracking()
                 .Where(k => k.UserId == userId)
                 .Select(k => new ApiKeyDto {
                     PartialKey = k.PartialKey,
@@ -64,12 +64,11 @@ namespace server.Services
 
         public async Task<User?> GetUserFromApiKeyAsync(string rawApiKey) {
             // Linear search through all keys to find a match
-            // !suboptimal
+            // Could be improved - todo later
             var allKeys = await _context.ApiKeys.Include(k => k.User).ToListAsync();
 
             foreach (var key in allKeys) {
                 if (BCrypt.Net.BCrypt.Verify(rawApiKey, key.KeyHash)) {
-                    // if found, update last used date and return the user
                     key.LastUsedDate = DateTime.UtcNow;
                     await _context.SaveChangesAsync();
                     return key.User;
@@ -79,11 +78,8 @@ namespace server.Services
             return null;
         }
 
-        /// <summary>
-        /// Generates a cryptographically secure, URL-safe API key.
-        /// </summary>
         private string GenerateSecureApiKey() {
-            const int keyLength = 32; // Generates a 256-bit key
+            const int keyLength = 32;
             var bytes = new byte[keyLength];
             using (var rng = RandomNumberGenerator.Create()) {
                 rng.GetBytes(bytes);

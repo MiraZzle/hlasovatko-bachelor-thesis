@@ -8,6 +8,7 @@
 	import { getSessionIdByJoinCode } from '$lib/sessions/session_utils';
 	import { base } from '$app/paths';
 	import { getSessionInfoByJoinCode } from '$lib/sessions/session_utils';
+	import { toast } from '$lib/stores/toast_store';
 
 	let gameCode = $state('');
 	let isLoading = $state(false);
@@ -27,12 +28,13 @@
 			const sessionId = await getSessionInfoByJoinCode(code);
 			if (!sessionId) {
 				error = 'Invalid session code. Please try again.';
+				isLoading = false;
 				return;
 			}
 			await goto(`${base}/participate/${sessionId}`);
 		} catch (err) {
 			console.error('Error joining session:', err);
-			error = 'Failed to join session. Please try again later.';
+			toast.show('Failed to join session. Please try again later.', 'error');
 		} finally {
 			isLoading = false;
 		}

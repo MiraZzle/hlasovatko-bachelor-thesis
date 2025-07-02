@@ -10,6 +10,7 @@
 	import type { SessionMode } from '$lib/shared_types';
 	import type { TemplateStub } from '$lib/templates/types';
 	import DatePicker from '$components/elements/typography/DatePicker.svelte';
+	import { toast } from '$lib/stores/toast_store';
 
 	let {
 		open = $bindable(false),
@@ -99,12 +100,11 @@
 	 */
 	async function handleSubmit(): Promise<void> {
 		if (!selectedTemplateId) {
-			alert('Please select a template.');
+			toast.show('Please select a template.', 'error');
 			return;
 		}
 		if (isSubmitting) return;
 
-		console.log('Date:', activationDate);
 		isSubmitting = true;
 		try {
 			const finalTitle =
@@ -119,8 +119,10 @@
 			);
 			requestClose();
 		} catch (err) {
-			console.error('Error during session creation:', err);
-			alert(`Failed to start session: ${err instanceof Error ? err.message : 'Unknown error'}`);
+			toast.show(
+				`Failed to start session: ${err instanceof Error ? err.message : 'Unknown error'}`,
+				'error'
+			);
 		} finally {
 			isSubmitting = false;
 		}

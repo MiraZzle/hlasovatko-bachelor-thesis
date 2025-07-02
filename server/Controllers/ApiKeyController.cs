@@ -8,6 +8,9 @@ using server.Extensions;
 
 namespace server.Controllers
 {
+    /// <summary>
+    /// Controller for managing API keys for users.
+    /// </summary>
     [Route("api/v1/apikey")]
     [ApiController]
     [Authorize]
@@ -19,6 +22,13 @@ namespace server.Controllers
             _apiKeyService = apiKeyService;
         }
 
+        /// <summary>
+        /// Retrieves a partial key for the current user.
+        /// </summary>
+        /// <returns>
+        /// 200 OK with apikeydto if a key exists.<br/>
+        /// 404 Not Found if the user does not have an API key.
+        /// </returns>
         [HttpGet]
         public async Task<IActionResult> GetKey() {
             var userId = this.GetCurrentUserId();
@@ -31,6 +41,12 @@ namespace server.Controllers
             return Ok(keyInfo);
         }
 
+        /// <summary>
+        /// Regenerates the API key for the current user.
+        /// </summary>
+        /// <returns>
+        /// 200 OK with apikeydto containing the new RAW!!! API key and key info.
+        /// </returns>
         [HttpPost("regenerate")]
         public async Task<IActionResult> RegenerateKey() {
             var userId = this.GetCurrentUserId();

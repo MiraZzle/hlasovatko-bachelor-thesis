@@ -8,6 +8,7 @@
 	import { tick } from 'svelte';
 	import { onDestroy } from 'svelte';
 	import { formatDate } from '$lib/functions/utils';
+	import { toast } from '$lib/stores/toast_store';
 
 	let {
 		session,
@@ -53,6 +54,7 @@
 	function handleDelete(event: MouseEvent): void {
 		event.stopPropagation();
 		onDelete(session.id);
+		toast.show(`Session "${session.title}" deleted.`, 'info');
 		isMenuOpen = false;
 	}
 

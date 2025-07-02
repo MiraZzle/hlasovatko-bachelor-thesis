@@ -24,7 +24,6 @@ namespace server.Services
         }
 
         public async Task<ActivityResponseDto> AddToBankAsync(ActivityRequestDto dto, Guid ownerId) {
-            // Re-serialize the JsonElement to a string for validation and storage.
             var definitionJson = JsonSerializer.Serialize(dto.Definition);
             await ValidateActivityDefinitionAsync(dto.ActivityType, definitionJson);
 
@@ -59,18 +58,6 @@ namespace server.Services
                 .ToListAsync();
 
             return activitiesFromDb.Select(a => MapActivityToDto(a));
-        }
-
-        private async Task ValidateActivityDefinition(string activityType, string definitionJson) {
-            var schemaPath = Path.Combine(AppContext.BaseDirectory, "Schemas", $"{activityType}.json");
-            if (!File.Exists(schemaPath)) {
-                throw new Exception($"Schema for activity type '{activityType}' not found.");
-            }
-            var schema = await JsonSchema.FromJsonAsync(await File.ReadAllTextAsync(schemaPath));
-            var errors = schema.Validate(definitionJson);
-            if (errors.Any()) {
-                throw new Exception($"Invalid activity definition: {string.Join(", ", errors.Select(e => e.Path + ": " + e.Kind))}");
-            }
         }
 
         public ActivityResponseDto MapActivityToDto(IActivity activity) {

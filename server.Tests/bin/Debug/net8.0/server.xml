@@ -1,0 +1,1352 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>server</name>
+    </assembly>
+    <members>
+        <member name="T:server.Controllers.ActivityController">
+            <summary>
+            Controller for handling activity bank operations.
+            </summary>
+        </member>
+        <member name="M:server.Controllers.ActivityController.GetActivityBank">
+            <summary>
+            Retrieves the all activities in the activity bank for the current user.
+            </summary>
+            <returns> All activities in the bank if succesful. </returns>
+        </member>
+        <member name="M:server.Controllers.ActivityController.AddToBank(server.Models.Activities.DTOs.ActivityRequestDto)">
+            <summary>
+            Adds a new activity to the current user's activity bank.
+            </summary>
+        </member>
+        <member name="T:server.Controllers.AnswerController">
+            <summary>
+            Controller for handling answer submissions and retrievals.
+            </summary>
+        </member>
+        <member name="M:server.Controllers.AnswerController.SubmitAnswer(System.Guid,server.Models.Answers.DTOs.CreateAnswerRequestDto)">
+            <summary>
+            Submits an answer for a specific session and activity.
+            </summary>
+            <param name="sessionId">The session id.</param>
+            <param name="request">>The answer details, including ActivityId, ParticipantId, and AnswerJson.</param>
+            <returns>
+            200 OK with the created answer if successful.<br/>
+            400 Bad Request if submission fails or the answer format is invalid.<br/>
+            500 Internal Server Error for unexpected errors.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.AnswerController.GetAllSessionAnswers(System.Guid)">
+            <summary>
+            Retrieves all answers for a specific session for the current user.
+            </summary>
+            <param name="sessionId">The session id.</param>
+            <returns>
+            200 OK with a list of answers for the session.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.AnswerController.GetActivityAnswers(System.Guid,System.Guid)">
+            <summary>
+            Retrieves all answers for a specific activity within a session for the current user.
+            </summary>
+            <param name="sessionId">The session id.</param>
+            <param name="activityId">The activity id.</param>
+            <returns>
+            200 OK with a list of answers for the activity in the session.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.AnswerController.GetSessionResults(System.Guid)">
+            <summary>
+            Retrieves aggregated results for all activities in a session for the current user.
+            </summary>
+            <param name="sessionId">The session id.</param>
+            <returns>
+            200 OK with aggregated results for the session.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.AnswerController.GetActivityResults(System.Guid,System.Guid)">
+            <summary>
+            Retrieves aggregated results for a specific activity in a session.
+            </summary>
+            <param name="sessionId">The session id.</param>
+            <param name="activityId">The activity id.</param>
+            <returns>
+            200 OK with aggregated results for the activity.<br/>
+            404 Not Found if no results are available.
+            </returns>
+        </member>
+        <member name="T:server.Controllers.ApiKeyController">
+            <summary>
+            Controller for managing API keys for users.
+            </summary>
+        </member>
+        <member name="M:server.Controllers.ApiKeyController.GetKey">
+            <summary>
+            Retrieves a partial key for the current user.
+            </summary>
+            <returns>
+            200 OK with apikeydto if a key exists.<br/>
+            404 Not Found if the user does not have an API key.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.ApiKeyController.RegenerateKey">
+            <summary>
+            Regenerates the API key for the current user.
+            </summary>
+            <returns>
+            200 OK with apikeydto containing the new RAW!!! API key and key info.
+            </returns>
+        </member>
+        <member name="T:server.Controllers.AuthController">
+            <summary>
+            Controller for handling user authentication and registration.
+            </summary>
+        </member>
+        <member name="M:server.Controllers.AuthController.Register(server.Models.Auth.DTOs.RegisterRequestDto)">
+            <summary>
+            Registers a new user with the provided details.
+            </summary>
+            <returns>
+            201 Created with the new user ID, name, email if succsful.<br/>
+            400 Bad Request if registration fails or input is invalid.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.AuthController.Login(server.Models.Auth.DTOs.LoginRequestDto)">
+            <summary>
+            Authenticates a user and returns a JWT token if successful.
+            </summary>
+            <returns>
+            200 OK with user info and JWT token if authentication succeeds.<br/>
+            400 Bad Request if input is invalid.<br/>
+            401 Unauthorized if authentication fails.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.AuthController.ChangePassword(server.Models.Auth.DTOs.ChangePasswordRequestDto)">
+            <summary>
+            Changes the password for authenticated user.
+            </summary>
+            <returns>
+            200 OK if the password was changed successfully.<br/>
+            400 Bad Request if the change fails or input is invalid.
+            </returns>
+        </member>
+        <member name="T:server.Controllers.SessionController">
+            <summary>
+            Controller for managing sessions.
+            </summary>
+        </member>
+        <member name="M:server.Controllers.SessionController.GetSessionByJoinCode(System.String)">
+            <summary>
+            Gets session details by join code.
+            </summary>
+            <param name="joinCode">The join code for the session.</param>
+            <returns>
+            200 OK with session id, title, and mode if found.<br/>
+            404 Not Found if no session matches the join code.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.GetParticipantSessionState(System.Guid)">
+            <summary>
+            Gets the current state of a session for a participant.
+            </summary>
+            <param name="sessionId">The session id.</param>
+            <returns>
+            200 OK with the session state.<br/>
+            404 Not Found if the session does not exist or is not active.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.DeleteSession(System.Guid)">
+            <summary>
+            Deletes a session owned by the current user.
+            </summary>
+            <param name="id">The session id.</param>
+            <returns>
+            204 No Content if deleted.<br/>
+            404 Not Found if the session does not exist or the user lacks the permission.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.CreateSession(server.Models.Sessions.DTOs.CreateSessionRequestDto)">
+            <summary>
+            Creates a new session from a template.
+            </summary>
+            <param name="request">The session creation details.</param>
+            <returns>
+            201 Created with the new session details.<br/>
+            400 Bad Request if creation fails.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.GetAllSessions">
+            <summary>
+            Gets all sessions owned by the current user.
+            </summary>
+            <returns>
+            200 OK with a list of sessions.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.GetSessionsByTemplate(System.Guid)">
+            <summary>
+            Gets all sessions created from a specific template for the current user.
+            </summary>
+            <param name="templateId">The template id.</param>
+            <returns>
+            200 OK with a list of sessions.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.GetSessionById(System.Guid)">
+            <summary>
+            Gets session details by session ID.
+            </summary>
+            <param name="id">The session id.</param>
+            <returns>
+            200 OK with session details.<br/>
+            404 Not Found if the session does not exist.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.GetSessionActivities(System.Guid)">
+            <summary>
+            Gets all activities for a session.
+            </summary>
+            <param name="id">The session id.</param>
+            <returns>
+            200 OK with a list of activities.<br/>
+            404 Not Found if the session does not exist or is not accessible.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.StartSession(System.Guid)">
+            <summary>
+            Starts a session owned by the current user.
+            </summary>
+            <param name="id">The session id.</param>
+            <returns>
+            200 OK with updated session details.<br/>
+            404 Not Found if the session does not exist or is already active.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.StopSession(System.Guid)">
+            <summary>
+            Stops a session owned by the current user.
+            </summary>
+            <param name="id">The session id.</param>
+            <returns>
+            200 OK with updated session details.<br/>
+            404 Not Found if the session does not exist or is already finished.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.SessionController.NextActivity(System.Guid)">
+            <summary>
+            Advances the session to the next activity.
+            </summary>
+            <param name="id">The session id.</param>
+            <returns>
+            200 OK with updated session details.<br/>
+            404 Not Found if the session does not exist, is not active, or is on the last activity.
+            </returns>
+        </member>
+        <member name="T:server.Controllers.StatisticsController">
+            <summary>
+            Controller for any kind of stats.
+            </summary>
+        </member>
+        <member name="M:server.Controllers.StatisticsController.GetStatistics">
+            <summary>
+            Retrieves overall statistics for the authenticated user.
+            </summary>
+            <returns>
+            200 OK with a StatisticsDto obj containing the users statistics.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.StatisticsController.ExportStatistics(System.String)">
+            <summary>
+            Exports the users statistics in specified format.
+            </summary>
+            <param name="format">
+            The export format: <c>csv</c> or <c>json</c> (case-insensitive).
+            </param>
+            <returns>
+            200 OK with a file containing the statistics in the requested format.<br/>
+            400 Bad Request if the format is invalid.
+            </returns>
+        </member>
+        <member name="T:server.Controllers.TemplateController">
+            <summary>
+            Controller for managing templates. Requires authenticated users.
+            </summary>
+        </member>
+        <member name="M:server.Controllers.TemplateController.CreateTemplate(server.Models.Templates.DTOs.CreateTemplateRequestDto)">
+            <summary>
+            Creates new template for the authenticated user.
+            </summary>
+            <param name="request">
+            The template details.
+            </param>
+            <returns>
+            201 Created with the new template if successful.<br/>
+            400 Bad Request if input is invalid or creation fails.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.TemplateController.GetTemplate(System.Guid)">
+            <summary>
+            Retrieves a template by its unique id.
+            </summary>
+            <param name="id">The template id.</param>
+            <returns>
+            200 OK with the template details if found.<br/>
+            404 Not Found if the template does not exist.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.TemplateController.GetAllTemplatesForUser">
+            <summary>
+            Retrieves all templates owned for the user.
+            </summary>
+            <returns>
+            200 OK with a list of templates.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.TemplateController.UpdateTemplate(System.Guid,server.Models.Templates.DTOs.UpdateTemplateDto)">
+            <summary>
+            Updates an existing templates definition and settings.
+            </summary>
+            <param name="id">The template id.</param>
+            <param name="request"> The updated template data, including /// </param>
+            <returns>
+            200 OK with the updated template if successful.<br/>
+            400 Bad Request if input is invalid.<br/>
+            404 Not Found if the template does not exist or user lacks permission.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.TemplateController.UpdateTemplateSettings(System.Guid,server.Models.Templates.DTOs.UpdateTemplateSettingsDto)">
+            <summary>
+            Updates only the settings of an existing template.
+            </summary>
+            <param name="id">The template id.</param>
+            <param name="request"> The updated settings. </param>
+            <returns>
+            200 OK with the updated template if successful.<br/>
+            400 Bad Request if input is invalid.<br/>
+            404 Not Found if the template does not exist or user lacks permission.
+            </returns>
+        </member>
+        <member name="M:server.Controllers.TemplateController.DeleteTemplate(System.Guid)">
+            <summary>
+            Deletes a template owned by the authenticated user.
+            </summary>
+            <param name="id">The template id.</param>
+            <returns>
+            204 No Content if deleted.<br/>
+            404 Not Found if the template does not exist or user lacks permission.
+            </returns>
+        </member>
+        <member name="M:server.Data.DataSeeder.SeedAdminUserAsync(Microsoft.Extensions.Hosting.IHost)">
+            <summary>
+            Seeding service for demo data.
+            </summary>
+            <param name="app">The host app.</param>
+        </member>
+        <member name="M:server.Data.DataSeeder.GetInitialActivities">
+            <summary>
+            Returns a list of sample activities to be added to the activity bank.
+            </summary>
+            <returns>A list of ActivityRequestDtos.</returns>
+        </member>
+        <member name="M:server.Extensions.ControllerExtensions.GetCurrentUserId(Microsoft.AspNetCore.Mvc.ControllerBase)">
+            <summary>
+            Gets the current authenticated user's ID from the JWT token claims.
+            </summary>
+        </member>
+        <member name="T:server.Migrations.InitialCreate">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.InitialCreate.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.InitialCreate.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.InitialCreate.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.AddTempSettings">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.AddTempSettings.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.AddTempSettings.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.AddTempSettings.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.UpdateActivities">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateActivities.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateActivities.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateActivities.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.TemplateSettingsMap">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.TemplateSettingsMap.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.TemplateSettingsMap.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.TemplateSettingsMap.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.ActivityBankClass">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.ActivityBankClass.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.ActivityBankClass.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.ActivityBankClass.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.UpdateModel">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateModel.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateModel.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateModel.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.AddAnswersTable">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.AddAnswersTable.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.AddAnswersTable.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.AddAnswersTable.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.UpdateSchema">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateSchema.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateSchema.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.UpdateSchema.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.ConfigureFinalSchema">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.ConfigureFinalSchema.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.ConfigureFinalSchema.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.ConfigureFinalSchema.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Migrations.FixRelationshipNullability">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.FixRelationshipNullability.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.FixRelationshipNullability.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:server.Migrations.FixRelationshipNullability.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:server.Models.Activities.Activity">
+            <summary>
+            Full activity model representing an activity in the system.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.Activity.Id">
+            <summary>
+            The unique identifier of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.Activity.Title">
+            <summary>
+            The title of the activity - should be the question asked.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.Activity.ActivityType">
+            <summary>
+            The type or category of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.Activity.Definition">
+            <summary>
+            The definition of the activity as a JSON object.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.Activity.Tags">
+            <summary>
+            List of tags for categorizing the activity.
+            </summary>
+        </member>
+        <member name="T:server.Models.Activities.BankActivity">
+            <summary>
+            Represents an activity stored in the users activity bank.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.BankActivity.Id">
+            <summary>
+            The unique identifier for the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.BankActivity.Title">
+            <summary>
+            The title of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.BankActivity.ActivityType">
+            <summary>
+            The type of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.BankActivity.Definition">
+            <summary>
+            The definition of the activity as a JSON string.
+            </summary>
+            <remarks>
+            This property stores the activity's structure, such as options and settings.
+            The schema depends on the <c>ActivityType</c> and is validated on the backend.
+            </remarks>
+        </member>
+        <member name="P:server.Models.Activities.BankActivity.Tags">
+            <summary>
+            Optional list of tags for categorizing the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.BankActivity.OwnerId">
+            <summary>
+            The unique identifier of the user who owns this activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.BankActivity.Owner">
+            <summary>
+            Navigation property to the owner of the activity.
+            </summary>
+        </member>
+        <member name="T:server.Models.Activities.DTOs.ActivityRequestDto">
+            <summary>
+            DTO for creating or updating an activity.
+            The Definition is passed as a string and validated on the backend.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityRequestDto.Title">
+            <summary>
+            The title of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityRequestDto.ActivityType">
+            <summary>
+            The type of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityRequestDto.Definition">
+            <summary>
+            The definition of the activity as a JSON object.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityRequestDto.Tags">
+            <summary>
+            Optional list of tags for categorizing the activity.
+            </summary>
+        </member>
+        <member name="T:server.Models.Activities.DTOs.ActivityResponseDto">
+            <summary>
+            DTO for returning a full activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityResponseDto.Id">
+            <summary>
+            The unique identifier of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityResponseDto.Title">
+            <summary>
+            The title of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityResponseDto.ActivityType">
+            <summary>
+            The type of the activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityResponseDto.Definition">
+            <summary>
+            The definition of the activity as a JSON object.
+            </summary>
+        </member>
+        <member name="P:server.Models.Activities.DTOs.ActivityResponseDto.Tags">
+            <summary>
+            List of tags for categorizing the activity.
+            </summary>
+        </member>
+        <member name="T:server.Models.Activities.IActivity">
+            <summary>
+            Interface representing a basic activity structure.
+            </summary>
+        </member>
+        <member name="T:server.Models.Answers.Answer">
+            <summary>
+            Entity representing an individual answer submission for an activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.Answer.Id">
+            <summary>
+            The unique identifier for the answer.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.Answer.ActivityId">
+            <summary>
+            The unique identifier of the activity this answer is for.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.Answer.Activity">
+            <summary>
+            Navigation property to the related activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.Answer.ParticipantId">
+            <summary>
+            The unique identifier of the participant who submitted the answer.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.Answer.AnswerJson">
+            <summary>
+            The answer content as a JSON string.
+            </summary>
+            <remarks>
+            The structure of this JSON depends on the activity type.
+            </remarks>
+        </member>
+        <member name="P:server.Models.Answers.Answer.Timestamp">
+            <summary>
+            The timestamp when the answer was submitted.
+            </summary>
+        </member>
+        <member name="T:server.Models.Answers.DTOs.ActivityResultDto">
+            <summary>
+            DTO for returning the aggregated results of an activity - for displaying overall answers.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.ActivityResultDto.ActivityRef">
+            <summary>
+            Reference to the activity, including its metadata and definition.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.ActivityResultDto.Results">
+            <summary>
+            The aggregated results for the activity, represented as a JSON object.
+            </summary>
+        </member>
+        <member name="T:server.Models.Answers.DTOs.AnswerResponseDto">
+            <summary>
+            DTO for returning an individual answer to an activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.AnswerResponseDto.Id">
+            <summary>
+            The unique identifier of the answer.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.AnswerResponseDto.ActivityId">
+            <summary>
+            The unique identifier of the activity this answer is for.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.AnswerResponseDto.ParticipantId">
+            <summary>
+            The unique identifier of the participant who submitted the answer.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.AnswerResponseDto.AnswerJson">
+            <summary>
+            The answer content as a JSON object.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.AnswerResponseDto.Timestamp">
+            <summary>
+            The timestamp when the answer was submitted.
+            </summary>
+        </member>
+        <member name="T:server.Models.Answers.DTOs.CreateAnswerRequestDto">
+            <summary>
+            DTO for creating a new answer to an activity.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.CreateAnswerRequestDto.ActivityId">
+            <summary>
+            The unique identifier of the activity being answered.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.CreateAnswerRequestDto.ParticipantId">
+            <summary>
+            The unique identifier of the participant submitting the answer.
+            </summary>
+        </member>
+        <member name="P:server.Models.Answers.DTOs.CreateAnswerRequestDto.AnswerJson">
+            <summary>
+            The answer content as a JSON object.
+            </summary>
+            <remarks>
+            The structure of this JSON depends on the activity type.
+            </remarks>
+        </member>
+        <member name="T:server.Models.Auth.server.Models.Auth.ApiKey">
+            <summary>
+            ApiKey entity representing an API key for a user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.server.Models.Auth.ApiKey.KeyHash">
+            <summary>
+            The hashed version of the API key.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.server.Models.Auth.ApiKey.PartialKey">
+            <summary>
+            The last few characters of the raw key to help the user recognize it.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.server.Models.Auth.ApiKey.IsEnabled">
+            <summary>
+            Flag indicating whether the API key is enabled or disabled.
+            </summary>
+        </member>
+        <member name="T:server.Models.Auth.DTOs.ApiKeyDto">
+            <summary>
+            DTO for transfering partial api key information.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.ApiKeyDto.PartialKey">
+            <summary>
+            The partial API key for display.
+            </summary>
+        </member>
+        <member name="T:server.Models.Auth.DTOs.AuthResponseDto">
+            <summary>
+            DTO for returning authentication results to the client.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.AuthResponseDto.UserId">
+            <summary>
+            The unique identifier of the authenticated user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.AuthResponseDto.Name">
+            <summary>
+            The display name of the authenticated user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.AuthResponseDto.Email">
+            <summary>
+            The email address of the authenticated user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.AuthResponseDto.Token">
+            <summary>
+            The JWT token issued for the authenticated user.
+            </summary>
+        </member>
+        <member name="T:server.Models.Auth.DTOs.ChangePasswordRequestDto">
+            <summary>
+            DTO for requesting a password change.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.ChangePasswordRequestDto.OldPassword">
+            <summary>
+            The users current password.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.ChangePasswordRequestDto.NewPassword">
+            <summary>
+            The new password to set for the user. Must be at least 6 characters long.
+            </summary>
+        </member>
+        <member name="T:server.Models.Auth.DTOs.LoginRequestDto">
+            <summary>
+            DTO for login requests.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.LoginRequestDto.Email">
+            <summary>
+            Email address of the user attempting to log in.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.LoginRequestDto.Password">
+            <summary>
+            Password of the user attempting to log in.
+            </summary>
+        </member>
+        <member name="T:server.Models.Auth.DTOs.NewApiKeyDto">
+            <summary>
+            DTO for creating a new API key.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.NewApiKeyDto.RawApiKey">
+            <summary>
+            Raw API key string to be created.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.DTOs.NewApiKeyDto.KeyInfo">
+            <summary>
+            Metadata about the API key being created.
+            </summary>
+        </member>
+        <member name="T:server.Models.Auth.User">
+            <summary>
+            Entity representing the user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.User.Id">
+            <summary>
+            The unique identifier for the user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.User.Email">
+            <summary>
+            The users email address.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.User.Name">
+            <summary>
+            The users full display name - e.g. "Admin Velky".
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.User.PasswordHash">
+            <summary>
+            The hashed password for the user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.User.ApiKey">
+            <summary>
+            Navigation property to the users API key (if exists).
+            </summary>
+        </member>
+        <member name="P:server.Models.Auth.User.BankActivities">
+            <summary>
+            Navigation property to the collection of activities owned by the user in their activity bank.
+            </summary>
+        </member>
+        <member name="T:server.Models.Enums.SessionMode">
+            <summary>
+            Specifies the pacing mode for a session.
+            </summary>
+        </member>
+        <member name="T:server.Models.Enums.SessionStatus">
+            <summary>
+            Specifies the status of a session.
+            </summary>
+        </member>
+        <member name="T:server.Models.Sessions.DTOs.CreateSessionRequestDto">
+            <summary>
+            DTO for creating a new session based on a template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.CreateSessionRequestDto.TemplateId">
+            <summary>
+            The unique identifier of the template to base the session on.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.CreateSessionRequestDto.ActivationDate">
+            <summary>
+            Optional activation date for the session. If not provided, the session will be created in a planned state.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.CreateSessionRequestDto.Mode">
+            <summary>
+            The pacing mode for the session (TeacherPaced or StudentPaced).
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.CreateSessionRequestDto.Title">
+            <summary>
+            The optional title for the session.
+            </summary>
+        </member>
+        <member name="T:server.Models.Sessions.DTOs.ParticipantSessionStateDto">
+            <summary>
+            DTO representing the current state of a session for a participant.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.ParticipantSessionStateDto.SessionId">
+            <summary>
+            The unique identifier of the session.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.ParticipantSessionStateDto.Status">
+            <summary>
+            The current status of the session.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.ParticipantSessionStateDto.CurrentActivityId">
+            <summary>
+            The unique identifier of the current activity in the session, or null if no activity is active.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.ParticipantSessionStateDto.ShowResults">
+            <summary>
+            Indicates whether the results are currently visible to the participant.
+            </summary>
+        </member>
+        <member name="T:server.Models.Sessions.DTOs.SessionResponseDto">
+            <summary>
+            DTO for returning the entire session details to the client.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.Id">
+            <summary>
+            The unique identifier of the session.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.Title">
+            <summary>
+            The title of the session.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.JoinCode">
+            <summary>
+            The join code for participants to join the session.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.Status">
+            <summary>
+            The current status of the session.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.Activities">
+            <summary>
+            The list of activities included in the session.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.ActivationDate">
+            <summary>
+            The date and time when the session becomes active, or null if not scheduled.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.Mode">
+            <summary>
+            The pacing mode for the session (TeacherPaced or StudentPaced).
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.Participants">
+            <summary>
+            The number of participants currently in the session.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.CurrentActivity">
+            <summary>
+            The index of the current activity in the session, or null if not started.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.TemplateId">
+            <summary>
+            The unique identifier of the template from which this session was created.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.TemplateVersion">
+            <summary>
+            The version of the template used when this session was created.
+            </summary>
+        </member>
+        <member name="P:server.Models.Sessions.DTOs.SessionResponseDto.CreatedAt">
+            <summary>
+            The date and time when the session was created.
+            </summary>
+        </member>
+        <member name="T:server.Models.Statistics.DTOs.StatisticsDto">
+            <summary>
+            DTO for returning users statistics about sessions and activities.
+            </summary>
+        </member>
+        <member name="P:server.Models.Statistics.DTOs.StatisticsDto.TotalSessions">
+            <summary>
+            The total number of sessions created by the user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Statistics.DTOs.StatisticsDto.TotalActivities">
+            <summary>
+            The total number of activities across all sessions for the user.
+            </summary>
+        </member>
+        <member name="P:server.Models.Statistics.DTOs.StatisticsDto.MostCommonActivityType">
+            <summary>
+            The most frequently used activity type by the user, or "N/A" if not available.
+            </summary>
+        </member>
+        <member name="T:server.Models.Templates.DTOs.CreateTemplateRequestDto">
+            <summary>
+            DTO for creating a new template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.CreateTemplateRequestDto.Title">
+            <summary>
+            The title of the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.CreateTemplateRequestDto.Tags">
+            <summary>
+            Optional list of tags for categorizing the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.CreateTemplateRequestDto.ResultsVisibleDefault">
+            <summary>
+            Indicates whether results are visible to participants by default in sessions created from this template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.CreateTemplateRequestDto.Activities">
+            <summary>
+            The list of activities that define the templates structure.
+            </summary>
+            <remarks>
+            Each activity must include a title, type, definition (as JSON) according to schema, and optional tags.
+            </remarks>
+        </member>
+        <member name="T:server.Models.Templates.DTOs.TemplateResponseDto">
+            <summary>
+            DTO for returning template details to the client.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.TemplateResponseDto.Id">
+            <summary>
+            The unique identifier of the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.TemplateResponseDto.Title">
+            <summary>
+            The title of the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.TemplateResponseDto.Tags">
+            <summary>
+            List of tags for categorizing the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.TemplateResponseDto.SessionPacing">
+            <summary>
+            The pacing mode for sessions created from this template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.TemplateResponseDto.ResultsVisibleDefault">
+            <summary>
+            Indicates whether results are visible to participants by default in sessions created from this template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.TemplateResponseDto.DateCreated">
+            <summary>
+            The date and time when the template was created.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.TemplateResponseDto.Definition">
+            <summary>
+            The list of activities that define the templates structure.
+            </summary>
+        </member>
+        <member name="T:server.Models.Templates.DTOs.UpdateTemplateDto">
+            <summary>
+            DTO for updating an existing template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.UpdateTemplateDto.Settings">
+            <summary>
+            The updated settings for the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.UpdateTemplateDto.Definition">
+            <summary>
+            The updated list of activities that define the templates structure.
+            </summary>
+            <remarks>
+            Each activity must include a title, type, definition (as JSON) according to schema, and optional tags.
+            </remarks>
+        </member>
+        <member name="T:server.Models.Templates.DTOs.UpdateTemplateSettingsDto">
+            <summary>
+            DTO for updating the settings of a template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.UpdateTemplateSettingsDto.Title">
+            <summary>
+            The updated title of the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.UpdateTemplateSettingsDto.Tags">
+            <summary>
+            The updated list of tags for categorizing the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.DTOs.UpdateTemplateSettingsDto.ResultsVisibleDefault">
+            <summary>
+            Indicates whether results are visible to participants.
+            </summary>
+        </member>
+        <member name="T:server.Models.Templates.TemplateSettings">
+            <summary>
+            Entity representing the settings for a template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.TemplateSettings.Id">
+            <summary>
+            The unique identifier for the template settings.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.TemplateSettings.Title">
+            <summary>
+            The title of the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.TemplateSettings.Tags">
+            <summary>
+            List of tags for categorizing the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.TemplateSettings.SessionPacing">
+            <summary>
+            The pacing mode for sessions created from this template (TeacherPaced or StudentPaced).
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.TemplateSettings.ResultsVisibleDefault">
+            <summary>
+            Indicates whether results are visible to participants by default in sessions created from this template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.TemplateSettings.TemplateId">
+            <summary>
+            The unique identifier of the template to which these settings belong.
+            </summary>
+        </member>
+        <member name="P:server.Models.Templates.TemplateSettings.Template">
+            <summary>
+            Navigation property to the template that owns these settings.
+            </summary>
+        </member>
+        <member name="T:server.Models.Template">
+            <summary>
+            Entity representing a reusable template for creating sessions.
+            </summary>
+        </member>
+        <member name="P:server.Models.Template.Id">
+            <summary>
+            The unique identifier for the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Template.OwnerId">
+            <summary>
+            The unique identifier of the user who owns this template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Template.Owner">
+            <summary>
+            Navigation property to the owner of the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Template.Version">
+            <summary>
+            The version number of the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Template.DateCreated">
+            <summary>
+            The date and time when the template was created.
+            </summary>
+        </member>
+        <member name="P:server.Models.Template.Settings">
+            <summary>
+            The settings for the template.
+            </summary>
+        </member>
+        <member name="P:server.Models.Template.Definition">
+            <summary>
+            The collection of activities that define the templates structure.
+            </summary>
+            <remarks>
+            Each activity includes its own metadata and definition.
+            </remarks>
+        </member>
+        <member name="T:server.Entities.Session">
+            <summary>
+            Entity representing a session, which is an instance of a template with its own activities and state.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.Id">
+            <summary>
+            The unique identifier for the session.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.Title">
+            <summary>
+            The title of the session.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.TemplateId">
+            <summary>
+            The unique identifier of the template from which this session was created.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.Status">
+            <summary>
+            The current status of the session (e.g., Planned, Active, Finished).
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.Created">
+            <summary>
+            The date and time when the session was created.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.JoinCode">
+            <summary>
+            The join code used by participants to join the session, if applicable.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.Activities">
+            <summary>
+            The list of activities included in this session.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.ActivationDate">
+            <summary>
+            The date and time when the session becomes active, or null if not scheduled.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.Mode">
+            <summary>
+            The pacing mode for the session (TeacherPaced or StudentPaced).
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.Participants">
+            <summary>
+            The number of participants currently in the session.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.CurrentActivity">
+            <summary>
+            The index of the current activity in the session, or null if not started.
+            </summary>
+        </member>
+        <member name="P:server.Entities.Session.TemplateVersion">
+            <summary>
+            The version of the template used when this session was created - not used as of now.
+            </summary>
+        </member>
+        <member name="M:server.Services.Analytics.AnalyticsProcessor.#ctor(System.Collections.Generic.IEnumerable{server.Services.Analytics.IActivityResultProcessor})">
+            <summary>
+            Initializes the processor by discovering all registered IActivityResultProcessor implementations.
+            </summary>
+        </member>
+        <member name="M:server.Services.Analytics.AnalyticsProcessor.ProcessResults(server.Models.Activities.Activity,System.Collections.Generic.List{server.Models.Answers.Answer})">
+            <summary>
+            Processes results for an activity by finding the appropriate registered processor.
+            </summary>
+        </member>
+        <member name="M:server.Services.Analytics.StatisticsService.GetUserSessionsCount(System.Guid)">
+            <summary>
+            Gets the total number of sessions for a given user.
+            </summary>
+            <param name="userId"> The ID of the user.</param>
+            <returns>Number of sessions for user.</returns>
+        </member>
+        <member name="M:server.Services.Analytics.StatisticsService.GetUserActivitiesCount(System.Guid)">
+            <summary>
+            Gets the total number of activities for a given user.
+            </summary>
+            <param name="userId"> The ID of the user.</param>
+            <returns>Number of activities for user.</returns>
+        </member>
+        <member name="M:server.Services.Analytics.StatisticsService.GetMostCommonActivityType(System.Guid)">
+            <summary>
+            Gets the most frequently used activity type for a given user.
+            </summary>
+            <param name="userId">The ID of the user.</param>
+            <returns>The string name of the most common activity type, or null if none exist.</returns>
+        </member>
+        <member name="M:server.Services.ApiKeyService.GenerateSecureApiKey">
+            <summary>
+            Generates a cryptographically secure, URL-safe API key.
+            </summary>
+        </member>
+        <member name="T:server.Services.IStatisticsService">
+            <summary>
+            Defines the contract for the statistics service.
+            </summary>
+        </member>
+        <member name="M:server.Services.IStatisticsService.GetStatistics(System.Guid)">
+            <summary>
+            Computes and gets statistics for a given user.
+            </summary>
+            <param name="userId"> The ID of the user.</param>
+            <returns>A StatisticsDto object containing the computed statistics.</returns>
+        </member>
+        <member name="M:server.Services.IStatisticsService.GetStatisticsCsv(System.Guid)">
+            <summary>
+            Returns the statistics for a given user in CSV format.
+            </summary>
+            <param name="userId">The ID of the user.</param>
+            <returns>A string containing the statistics in CSV format.</returns>
+        </member>
+        <member name="M:server.Services.IStatisticsService.GetStatisticsJson(System.Guid)">
+            <summary>
+            Returns the statistics for a given user in JSON format.
+            </summary>
+            <param name="userId">The ID of the user.</param>
+            <returns>A string containing the statistics in JSON format.</returns>
+        </member>
+        <member name="T:server.Utils.JsonSchemaValidator">
+            <summary>
+            Provides functionality to validate JSON data against a specified JSON schema.
+            </summary>
+        </member>
+        <member name="M:server.Utils.JsonSchemaValidator.ValidateAsync(System.String,System.String,System.String,Microsoft.Extensions.Logging.ILogger)">
+            <summary>
+            Validates a JSON string against a JSON schema file.
+            </summary>
+            <param name="json">The JSON string to validate.</param>
+            <param name="schemaPath">The file path to the JSON schema.</param>
+            <param name="validationTarget">A label describing what is being validated (used in logs and error messages).</param>
+            <param name="logger">The logger for recording validation errors and issues.</param>
+        </member>
+        <member name="T:server.Utils.JwtUtils">
+            <summary>
+            Utility class for generating JWT tokens for users.
+            </summary>
+        </member>
+        <member name="M:server.Utils.JwtUtils.GenerateJwtToken(server.Models.Auth.User,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            Generates a JWT token for the specified user.
+            </summary>
+        </member>
+        <member name="T:server.Utils.SessionModeJsonConverter">
+            <summary>
+            My custom JSON converter for the SessionMode enum.
+            Serializes <see cref="T:server.Models.Enums.SessionMode"/> values as kebab-case strings 
+            ("teacher-paced" or "student-paced") and deserializes them back to the corresponding enum values.
+            </summary>
+        </member>
+        <member name="T:server.Utils.SessionStatusJsonConverter">
+            <summary>
+            My custom JSON converter for the SessionStatus enum.
+            Serializes <see cref="T:server.Models.Enums.SessionStatus"/> values as lowercase strings.
+            </summary>
+        </member>
+    </members>
+</doc>

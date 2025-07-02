@@ -1,5 +1,6 @@
 import { API_URL } from '$lib/config';
 import type { User } from './types';
+import { toast } from '$lib/stores/toast_store';
 
 /**
  * Logs the user out by clearing their session data from localStorage.
@@ -7,6 +8,7 @@ import type { User } from './types';
 export function logout(): void {
 	localStorage.removeItem('token');
 	localStorage.removeItem('user');
+	toast.show('You have been logged out.', 'info');
 }
 
 /**
@@ -88,6 +90,7 @@ export async function login(email: string, password: string): Promise<User | nul
 
 		localStorage.setItem('token', user.token);
 		localStorage.setItem('user', JSON.stringify(user));
+		toast.show(`👋 Welcome back, ${user.name}!`, 'info');
 		return user;
 	} catch (err) {
 		console.error('Login API error:', err);
@@ -142,7 +145,7 @@ export async function changePassword(oldPassword: string, newPassword: string): 
 			body: JSON.stringify({ oldPassword, newPassword })
 		});
 
-		console.log('Change password response:', res.status, res.statusText);
+		toast.show('Password changed successfully!', 'success');
 
 		return res.ok;
 	} catch (err) {

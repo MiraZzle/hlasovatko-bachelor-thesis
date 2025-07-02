@@ -9,6 +9,7 @@
 	import ShareSessionModal from '$components/elements/modals/ShareSessionModal.svelte';
 	import { getManageSessionLink, getParticipateSessionLink } from '$lib/router/external_routes';
 	import type { SessionStatus } from '$lib/sessions/types';
+	import { toast } from '$lib/stores/toast_store';
 
 	let {
 		sessionId,
@@ -35,7 +36,10 @@
 			await invalidateAll(); // rerefresh the session data
 		} catch (error: any) {
 			console.error('Failed to start session:', error);
-			alert(error.message);
+			toast.show(
+				`Failed to start session: ${error instanceof Error ? error.message : 'Unknown error'}`,
+				'error'
+			);
 		} finally {
 			isLoading = false;
 		}
@@ -47,8 +51,8 @@
 			await stopSession(sessionId);
 			await invalidateAll();
 		} catch (error: any) {
+			toast.show(`Failed to stop session: ${error}`, 'error');
 			console.error('Failed to stop session:', error);
-			alert(error.message);
 		} finally {
 			isLoading = false;
 		}

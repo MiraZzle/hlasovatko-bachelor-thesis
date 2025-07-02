@@ -5,6 +5,7 @@
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
 	import { getParticipateSessionLinkWithCode } from '$lib/router/external_routes';
+	import { toast } from '$lib/stores/toast_store';
 
 	let gameCode = $state('');
 
@@ -17,7 +18,10 @@
 			const participateLink = await getParticipateSessionLinkWithCode(gameCode);
 			window.location.href = participateLink;
 		} catch (err) {
-			alert('Failed to join session: ' + err);
+			toast.show(
+				`Failed to join session: ${err instanceof Error ? err.message : 'Unknown error'}`,
+				'error'
+			);
 			return;
 		}
 	}

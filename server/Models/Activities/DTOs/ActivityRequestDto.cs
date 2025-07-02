@@ -9,14 +9,27 @@ namespace server.Models.Activities.DTOs
     /// </summary>
     public class ActivityRequestDto
     {
+        /// <summary>
+        /// The title of the activity.
+        /// </summary>
         [Required]
         public string Title { get; set; } = string.Empty;
 
+        /// <summary>
+        /// The type of the activity.
+        /// </summary>
         [Required]
         public string ActivityType { get; set; } = string.Empty;
 
+        /// <summary>
+        /// The definition of the activity as a JSON object.
+        /// </summary>
         [Required]
         public JsonElement Definition { get; set; }
+
+        /// <summary>
+        /// Optional list of tags for categorizing the activity.
+        /// </summary>
         public List<string> Tags { get; set; } = new();
     }
 }

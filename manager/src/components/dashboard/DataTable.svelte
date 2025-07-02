@@ -214,7 +214,6 @@
 			background-color: $color-surface;
 			border-radius: $border-radius-lg;
 			box-shadow: $box-shadow-sm;
-			overflow-x: auto;
 			margin-bottom: $spacing-xl;
 		}
 

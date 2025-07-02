@@ -11,6 +11,9 @@ using server.Extensions;
 
 namespace server.Controllers
 {
+    /// <summary>
+    /// Controller for handling user authentication and registration.
+    /// </summary>
     [Route("api/v1/auth")]
     [ApiController]
     public class AuthController : ControllerBase
@@ -21,6 +24,13 @@ namespace server.Controllers
             _authService = authService;
         }
 
+        /// <summary>
+        /// Registers a new user with the provided details.
+        /// </summary>
+        /// <returns>
+        /// 201 Created with the new user ID, name, email if succsful.<br/>
+        /// 400 Bad Request if registration fails or input is invalid.
+        /// </returns>
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterRequestDto request) {
@@ -37,6 +47,14 @@ namespace server.Controllers
             }
         }
 
+        /// <summary>
+        /// Authenticates a user and returns a JWT token if successful.
+        /// </summary>
+        /// <returns>
+        /// 200 OK with user info and JWT token if authentication succeeds.<br/>
+        /// 400 Bad Request if input is invalid.<br/>
+        /// 401 Unauthorized if authentication fails.
+        /// </returns>
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginRequestDto request) {
@@ -52,7 +70,13 @@ namespace server.Controllers
                 return Unauthorized(new { message = ex.Message });
             }
         }
-
+        /// <summary>
+        /// Changes the password for authenticated user.
+        /// </summary>
+        /// <returns>
+        /// 200 OK if the password was changed successfully.<br/>
+        /// 400 Bad Request if the change fails or input is invalid.
+        /// </returns>
         [HttpPost("change-password")]
         [Authorize(Policy = "AuthenticatedUser")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDto request) {
@@ -71,25 +95,6 @@ namespace server.Controllers
             catch (Exception ex) {
                 return BadRequest(new { message = ex.Message });
             }
-        }
-
-        [HttpGet("test")]
-        [Authorize]
-        public IActionResult TestAuth() {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
-            var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
-
-            if (userId == null) {
-                return Unauthorized();
-            }
-
-            return Ok(new {
-                message = "JWT is valid!",
-                authenticatedUserId = userId,
-                authenticatedUserName = userName,
-                authenticatedUserEmail = userEmail
-            });
         }
     }
 }
