@@ -75,10 +75,6 @@ namespace server.Services
                 ? DateTime.SpecifyKind(request.ActivationDate.Value, DateTimeKind.Utc)
                 : null;
 
-            // log session mode
-            Console.WriteLine($"Creating session with mode: {request.Mode}");
-
-
             var session = new Session {
                 Title = !string.IsNullOrEmpty(request.Title) ? request.Title : template.Settings.Title,
                 TemplateId = template.Id,
@@ -180,6 +176,7 @@ namespace server.Services
         }
 
         private async Task<string> GenerateUniqueJoinCode() {
+            // Allowed chars in the code
             const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
             var random = new Random();
             string code;

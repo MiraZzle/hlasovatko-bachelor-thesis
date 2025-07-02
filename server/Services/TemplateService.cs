@@ -38,6 +38,10 @@ namespace server.Services
                                             .Include(t => t.Settings)
                                             .FirstOrDefaultAsync(t => t.Id == id);
 
+            if (templateForUpdate == null) {
+                return null;
+            }
+
             templateForUpdate.Settings.Title = dto.Settings.Title;
             templateForUpdate.Settings.Tags = dto.Settings.Tags;
             templateForUpdate.Settings.SessionPacing = dto.Settings.SessionPacing;

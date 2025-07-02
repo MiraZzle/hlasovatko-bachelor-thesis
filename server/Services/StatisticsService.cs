@@ -23,7 +23,7 @@ namespace server.Services.Analytics
 
             var mostCommonActivityTask = GetMostCommonActivityType(userId);
 
-            // prevent locking the db
+            // Prevent locking the db
             var totalSessions = await GetUserSessionsCount(userId);
             var totalActivities = await GetUserActivitiesCount(userId);
             var mostCommonActivityType = await GetMostCommonActivityType(userId);
@@ -39,7 +39,7 @@ namespace server.Services.Analytics
             var stats = await GetStatistics(userId);
             var builder = new StringBuilder();
 
-            // define the CSV structure
+            // Define the CSV structure
             builder.AppendLine("Statistic,Value");
             builder.AppendLine($"Total Sessions,{stats.TotalSessions}");
             builder.AppendLine($"Total Activities,{stats.TotalActivities}");
@@ -52,11 +52,6 @@ namespace server.Services.Analytics
             return JsonSerializer.Serialize(stats, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
 
-        /// <summary>
-        /// Gets the total number of sessions for a given user.
-        /// </summary>
-        /// <param name="userId"> The ID of the user.</param>
-        /// <returns>Number of sessions for user.</returns>
         private async Task<int> GetUserSessionsCount(Guid userId) {
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.Sessions
@@ -64,11 +59,6 @@ namespace server.Services.Analytics
                 .CountAsync();
         }
 
-        /// <summary>
-        /// Gets the total number of activities for a given user.
-        /// </summary>
-        /// <param name="userId"> The ID of the user.</param>
-        /// <returns>Number of activities for user.</returns>
         private async Task<int> GetUserActivitiesCount(Guid userId) {
             await using var context = await _contextFactory.CreateDbContextAsync();
             return await context.Sessions
@@ -77,11 +67,6 @@ namespace server.Services.Analytics
                 .CountAsync();
         }
 
-        /// <summary>
-        /// Gets the most frequently used activity type for a given user.
-        /// </summary>
-        /// <param name="userId">The ID of the user.</param>
-        /// <returns>The string name of the most common activity type, or null if none exist.</returns>
         private async Task<string?> GetMostCommonActivityType(Guid userId) {
             await using var context = await _contextFactory.CreateDbContextAsync();
             var mostCommonType = await context.Sessions

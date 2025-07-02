@@ -40,6 +40,7 @@ namespace server.Services
                 .Include(s => s.Activities)
                 .FirstOrDefaultAsync(s => s.Id == sessionId);
 
+            // Check if session exists and is active
             if (session == null || session.Status != SessionStatus.Active) {
                 return null;
             }
@@ -98,7 +99,6 @@ namespace server.Services
                     ActivityRef = MapActivityToDto(activity),
                     Results = _analyticsProcessor.ProcessResults(activity, answersForThisActivity)
                 });
-                Console.WriteLine($"Latest results for activity {activity.Id} ({activity.Title}): {JsonSerializer.Serialize(results.Last().Results)}");
             }
 
             return results;
@@ -138,7 +138,7 @@ namespace server.Services
                 return new List<AnswerResponseDto>();
             }
 
-            // CORRECTED: First, fetch the raw data from the database.
+            // Get raw data from db
             var rawAnswers = await _context.Answers
                 .Where(a => a.ActivityId == activityId)
                 .Select(a => new {
@@ -150,7 +150,6 @@ namespace server.Services
                 })
                 .ToListAsync();
 
-            // Second, process the JSON in memory.
             return rawAnswers.Select(a => new AnswerResponseDto {
                 Id = a.Id,
                 ActivityId = a.ActivityId,
@@ -176,7 +175,6 @@ namespace server.Services
                 return new List<AnswerResponseDto>();
             }
 
-            // CORRECTED: First, fetch the raw data.
             var rawAnswers = await _context.Answers
                 .Where(a => activityIds.Contains(a.ActivityId))
                 .Select(a => new {
@@ -188,7 +186,6 @@ namespace server.Services
                 })
                 .ToListAsync();
 
-            // Second, process the JSON in memory.
             return rawAnswers.Select(a => new AnswerResponseDto {
                 Id = a.Id,
                 ActivityId = a.ActivityId,
