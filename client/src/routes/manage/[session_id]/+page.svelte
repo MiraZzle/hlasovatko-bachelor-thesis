@@ -19,6 +19,7 @@
 	} from '$lib/sessions/session_utils';
 	import type { Session } from '$lib/sessions/types';
 	import { get } from 'svelte/store';
+	import { toast } from '$lib/stores/toast_store';
 
 	const session_id = $page.params.session_id;
 
@@ -110,7 +111,7 @@
 			}
 		} catch (error) {
 			console.error('Error going to next session', error);
-			alert('An error occurred');
+			toast.show('Failed to advance to next activity. Please try again.', 'error');
 		} finally {
 			isAdvancing = false;
 		}

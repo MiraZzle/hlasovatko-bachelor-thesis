@@ -16,6 +16,7 @@
 	import { getActivitiesFromSession, getSessionState } from '$lib/sessions/session_utils';
 	import type { ParticipantSessionState } from '$lib/sessions/session_utils';
 	import type { StaticActivityType } from '$lib/activities/types';
+	import { toast } from '$lib/stores/toast_store';
 
 	const session_id = $page.params.session_id;
 
@@ -162,8 +163,9 @@
 		const success = await submitAnswer(session_id, fullPayload);
 		if (success) {
 			submittedAnswers = { ...submittedAnswers, [payload.activityId]: true };
+			toast.show('Answer submitted successfully.', 'success');
 		} else {
-			alert('Error submitting answer.');
+			toast.show('Error submitting answer.', 'error');
 		}
 	}
 
