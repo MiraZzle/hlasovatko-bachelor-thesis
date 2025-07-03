@@ -13,6 +13,7 @@
 	import { onMount } from 'svelte';
 	import { deleteTemplate } from '$lib/templates/template_utils';
 	import { toast } from '$lib/stores/toast_store';
+	import { goto } from '$app/navigation';
 
 	// state management
 	let searchTerm = $state('');
@@ -48,6 +49,11 @@
 		isCreateModalOpen = false;
 	}
 
+	/**
+	 * Handles the submission of the create template form.
+	 * Redirects to the new template page upon successful creation.
+	 * @param data - The form data containing the template name.
+	 */
 	async function handleCreateTemplateSubmit(data: { name: string }): Promise<void> {
 		console.log('Creating template (from page):', data);
 		const newTemplate = await createNewTemplate(
@@ -63,6 +69,7 @@
 		if (newTemplate) {
 			toast.show(`Template "${newTemplate.settings!.title}" created successfully!`, 'success');
 			templates.push(newTemplate);
+			await goto(`/overview/templates/${newTemplate.id}/overview`);
 		} else {
 			toast.show('Failed to create template.', 'error');
 		}
