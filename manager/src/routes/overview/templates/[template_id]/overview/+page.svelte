@@ -216,7 +216,11 @@
 				{#each templateDefinition.definition as activityData, index (activityData.id ?? index)}
 					<SessionActivityItem activity={activityData} />
 				{:else}
-					<p class="template-overview-page__message--info">Template has no activities defined.</p>
+					<p class="template-overview-page__message--info">
+						This template has no activities defined. Your template needs at least one activity to be
+						useful. You can add an activity using the "Add from Bank" button. Once added, you can
+						reorder or remove activities directly from the "definition" list.
+					</p>
 				{/each}
 			</div>
 		{:else}

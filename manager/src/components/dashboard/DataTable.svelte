@@ -215,6 +215,10 @@
 			border-radius: $border-radius-lg;
 			box-shadow: $box-shadow-sm;
 			margin-bottom: $spacing-xl;
+
+			@media screen and (max-width: 768px) {
+				overflow-x: auto;
+			}
 		}
 
 		&__pagination {

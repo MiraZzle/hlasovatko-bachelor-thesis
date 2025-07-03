@@ -195,7 +195,7 @@
 				</div>
 				<div class="settings-card__field settings-card__field--toggle">
 					<label for="results-visibility-toggle" class="settings-card__toggle-label">
-						Results Visibility to Participants
+						Results Visible to Participants
 					</label>
 					<ToggleSwitch
 						bind:checked={settings!.resultsVisibleDefault}
@@ -203,7 +203,7 @@
 						label="Toggle default results visibility for participants"
 					/>
 					<p class="settings-card__field-description">
-						If enabled, participants will see activity results by default after they close.
+						If enabled, participants will see activity results after submitting their answer.
 					</p>
 				</div>
 			</section>
@@ -307,15 +307,16 @@
 		}
 		&__field--toggle {
 			display: flex;
-			align-items: center;
+			align-items: baseline;
 			justify-content: space-between;
 			flex-wrap: wrap;
-			gap: $spacing-md;
+			flex-direction: column;
 			.settings-card__toggle-label {
-				font-size: $font-size-md;
+				display: block;
+				margin-bottom: $spacing-xs;
 				font-weight: $font-weight-medium;
-				color: $color-text-primary;
-				flex-grow: 1;
+				font-size: $font-size-sm;
+				color: $color-text-secondary;
 			}
 			.settings-card__field-description {
 				width: 100%;
