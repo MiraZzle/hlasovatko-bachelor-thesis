@@ -16,10 +16,13 @@
 	import type { SelectOption } from '$lib/shared_types';
 	import ActivityDetailModal from '$components/elements/modals/ActivityDetailModal.svelte';
 	import { onMount } from 'svelte';
+	import MultiSelect from '$components/elements/typography/MultiSelect.svelte';
+	import Toaster from '$components/elements/typography/Toaster.svelte';
+	import { toast } from '$lib/stores/toast_store';
 
 	let activities = $state<Activity[]>([]);
 	let isCreateActivityModalOpen = $state(false);
-	let selectedCategory = $state('all');
+	let selectedCategories = $state<string[]>([]);
 	let selectedActivityType = $state('all');
 	let isDetailModalOpen = $state(false);
 	let selectedActivityForDetail = $state<Activity | null>(null);
@@ -39,7 +42,7 @@
 			activity.tags?.forEach((cat) => categories.add(cat));
 		});
 		const options = Array.from(categories).map((cat) => ({ value: cat, label: cat }));
-		return [{ value: 'all', label: 'All Categories' }, ...options];
+		return options.sort((a, b) => a.label.localeCompare(b.label));
 	}
 
 	/**
@@ -93,6 +96,7 @@
 			selectedActivityForDetail = activity;
 			isDetailModalOpen = true;
 		} else {
+			toast.show('Activity not found', 'error');
 			console.error(`Activity with id ${id} not found.`);
 		}
 	}
@@ -103,9 +107,13 @@
 	 */
 	function getFilteredActivities(): Activity[] {
 		return activities.filter((activity) => {
-			const categoryMatch = selectedCategory === 'all' || activity.tags?.includes(selectedCategory);
+			const categoryMatch =
+				selectedCategories.length === 0 ||
+				activity.tags?.some((tag) => selectedCategories.includes(tag));
+
 			const typeMatch =
 				selectedActivityType === 'all' || activity.type.toLowerCase() === selectedActivityType;
+
 			return categoryMatch && typeMatch;
 		});
 	}
@@ -125,14 +133,14 @@
 			<Button variant="primary" onclick={openCreateActivityModal}>Create Activity</Button>
 		</div>
 		<div class="activity-bank-page__filters">
-			<Select
-				label="Category"
+			<MultiSelect
+				label="Filter by Category"
 				options={categoryOptions}
-				bind:value={selectedCategory}
-				ariaLabel="Filter by category"
+				bind:selectedValues={selectedCategories}
+				placeholder="Selected Categories"
 			/>
 			<Select
-				label="Activity type"
+				label="Filter by Activity type"
 				options={activityTypeOptions}
 				bind:value={selectedActivityType}
 				ariaLabel="Filter by activity type"
