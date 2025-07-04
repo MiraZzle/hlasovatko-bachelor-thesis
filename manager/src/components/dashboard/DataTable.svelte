@@ -48,6 +48,7 @@
 	let sortKey = $state<keyof T | (string & {}) | null>(null);
 	let sortDirection = $state<'asc' | 'desc'>('asc');
 	const totalPages = $derived(Math.ceil(items.length / pageSize));
+	let sortedItems = $state([...items]);
 
 	/**
 	 * Handles sorting by a specific key.
@@ -85,9 +86,11 @@
 		return path.split('.').reduce((o, k) => (o ? o[k] : undefined), obj as any);
 	}
 
-	// Dynamic sorting logic
-	const sortedItems = $derived.by(() => {
-		if (!sortKey) return [...items];
+	$effect(() => {
+		if (!sortKey) {
+			sortedItems = [...items];
+			return;
+		}
 
 		const sorted = [...items].sort((a, b) => {
 			const valA = getValueByPath(a, sortKey as string);
@@ -116,7 +119,7 @@
 		if (sortDirection === 'desc') {
 			sorted.reverse();
 		}
-		return sorted;
+		sortedItems = sorted;
 	});
 </script>
 

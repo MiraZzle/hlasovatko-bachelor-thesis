@@ -120,7 +120,7 @@
 			requestClose();
 		} catch (err) {
 			toast.show(
-				`Failed to start session: ${err instanceof Error ? err.message : 'Unknown error'}`,
+				`Failed to create session: ${err instanceof Error ? err.message : 'Unknown error'}`,
 				'error'
 			);
 		} finally {
@@ -188,7 +188,7 @@
 				>Cancel</Button
 			>
 			<Button type="submit" variant="primary" disabled={isSubmitting || !selectedTemplateId}>
-				{#if isSubmitting}Starting...{:else}Start Session{/if}
+				{#if isSubmitting}Creating...{:else}Create{/if}
 			</Button>
 		</div>
 	</form>

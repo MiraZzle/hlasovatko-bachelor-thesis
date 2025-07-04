@@ -1,14 +1,31 @@
 import { API_URL } from '$lib/config';
 import type { User } from './types';
 import { toast } from '$lib/stores/toast_store';
+import { browser } from '$app/environment';
+
+const TOKEN_KEY = 'token';
+const USER_KEY = 'user';
 
 /**
  * Logs the user out by clearing their session data from localStorage.
  */
 export function logout(): void {
-	localStorage.removeItem('token');
-	localStorage.removeItem('user');
+	if (!browser) {
+		return;
+	}
+	localStorage.removeItem(TOKEN_KEY);
+	localStorage.removeItem(USER_KEY);
 	toast.show('You have been logged out.', 'info');
+}
+
+/**
+ * Clears the JWT token from local storage.
+ */
+export function clearToken(): void {
+	if (!browser) {
+		return;
+	}
+	localStorage.removeItem(TOKEN_KEY);
 }
 
 /**
@@ -16,7 +33,10 @@ export function logout(): void {
  * @returns The token string, or null if it doesn't exist.
  */
 export function getToken(): string | null {
-	return localStorage.getItem('token');
+	if (!browser) {
+		return null;
+	}
+	return localStorage.getItem(TOKEN_KEY);
 }
 
 /**
@@ -45,7 +65,10 @@ export function isAuthenticated(): boolean {
  * @returns The user object, or null if not found or invalid.
  */
 export function getUser(): User | null {
-	const userJson = localStorage.getItem('user');
+	if (!browser) {
+		return null;
+	}
+	const userJson = localStorage.getItem(USER_KEY);
 	if (userJson) {
 		try {
 			return JSON.parse(userJson) as User;
@@ -88,9 +111,11 @@ export async function login(email: string, password: string): Promise<User | nul
 			token: data.token
 		};
 
-		localStorage.setItem('token', user.token);
-		localStorage.setItem('user', JSON.stringify(user));
-		toast.show(`👋 Welcome back, ${user.name}!`, 'info');
+		if (browser) {
+			localStorage.setItem(TOKEN_KEY, user.token);
+			localStorage.setItem(USER_KEY, JSON.stringify(user));
+			toast.show(`👋 Welcome back, ${user.name}!`, 'info');
+		}
 		return user;
 	} catch (err) {
 		console.error('Login API error:', err);

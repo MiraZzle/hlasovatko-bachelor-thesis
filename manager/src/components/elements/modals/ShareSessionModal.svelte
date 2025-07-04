@@ -109,15 +109,18 @@
 			display: flex;
 			flex-direction: column;
 			gap: $spacing-xl;
+			align-items: center;
+			justify-content: center;
 		}
 
 		&__qr-container {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			background-color: $color-surface-alt;
 			border-radius: $border-radius-lg;
 			padding: $spacing-md;
+			border: 1px solid #e0e0e0;
+			width: fit-content;
 			canvas {
 				border-radius: $border-radius-md;
 				max-width: 100%;
