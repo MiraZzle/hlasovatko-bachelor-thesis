@@ -49,24 +49,28 @@ function mapResponseToSession(dto: SessionResponseDto): Session {
  */
 export async function getSessionById(sessionID: string): Promise<Session | null> {
 	const token = getToken();
+	if (!token) return null;
 
-	const response = await fetch(`${API_URL}/api/v1/session/${sessionID}`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`
-		}
-	});
+	try {
+		const response = await fetch(`${API_URL}/api/v1/session/${sessionID}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			}
+		});
 
-	if (!response.ok) {
-		if (response.status === 404) {
+		if (!response.ok) {
+			console.error(`Failed to fetch session with ID ${sessionID}:`, response.statusText);
 			return null;
 		}
-		throw new Error(`Failed to fetch session with ID: ${sessionID}`);
-	}
 
-	const sessionDto: SessionResponseDto = await response.json();
-	return mapResponseToSession(sessionDto);
+		const sessionDto: SessionResponseDto = await response.json();
+		return mapResponseToSession(sessionDto);
+	} catch (err) {
+		console.error('API error fetching session:', err);
+		return null;
+	}
 }
 
 /**

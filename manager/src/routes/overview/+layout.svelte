@@ -19,6 +19,7 @@
 	let userInitials = $state('XY');
 	let sessionData = $derived($page.data.sessionDataForTopbar);
 	let templateData = $derived($page.data.templateDataForTopBar);
+	let isMounted = $state(false);
 
 	let isSidebarOpen = $state(false);
 
@@ -35,6 +36,7 @@
 	 * If user data is not found, redirects to the login page.
 	 */
 	onMount(async () => {
+		isMounted = true;
 		const raw = localStorage.getItem('user');
 		if (!raw) {
 			console.warn('User not found in localStorage');
@@ -46,50 +48,52 @@
 	});
 </script>
 
-<div class="overview-layout-wrapper">
-	<Desktop>
-		<Sidebar />
-	</Desktop>
-
-	{#if isSidebarOpen}
-		<button
-			class="sidebar-mobile-overlay"
-			onclick={closeSidebar}
-			tabindex="-1"
-			aria-label="Close menu"
-		></button>
-
-		<div class="sidebar-mobile-container">
+{#if isMounted}
+	<div class="overview-layout-wrapper">
+		<Desktop>
 			<Sidebar />
-		</div>
-	{/if}
+		</Desktop>
 
-	<DashboardLayout>
-		<svelte:fragment slot="topbar">
-			<Topbar>
-				<Mobile>
-					<Button variant={'primary'} onclick={toggleSidebar}>☰</Button>
-				</Mobile>
-				{#if sessionData}
-					<SessionTopbar
-						sessionId={sessionData.id}
-						sessionTitle={sessionData.title}
-						sessionStatus={sessionData.status}
-						joinCode={sessionData.joinCode}
-					/>
-				{:else if templateData}
-					<TemplateTopbar templateId={templateData.id} templateTitle={templateData.title} />
-				{:else}
-					<div class="overview-layout__topbar-spacer"></div>
-					<UserProfileBadge initials={userInitials} />
-				{/if}
-			</Topbar>
-		</svelte:fragment>
-		<svelte:fragment slot="content">
-			<slot />
-		</svelte:fragment>
-	</DashboardLayout>
-</div>
+		{#if isSidebarOpen}
+			<button
+				class="sidebar-mobile-overlay"
+				onclick={closeSidebar}
+				tabindex="-1"
+				aria-label="Close menu"
+			></button>
+
+			<div class="sidebar-mobile-container">
+				<Sidebar />
+			</div>
+		{/if}
+
+		<DashboardLayout>
+			<svelte:fragment slot="topbar">
+				<Topbar>
+					<Mobile>
+						<Button variant={'primary'} onclick={toggleSidebar}>☰</Button>
+					</Mobile>
+					{#if sessionData}
+						<SessionTopbar
+							sessionId={sessionData.id}
+							sessionTitle={sessionData.title}
+							sessionStatus={sessionData.status}
+							joinCode={sessionData.joinCode}
+						/>
+					{:else if templateData}
+						<TemplateTopbar templateId={templateData.id} templateTitle={templateData.title} />
+					{:else}
+						<div class="overview-layout__topbar-spacer"></div>
+						<UserProfileBadge initials={userInitials} />
+					{/if}
+				</Topbar>
+			</svelte:fragment>
+			<svelte:fragment slot="content">
+				<slot />
+			</svelte:fragment>
+		</DashboardLayout>
+	</div>
+{/if}
 
 <style lang="scss">
 	.overview-layout-wrapper {
