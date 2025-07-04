@@ -28,6 +28,7 @@
 	let isLoading = $state(true);
 	let error: string | null = $state(null);
 	let notification = $state('');
+	let manageUrl = $state(getManageSessionLink(session_id));
 
 	// Fetch data when the component is first mounted
 	onMount(() => {
@@ -141,10 +142,13 @@
 					</button>
 				</div>
 				<div class="info-card__join-group">
-					<Button onclick={openSharePage}>Open Join Info</Button>
+					<Button href={manageUrl} variant="primary" fullWidth>Manage Session</Button>
 				</div>
 				<div class="info-card__join-group">
-					<Button onclick={copyParticipateLink} variant="outline">Copy Join Link</Button>
+					<Button onclick={openSharePage} variant="secondary" fullWidth>Open Join Info</Button>
+				</div>
+				<div class="info-card__join-group">
+					<Button onclick={copyParticipateLink} variant="outline" fullWidth>Copy Join Link</Button>
 				</div>
 			</div>
 		</section>
