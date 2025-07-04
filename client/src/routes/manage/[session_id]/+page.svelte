@@ -376,8 +376,6 @@
 		text-align: center;
 		min-height: 80vh;
 		padding: $spacing-xl;
-		background-color: $color-surface;
-		border-radius: $border-radius-lg;
 
 		&__title {
 			font-size: $font-size-2xl;

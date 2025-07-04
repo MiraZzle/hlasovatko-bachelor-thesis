@@ -188,7 +188,7 @@
 				>Cancel</Button
 			>
 			<Button type="submit" variant="primary" disabled={isSubmitting || !selectedTemplateId}>
-				{#if isSubmitting}Creating...{:else}Create Session{/if}
+				{#if isSubmitting}Creating...{:else}Create{/if}
 			</Button>
 		</div>
 	</form>

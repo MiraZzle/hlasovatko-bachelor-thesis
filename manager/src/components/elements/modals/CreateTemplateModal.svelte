@@ -80,7 +80,7 @@
 </script>
 
 <ModalDialog bind:open {onclose} width="sm" {titleId}>
-	<h2 id={titleId} class="create-template-modal__title">Create template</h2>
+	<h2 id={titleId} class="create-template-modal__title">Add new Template</h2>
 
 	<form onsubmit={handleSubmit} class="create-template-modal__form">
 		<Input

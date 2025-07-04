@@ -117,7 +117,6 @@
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			background-color: $color-surface-alt;
 			border-radius: $border-radius-lg;
 			padding: $spacing-md;
 			border: 1px solid #e0e0e0;
