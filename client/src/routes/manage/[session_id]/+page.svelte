@@ -122,87 +122,108 @@
 	<title>EngaGenie | Manage Session {session?.title}</title>
 </svelte:head>
 
-<div class="live-session-page">
-	<header class="live-session-page__top-bar">
-		<Button variant="primary" onclick={advanceToNext} disabled={isAdvancing || sessionFinished}>
-			{advanceButtonText}
-		</Button>
-	</header>
-
-	<div class="live-session-page__main-grid">
-		<!-- Left Column: Activity Queue -->
-		<aside class="live-session-page__queue-panel">
-			<!-- Current Activity in the Queue -->
-			{#if currentActivity}
-				<div class="queue-section">
-					<h3 class="queue-section__title">Current Activity</h3>
-					<div class="queue-item queue-item--active">
-						<span class="queue-item__index">{currentIndex + 1}</span>
-						<span class="queue-item__title">{currentActivity.title}</span>
-					</div>
-				</div>
-			{/if}
-
-			<!-- Upcoming Activities -->
-			{#if upcomingActivities.length > 0}
-				<div class="queue-section">
-					<h3 class="queue-section__title">Upcoming</h3>
-					<div class="queue-list">
-						{#each upcomingActivities as activityItem, i}
-							<div class="queue-item queue-item--pending">
-								<span class="queue-item__index">{currentIndex + i + 2}</span>
-								<span class="queue-item__title">{activityItem.title}</span>
-							</div>
-						{/each}
-					</div>
-				</div>
-			{/if}
-
-			{#if completedActivities.length > 0}
-				<div class="queue-section">
-					<h3 class="queue-section__title">Completed</h3>
-					<div class="queue-list">
-						{#each completedActivities as activityItem}
-							<div class="queue-item queue-item--closed">
-								<span class="queue-item__title">{activityItem.title}</span>
-							</div>
-						{/each}
-					</div>
-				</div>
-			{/if}
-		</aside>
-
-		<main class="live-session-page__main-panel">
-			<!-- Current Activity Display -->
-			<section class="content-card">
-				<h2 class="content-card__title">Current Activity</h2>
-				<div class="content-card__body">
-					{#if currentActivity}
-						<ActivityItemDisplay activity={currentActivity} />
-					{:else}
-						<div class="placeholder">
-							<p>Click "Start Session" to begin</p>
-						</div>
-					{/if}
-				</div>
-			</section>
-
-			<!-- Analytics Display -->
-			<section class="content-card">
-				<h2 class="content-card__title">Live Answers</h2>
-				<div class="content-card__body">
-					{#if currentActivityResult}
-						<SessionAnalyticsItem activityResult={currentActivityResult} />
-					{:else}
-						<div class="placeholder">
-							<p>Results will appear here when an activity is active</p>
-						</div>
-					{/if}
-				</div>
-			</section>
-		</main>
+{#if isLoading}
+	<div class="placeholder-container">
+		<p>Loading session details...</p>
 	</div>
-</div>
+{:else if session?.mode === 'student-paced'}
+	<div class="placeholder-container">
+		<h2 class="placeholder-container__title">Student-Paced Session</h2>
+		<p class="placeholder-container__message">
+			This session is in student-paced mode, so there is nothing to manage here. Participants can
+			navigate through activities on their own.
+		</p>
+	</div>
+{:else if activities.length === 0}
+	<div class="placeholder-container">
+		<h2 class="placeholder-container__title">No Activities to Manage</h2>
+		<p class="placeholder-container__message">
+			There are 0 activities in this session. Add activities to the session's template to begin.
+		</p>
+	</div>
+{:else}
+	<div class="live-session-page">
+		<header class="live-session-page__top-bar">
+			<Button variant="primary" onclick={advanceToNext} disabled={isAdvancing || sessionFinished}>
+				{advanceButtonText}
+			</Button>
+		</header>
+
+		<div class="live-session-page__main-grid">
+			<!-- Left Column: Activity Queue -->
+			<aside class="live-session-page__queue-panel">
+				<!-- Current Activity in the Queue -->
+				{#if currentActivity}
+					<div class="queue-section">
+						<h3 class="queue-section__title">Current Activity</h3>
+						<div class="queue-item queue-item--active">
+							<span class="queue-item__index">{currentIndex + 1}</span>
+							<span class="queue-item__title">{currentActivity.title}</span>
+						</div>
+					</div>
+				{/if}
+
+				<!-- Upcoming Activities -->
+				{#if upcomingActivities.length > 0}
+					<div class="queue-section">
+						<h3 class="queue-section__title">Upcoming</h3>
+						<div class="queue-list">
+							{#each upcomingActivities as activityItem, i}
+								<div class="queue-item queue-item--pending">
+									<span class="queue-item__index">{currentIndex + i + 2}</span>
+									<span class="queue-item__title">{activityItem.title}</span>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				{#if completedActivities.length > 0}
+					<div class="queue-section">
+						<h3 class="queue-section__title">Completed</h3>
+						<div class="queue-list">
+							{#each completedActivities as activityItem}
+								<div class="queue-item queue-item--closed">
+									<span class="queue-item__title">{activityItem.title}</span>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+			</aside>
+
+			<main class="live-session-page__main-panel">
+				<!-- Current Activity Display -->
+				<section class="content-card">
+					<h2 class="content-card__title">Current Activity</h2>
+					<div class="content-card__body">
+						{#if currentActivity}
+							<ActivityItemDisplay activity={currentActivity} />
+						{:else}
+							<div class="placeholder">
+								<p>Click "Start Session" to begin</p>
+							</div>
+						{/if}
+					</div>
+				</section>
+
+				<!-- Analytics Display -->
+				<section class="content-card">
+					<h2 class="content-card__title">Live Answers</h2>
+					<div class="content-card__body">
+						{#if currentActivityResult}
+							<SessionAnalyticsItem activityResult={currentActivityResult} />
+						{:else}
+							<div class="placeholder">
+								<p>Results will appear here when an activity is active</p>
+							</div>
+						{/if}
+					</div>
+				</section>
+			</main>
+		</div>
+	</div>
+{/if}
 
 <style lang="scss">
 	.live-session-page {
@@ -345,5 +366,30 @@
 		font-size: $font-size-lg;
 		background-color: $color-surface-alt;
 		border-radius: $border-radius-md;
+	}
+
+	.placeholder-container {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+		min-height: 80vh;
+		padding: $spacing-xl;
+		background-color: $color-surface;
+		border-radius: $border-radius-lg;
+
+		&__title {
+			font-size: $font-size-2xl;
+			font-weight: $font-weight-semibold;
+			color: $color-text-primary;
+			margin-bottom: $spacing-md;
+		}
+
+		&__message {
+			font-size: $font-size-lg;
+			color: $color-text-secondary;
+			max-width: 600px;
+		}
 	}
 </style>

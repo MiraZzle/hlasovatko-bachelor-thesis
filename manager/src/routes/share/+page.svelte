@@ -70,7 +70,7 @@
 		justify-content: center;
 		align-items: center;
 		min-height: 100vh;
-		background-color: $color-background;
+		background-color: $color-primary-light;
 		padding: $spacing-xl;
 		box-sizing: border-box;
 
