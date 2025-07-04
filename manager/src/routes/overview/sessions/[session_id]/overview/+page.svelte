@@ -9,6 +9,7 @@
 	import StatCard from '$components/dashboard/StatCard.svelte';
 	import { getSessionById } from '$lib/sessions/session_utils';
 	import { getParticipateSessionLink, getManageSessionLink } from '$lib/router/external_routes';
+	import { toast } from '$lib/stores/toast_store';
 
 	type SessionDetails = {
 		title: string;
@@ -65,23 +66,16 @@
 	const IconCopy = () => '📄';
 	const IconLink = () => '🔗';
 
-	function showNotification(message: string) {
-		notification = message;
-		setTimeout(() => {
-			notification = '';
-		}, 3000);
-	}
-
 	// Copy join code to clipboard
 	function copyJoinCode() {
 		if (!sessionDetails?.joinCode) return;
 
 		navigator.clipboard
 			.writeText(sessionDetails.joinCode)
-			.then(() => showNotification(`Code ${sessionDetails!.joinCode} copied!`))
+			.then(() => toast.show(`Join code copied!`, `info`))
 			.catch((err) => {
 				console.error('Failed to copy code:', err);
-				showNotification('Failed to copy code.');
+				toast.show(`Failed to copy code.`, `error`);
 			});
 	}
 
@@ -91,11 +85,23 @@
 
 		navigator.clipboard
 			.writeText(sessionDetails.participateLink)
-			.then(() => showNotification(`Link copied!`))
+			.then(() => toast.show(`Participate link copied!`, `info`))
 			.catch((err) => {
 				console.error('Failed to copy link:', err);
-				showNotification('Failed to copy link.');
+				toast.show(`Failed to copy link.`, `error`);
 			});
+	}
+
+	// Open share page in a new tab
+	function openSharePage(): void {
+		if (!sessionDetails?.joinCode) {
+			toast.show(`Join code is not available.`, `error`);
+			return;
+		}
+
+		const url = `/share?id=${session_id}&code=${sessionDetails.joinCode}`;
+		window.open(url, '_blank', 'noopener,noreferrer');
+		toast.show(`Join info opened!`, `info`);
 	}
 </script>
 
@@ -135,16 +141,10 @@
 					</button>
 				</div>
 				<div class="info-card__join-group">
-					<Button href={sessionDetails.participateLink}>
-						{IconLink()} Join Link
-					</Button>
-					<button
-						onclick={copyParticipateLink}
-						class="info-card__copy-button"
-						aria-label="Copy join link"
-					>
-						{IconCopy()}
-					</button>
+					<Button onclick={openSharePage}>Open Join Info</Button>
+				</div>
+				<div class="info-card__join-group">
+					<Button onclick={copyParticipateLink} variant="outline">Copy Join Link</Button>
 				</div>
 			</div>
 		</section>
