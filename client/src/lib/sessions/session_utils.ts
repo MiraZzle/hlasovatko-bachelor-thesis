@@ -5,8 +5,6 @@ import { API_URL } from '$lib/config';
 import type { Activity, ActivityResponse } from '$lib/activities/types';
 import type { SessionJoinInfo } from './types';
 import { getToken } from '$lib/auth/auth';
-
-// Lightweight session state for polling.
 export interface ParticipantSessionState {
 	sessionId: string;
 	status: SessionStatus;
@@ -124,7 +122,6 @@ export async function getSessionState(sessionId: string): Promise<ParticipantSes
 		}
 		const dto: ParticipantSessionState = await response.json();
 
-		// Manually map the DTO to the frontend type.
 		return {
 			sessionId: dto.sessionId,
 			status: dto.status,
@@ -149,7 +146,6 @@ export async function getSessionInfoByJoinCode(joinCode: string): Promise<Sessio
 		}
 		const dto: SessionJoinInfo = await response.json();
 
-		// Manually map the DTO to the frontend type for type safety.
 		return {
 			id: dto.id,
 			title: dto.title,

@@ -165,11 +165,13 @@ namespace server.Services
                 .Select(s => new ParticipantSessionStateDto {
                     SessionId = s.Id,
                     Status = s.Status,
-                    CurrentActivityId = s.Activities
-                                         .OrderBy(a => a.Id)
-                                         .Skip(s.CurrentActivity ?? -1)
-                                         .Select(a => (Guid?)a.Id)
-                                         .FirstOrDefault(),
+                    CurrentActivityId = s.CurrentActivity.HasValue
+                                         ? s.Activities
+                                             .OrderBy(a => a.Id)
+                                             .Skip(s.CurrentActivity.Value)
+                                             .Select(a => (Guid?)a.Id)
+                                             .FirstOrDefault()
+                                         : null,
                     ShowResults = s.Template.Settings.ResultsVisibleDefault
                 })
                 .FirstOrDefaultAsync();
