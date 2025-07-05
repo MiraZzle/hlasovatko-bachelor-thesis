@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using server.Data;
+using server.Extensions;
 using server.Models.Sessions.DTOs;
 using server.Services;
 using System.Security.Claims;
-using server.Extensions;
 
 namespace server.Controllers
 {
@@ -15,9 +17,11 @@ namespace server.Controllers
     public class SessionController : ControllerBase
     {
         private readonly ISessionService _sessionService;
+        private readonly AppDbContext _context;
 
-        public SessionController(ISessionService sessionService) {
+        public SessionController(ISessionService sessionService, AppDbContext context) {
             _sessionService = sessionService;
+            _context = context;
         }
 
         /// <summary>
@@ -38,17 +42,31 @@ namespace server.Controllers
         }
 
         /// <summary>
-        /// Gets the current state of a session for a participant.
+        /// Gets the current state of a session for a participant. Requires a valid Participant token.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
         /// <returns>
         /// 200 OK with the session state.<br/>
+        /// 401 Unauthorized if the token is invalid.<br/>
+        /// 403 Forbidden if the token does not belong to this session.<br/>
         /// 404 Not Found if the session does not exist or is not active.
         /// </returns>
         [HttpGet("{sessionId:guid}/state")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetParticipantSessionState(Guid sessionId) {
+        [Authorize(Policy = "Participant")]
+        public async Task<IActionResult> GetParticipantSessionState([FromRoute] Guid sessionId) {
+            var sessionIdClaim = User.FindFirst("sessionId");
+
+            if (sessionIdClaim == null || !Guid.TryParse(sessionIdClaim.Value, out var sessionIdFromToken)) {
+                return Unauthorized("Invalid participant token.");
+            }
+
+            // Check if session ids match
+            if (sessionId != sessionIdFromToken) {
+                return Forbid("You are not authorized to access this session state.");
+            }
+
             var state = await _sessionService.GetParticipantSessionStateAsync(sessionId);
+
             return state == null ? NotFound(new { message = "Session not found or not active." }) : Ok(state);
         }
 
@@ -137,21 +155,30 @@ namespace server.Controllers
             return session == null ? NotFound() : Ok(session);
         }
 
+
         /// <summary>
-        /// Gets all activities for a session.
+        /// Gets all activities for a session. Requires a valid User or Participant token.
         /// </summary>
         /// <param name="id">The session id.</param>
         /// <returns>
         /// 200 OK with a list of activities.<br/>
-        /// 404 Not Found if the session does not exist or is not accessible.
+        /// 403 Forbidden if the user is not authorized for this session.<br/>
+        /// 404 Not Found if the session does not exist.
         /// </returns>
         [HttpGet("{id:guid}/activities")]
-        [AllowAnonymous]
+        [Authorize(Policy = "SessionViewer")]
         public async Task<IActionResult> GetSessionActivities(Guid id) {
+            // Use the new extension method for cleaner authorization logic.
+            var isAuthorized = await this.IsAuthorizedForSessionAsync(id, _context);
+
+            if (!isAuthorized) {
+                return Forbid("You are not authorized to view activities for this session.");
+            }
+
             var activities = await _sessionService.GetSessionActivitiesAsync(id);
 
             if (activities == null) {
-                return NotFound(new { message = "Session not found or lacking permission." });
+                return NotFound(new { message = "Session not found." });
             }
 
             return Ok(activities);

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using server.Data;
 using server.Extensions;
 using server.Models.Answers.DTOs;
 using server.Services;
@@ -18,9 +20,11 @@ namespace server.Controllers
     public class AnswerController : ControllerBase
     {
         private readonly IAnswerService _answerService;
+        private readonly AppDbContext _context;
 
-        public AnswerController(IAnswerService answerService) {
+        public AnswerController(IAnswerService answerService, AppDbContext context) {
             _answerService = answerService;
+            _context = context;
         }
 
         /// <summary>
@@ -31,17 +35,35 @@ namespace server.Controllers
         /// <returns>
         /// 200 OK with the created answer if successful.<br/>
         /// 400 Bad Request if submission fails or the answer format is invalid.<br/>
+        /// 401 Unauthorized if the token is invalid.<br/>
+        /// 403 Forbidden if the token does not belong to the specified session.
         /// 500 Internal Server Error for unexpected errors.
         /// </returns>
-
         [HttpPost("{sessionId:guid}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> SubmitAnswer(Guid sessionId, [FromBody] CreateAnswerRequestDto request) {
+        [Authorize(Policy = "Participant")]
+        public async Task<IActionResult> SubmitAnswer([FromRoute] Guid sessionId, [FromBody] CreateAnswerRequestDto request) {
             try {
-                var result = await _answerService.CreateAnswerAsync(sessionId, request);
-                if (result == null) {
-                    return BadRequest(new { message = "Answer submission failed!" });
+                var participantIdClaim = User.FindFirst("participantId");
+                var sessionIdClaim = User.FindFirst("sessionId");
+
+                // Parse the claims
+                if (participantIdClaim == null || sessionIdClaim == null ||
+                    !Guid.TryParse(participantIdClaim.Value, out var participantId) ||
+                    !Guid.TryParse(sessionIdClaim.Value, out var sessionIdFromToken)) {
+                    return Unauthorized("Invalid participant token.");
                 }
+
+                // Check if session ids match
+                if (sessionId != sessionIdFromToken) {
+                    return Forbid("You are not authorized to submit answers for this session.");
+                }
+
+                var result = await _answerService.CreateAnswerAsync(sessionId, participantId, request);
+
+                if (result == null) {
+                    return BadRequest(new { message = "Answer submission failed. The session may not be active or the activity may be incorrect." });
+                }
+
                 return Ok(result);
             }
             catch (JsonException jsonEx) {
@@ -100,17 +122,17 @@ namespace server.Controllers
 
         /// <summary>
         /// Retrieves aggregated results for a specific activity in a session.
+        /// Requires either a valid Participant token for the session or a User token for the session owner.
         /// </summary>
-        /// <param name="sessionId">The session id.</param>
-        /// <param name="activityId">The activity id.</param>
-        /// <returns>
-        /// 200 OK with aggregated results for the activity.<br/>
-        /// 404 Not Found if no results are available.
-        /// </returns>
         [HttpGet("session/{sessionId:guid}/activity/{activityId:guid}/results")]
-        [AllowAnonymous]
+        [Authorize(Policy = "SessionViewer")]
         public async Task<IActionResult> GetActivityResults(Guid sessionId, Guid activityId) {
+            var isAuthorized = await this.IsAuthorizedForSessionAsync(sessionId, _context);
+
+            if (!isAuthorized) { return Forbid(); }
+
             var result = await _answerService.GetAggregatedResultsForActivityAsync(sessionId, activityId);
+
             return result == null ? NotFound() : Ok(result);
         }
     }

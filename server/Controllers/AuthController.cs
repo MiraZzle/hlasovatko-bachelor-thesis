@@ -96,5 +96,23 @@ namespace server.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Allows a participant to join a session by providing a session id and join code.
+        /// </summary>
+        /// <param name="request">The request containing the session id and join code.</param>
+        /// <returns>A short-lived JWT for the participant if the credentials are valid.</returns>
+        [HttpPost("participant/join")]
+        [AllowAnonymous]
+        public async Task<IActionResult> JoinSession([FromBody] ValidateParticipantRequestDto request) {
+            var result = await _authService.VerifyParticipantAsync(request);
+
+            if (result == null) {
+                return Unauthorized("Invalid session ID or join code.");
+            }
+
+            return Ok(result);
+        }
+
     }
 }
