@@ -1,10 +1,11 @@
 import type { Session } from './types';
 import type { SessionStatus } from './types';
 import type { SessionMode } from '$lib/shared_types';
-import { API_URL } from '$lib/config';
+import { API_URL, API_BASE } from '$lib/config';
 import type { Activity, ActivityResponse } from '$lib/activities/types';
 import type { SessionJoinInfo } from './types';
-import { getToken } from '$lib/auth/auth';
+import { getToken, getParticipantToken } from '$lib/auth/auth';
+
 export interface ParticipantSessionState {
 	sessionId: string;
 	status: SessionStatus;
@@ -27,8 +28,6 @@ interface SessionResponseDto {
 
 /**
  * Maps a SessionResponseDto from the backend to a Session object for the frontend.
- * @param dto The session data from the backend.
- * @returns A frontend-compatible Session object.
  */
 function mapResponseToSession(dto: SessionResponseDto): Session {
 	return {
@@ -48,14 +47,17 @@ function mapResponseToSession(dto: SessionResponseDto): Session {
 
 /**
  * Fetches a single session by its ID from the backend.
- * @param sessionID The ID of the session to fetch.
+ * @param sessionId The id of the session to fetch.
  * @returns A Promise that resolves to the Session object or null if not found.
  */
-export async function getSessionById(sessionID: string): Promise<Session | null> {
-	const response = await fetch(`${API_URL}/api/v1/session/${sessionID}`, {
+export async function getSessionById(sessionId: string): Promise<Session | null> {
+	const token = getParticipantToken(sessionId) || getToken();
+
+	const response = await fetch(`${API_URL}${API_BASE}/session/${sessionId}`, {
 		method: 'GET',
 		headers: {
-			'Content-Type': 'application/json'
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
 		}
 	});
 
@@ -63,16 +65,11 @@ export async function getSessionById(sessionID: string): Promise<Session | null>
 		if (response.status === 404) {
 			return null;
 		}
-		throw new Error(`Failed to fetch session with ID: ${sessionID}`);
+		throw new Error(`Failed to fetch session with ID: ${sessionId}`);
 	}
 
 	const sessionDto: SessionResponseDto = await response.json();
 	return mapResponseToSession(sessionDto);
-}
-
-export function getSessionIdByJoinCode(joinCode: string): string | null {
-	console.log(`Fetching session ID for join code: ${joinCode}`);
-	return 'session123';
 }
 
 /**
@@ -81,9 +78,18 @@ export function getSessionIdByJoinCode(joinCode: string): string | null {
  * @returns A promise that resolves to an array of activities.
  */
 export async function getActivitiesFromSession(sessionId: string): Promise<Activity[]> {
+	const token = getParticipantToken(sessionId) || getToken();
+	if (!token) {
+		console.error('Authentication token not found.');
+		return [];
+	}
+
 	try {
-		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/activities`, {
-			method: 'GET'
+		const response = await fetch(`${API_URL}${API_BASE}/session/${sessionId}/activities`, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
 		});
 
 		if (!response.ok) {
@@ -115,8 +121,18 @@ export async function getActivitiesFromSession(sessionId: string): Promise<Activ
  * Fetches the lightweight current state of a session for polling.
  */
 export async function getSessionState(sessionId: string): Promise<ParticipantSessionState | null> {
+	const token = getParticipantToken(sessionId);
+	if (!token) {
+		console.error('Participant token not found for this session.');
+		return null;
+	}
+
 	try {
-		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/state`);
+		const response = await fetch(`${API_URL}${API_BASE}/session/${sessionId}/state`, {
+			headers: {
+				Authorization: `Bearer ${token}`
+			}
+		});
 		if (!response.ok) {
 			return null;
 		}
@@ -140,7 +156,7 @@ export async function getSessionState(sessionId: string): Promise<ParticipantSes
  */
 export async function getSessionInfoByJoinCode(joinCode: string): Promise<SessionJoinInfo | null> {
 	try {
-		const response = await fetch(`${API_URL}/api/v1/session/join/${joinCode}`);
+		const response = await fetch(`${API_URL}${API_BASE}/session/join/${joinCode}`);
 		if (!response.ok) {
 			return null;
 		}
@@ -158,60 +174,12 @@ export async function getSessionInfoByJoinCode(joinCode: string): Promise<Sessio
 }
 
 /**
- * Sends a request to start a session.
- */
-export async function startSession(sessionId: string): Promise<Session | null> {
-	const token = getToken();
-	try {
-		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/start`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			}
-		});
-		if (!response.ok) {
-			throw new Error('Failed to start session');
-		}
-		const sessionDto: SessionResponseDto = await response.json();
-		return mapResponseToSession(sessionDto);
-	} catch (error) {
-		console.error('Start session error:', error);
-		return null;
-	}
-}
-
-/**
- * Sends a request to stop a session.
- */
-export async function stopSession(sessionId: string): Promise<Session | null> {
-	const token = getToken();
-	try {
-		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/stop`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			}
-		});
-		if (!response.ok) {
-			throw new Error('Failed to stop session');
-		}
-		const sessionDto: SessionResponseDto = await response.json();
-		return mapResponseToSession(sessionDto);
-	} catch (error) {
-		console.error('Stop session error:', error);
-		return null;
-	}
-}
-
-/**
  * Sends a request to advance to the next activity.
  */
 export async function nextActivity(sessionId: string): Promise<Session | null> {
 	const token = getToken();
 	try {
-		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/next`, {
+		const response = await fetch(`${API_URL}${API_BASE}/session/${sessionId}/next`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
