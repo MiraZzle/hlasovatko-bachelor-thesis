@@ -20,11 +20,13 @@ namespace server.Services
         private readonly AppDbContext _context;
         private readonly IActivityService _activityService;
         private readonly IAnalyticsProcessor _analyticsProcessor;
+        private readonly ISessionService _sessionService;
 
-        public AnswerService(AppDbContext context, IActivityService activityService, IAnalyticsProcessor analyticsProcessor) {
+        public AnswerService(AppDbContext context, IActivityService activityService, IAnalyticsProcessor analyticsProcessor, ISessionService sessionService) {
             _context = context;
             _activityService = activityService;
             _analyticsProcessor = analyticsProcessor;
+            _sessionService = sessionService;
         }
 
         private ActivityResponseDto MapActivityToDto(Activity activity) => new() {
@@ -84,7 +86,10 @@ namespace server.Services
             if (session == null)
                 return new List<ActivityResultDto>();
 
-            var activityIds = session.Activities.Select(a => a.Id).ToList();
+            var orderedActivities = _sessionService.GetOrderedActivities(session);
+
+            var activityIds = orderedActivities.Select(a => a.Id).ToList();
+
             var allAnswers = await _context.Answers
                 .Where(a => activityIds.Contains(a.ActivityId))
                 .AsNoTracking()
@@ -93,7 +98,7 @@ namespace server.Services
             var answersByActivityId = allAnswers.GroupBy(a => a.ActivityId).ToDictionary(g => g.Key, g => g.ToList());
 
             var results = new List<ActivityResultDto>();
-            foreach (var activity in session.Activities) {
+            foreach (var activity in orderedActivities) {
                 var answersForThisActivity = answersByActivityId.GetValueOrDefault(activity.Id, new List<Answer>());
                 results.Add(new ActivityResultDto {
                     ActivityRef = MapActivityToDto(activity),

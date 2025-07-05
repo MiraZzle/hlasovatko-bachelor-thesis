@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Models.Statistics.DTOs;
-using server.Services;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -18,20 +17,19 @@ namespace server.Services.Analytics
         }
 
         public async Task<StatisticsDto> GetStatistics(Guid userId) {
+            // Start all tasks concurrently
             var sessionsCountTask = GetUserSessionsCount(userId);
             var activitiesCountTask = GetUserActivitiesCount(userId);
-
             var mostCommonActivityTask = GetMostCommonActivityType(userId);
 
-            // Prevent locking the db
-            var totalSessions = await GetUserSessionsCount(userId);
-            var totalActivities = await GetUserActivitiesCount(userId);
-            var mostCommonActivityType = await GetMostCommonActivityType(userId);
+            // Await all tasks to complete
+            await Task.WhenAll(sessionsCountTask, activitiesCountTask, mostCommonActivityTask);
 
+            // Return the results from the completed tasks
             return new StatisticsDto {
-                TotalSessions = totalSessions,
-                TotalActivities = totalActivities,
-                MostCommonActivityType = mostCommonActivityType ?? "N/A"
+                TotalSessions = await sessionsCountTask,
+                TotalActivities = await activitiesCountTask,
+                MostCommonActivityType = await mostCommonActivityTask ?? "N/A"
             };
         }
 
@@ -39,11 +37,11 @@ namespace server.Services.Analytics
             var stats = await GetStatistics(userId);
             var builder = new StringBuilder();
 
-            // Define the CSV structure
             builder.AppendLine("Statistic,Value");
             builder.AppendLine($"Total Sessions,{stats.TotalSessions}");
             builder.AppendLine($"Total Activities,{stats.TotalActivities}");
             builder.AppendLine($"Most Common Activity Type,{stats.MostCommonActivityType}");
+
             return builder.ToString();
         }
 

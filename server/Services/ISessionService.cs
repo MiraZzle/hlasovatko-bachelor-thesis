@@ -1,5 +1,7 @@
-﻿using server.Models.Activities.DTOs;
+﻿using server.Entities;
+using server.Models.Activities.DTOs;
 using server.Models.Sessions.DTOs;
+using server.Models.Activities;
 
 namespace server.Services
 {
@@ -90,5 +92,12 @@ namespace server.Services
         /// <param name="sessionId">The unique id of the session.</param>
         /// <returns>The <see cref="ParticipantSessionStateDto"/> if found; otherwise, <c>null</c>.</returns>
         Task<ParticipantSessionStateDto?> GetParticipantSessionStateAsync(Guid sessionId);
+
+        /// <summary>
+        /// Retrieves the ordered list of activities for a session.
+        /// </summary>
+        /// <param name="session">The session to get ordered activities for.</param>
+        /// <returns></returns>
+        IEnumerable<Activity> GetOrderedActivities(Session session);
     }
 }

@@ -60,6 +60,8 @@ namespace server.Services
             }
 
             templateForUpdate.Definition = newActivities;
+            templateForUpdate.ActivityOrder = newActivities.Select(a => a.Id).ToList();
+            template.Version += 1;
             _context.Activities.AddRange(newActivities);
             
             await _context.SaveChangesAsync();
@@ -87,7 +89,8 @@ namespace server.Services
                     SessionPacing = templateDto.SessionPacing,
                     ResultsVisibleDefault = templateDto.ResultsVisibleDefault
                 },
-                Definition = activitiesForTemplate
+                Definition = activitiesForTemplate,
+                ActivityOrder = activitiesForTemplate.Select(a => a.Id).ToList()
             };
 
             _context.Templates.Add(template);
@@ -152,10 +155,12 @@ namespace server.Services
         }
 
         private TemplateResponseDto MapTemplateToDto(Template template) {
+            var orderedActivities = GetOrderedActivities(template);
+
             var response = new TemplateResponseDto {
                 Id = template.Id,
                 DateCreated = template.DateCreated,
-                Definition = template.Definition?.Select(a => new ActivityResponseDto {
+                Definition = orderedActivities?.Select(a => new ActivityResponseDto {
                     Id = a.Id,
                     Title = a.Title,
                     ActivityType = a.ActivityType,
@@ -172,6 +177,14 @@ namespace server.Services
             }
 
             return response;
+        }
+
+        private IEnumerable<Activity> GetOrderedActivities(Template template) {
+            if (template?.Definition == null || template.ActivityOrder == null || !template.ActivityOrder.Any()) {
+                return template?.Definition ?? Enumerable.Empty<Activity>();
+            }
+
+            return template.Definition.OrderBy(a => template.ActivityOrder.IndexOf(a.Id));
         }
     }
 }
