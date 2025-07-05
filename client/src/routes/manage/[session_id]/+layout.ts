@@ -1,13 +1,13 @@
 import { browser } from '$app/environment';
 import type { LayoutLoad } from './$types';
+import { saveToken } from '$lib/auth/auth';
 
 export const load: LayoutLoad = async ({ url }) => {
 	if (browser) {
 		const token = url.searchParams.get('token');
 
 		if (token) {
-			console.log('JWT token found in URL, saving to local storage.');
-			localStorage.setItem('token', token);
+			saveToken(token);
 
 			const newUrl = new URL(url);
 			newUrl.searchParams.delete('token');

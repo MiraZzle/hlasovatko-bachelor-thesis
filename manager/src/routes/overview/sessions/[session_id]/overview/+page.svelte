@@ -49,7 +49,7 @@
 					createdDate: sessionInfo.created,
 					joinCode: sessionInfo.joinCode,
 					manageLink: getManageSessionLink(session_id),
-					participateLink: getParticipateSessionLink(session_id),
+					participateLink: getParticipateSessionLink(session_id, sessionInfo.joinCode || ''),
 					activationDate: sessionInfo.activationDate
 				};
 			} catch (err: any) {
