@@ -15,12 +15,6 @@ namespace server.Models.Answers.DTOs
         public Guid ActivityId { get; set; }
 
         /// <summary>
-        /// The unique identifier of the participant submitting the answer.
-        /// </summary>
-        [Required]
-        public Guid ParticipantId { get; set; }
-
-        /// <summary>
         /// The answer content as a JSON object.
         /// </summary>
         /// <remarks>
