@@ -1,6 +1,6 @@
 import type { ActivityResponse, ActivityType, Activity } from './types.ts';
 import { getToken } from '$lib/auth/auth';
-import { API_URL } from '$lib/config';
+import { API_URL, API_BASE } from '$lib/config';
 
 export function getDefinedActivityTypes(): ActivityType[] {
 	return [
@@ -28,7 +28,7 @@ export async function addActivityToBank(activityData: {
 	console.log('Adding activity to bank:', activityData);
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/activity-bank`, {
+		const res = await fetch(`${API_URL}${API_BASE}/activity-bank`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ export async function getActivityBank(): Promise<Activity[]> {
 	if (!token) return [];
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/activity-bank`, {
+		const res = await fetch(`${API_URL}${API_BASE}/activity-bank`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -109,7 +109,7 @@ export async function getActivitiesFromSession(sessionId: string): Promise<Activ
 	}
 
 	try {
-		const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/activities`, {
+		const response = await fetch(`${API_URL}${API_BASE}/session/${sessionId}/activities`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`

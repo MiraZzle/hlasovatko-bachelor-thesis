@@ -1,7 +1,7 @@
 import type { Template, TemplateSettingsDTO } from '$lib/templates/types';
 import type { Activity } from '$lib/activities/types';
 import { getToken } from '$lib/auth/auth';
-import { API_URL } from '$lib/config';
+import { API_URL, API_BASE } from '$lib/config';
 import type { SessionMode } from '$lib/shared_types';
 import type { StaticActivityType } from '$lib/activities/types';
 
@@ -83,7 +83,7 @@ export async function updateTemplate(
 	};
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/template/${templateId}`, {
+		const res = await fetch(`${API_URL}${API_BASE}/template/${templateId}`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export async function getAllTemplates(): Promise<Template[]> {
 	if (!token) return [];
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/template`, {
+		const res = await fetch(`${API_URL}${API_BASE}/template`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -144,7 +144,7 @@ export async function getTemplateById(templateId: string): Promise<Template | nu
 	if (!token) return null;
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/template/${templateId}`, {
+		const res = await fetch(`${API_URL}${API_BASE}/template/${templateId}`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -185,7 +185,7 @@ export async function createNewTemplate(
 	}));
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/template`, {
+		const res = await fetch(`${API_URL}${API_BASE}/template`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -227,7 +227,7 @@ export async function updateTemplateSettings(
 	if (!token) return null;
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/template/${templateId}/settings`, {
+		const res = await fetch(`${API_URL}${API_BASE}/template/${templateId}/settings`, {
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
@@ -259,7 +259,7 @@ export async function deleteTemplate(templateId: string): Promise<boolean> {
 	if (!token) return false;
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/template/${templateId}`, {
+		const res = await fetch(`${API_URL}${API_BASE}/template/${templateId}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: `Bearer ${token}`

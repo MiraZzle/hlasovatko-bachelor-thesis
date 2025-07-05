@@ -1,4 +1,4 @@
-import { API_URL } from '$lib/config';
+import { API_URL, API_BASE } from '$lib/config';
 import type { User } from './types';
 import { toast } from '$lib/stores/toast_store';
 import { browser } from '$app/environment';
@@ -89,7 +89,7 @@ export function getUser(): User | null {
  */
 export async function login(email: string, password: string): Promise<User | null> {
 	try {
-		const res = await fetch(`${API_URL}/api/v1/auth/login`, {
+		const res = await fetch(`${API_URL}${API_BASE}/auth/login`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -132,7 +132,7 @@ export async function login(email: string, password: string): Promise<User | nul
  */
 export async function register(name: string, email: string, password: string): Promise<boolean> {
 	try {
-		const res = await fetch(`${API_URL}/api/v1/auth/register`, {
+		const res = await fetch(`${API_URL}${API_BASE}/auth/register`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -161,7 +161,7 @@ export async function changePassword(oldPassword: string, newPassword: string): 
 	}
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/auth/change-password`, {
+		const res = await fetch(`${API_URL}${API_BASE}/auth/change-password`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -190,7 +190,7 @@ export async function regenerateApiKey(): Promise<string> {
 		return '';
 	}
 	try {
-		const res = await fetch(`${API_URL}/api/v1/apikey/regenerate`, {
+		const res = await fetch(`${API_URL}${API_BASE}/apikey/regenerate`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -220,7 +220,7 @@ export async function getPartialApiKey(): Promise<string> {
 		return '';
 	}
 	try {
-		const res = await fetch(`${API_URL}/api/v1/apikey`, {
+		const res = await fetch(`${API_URL}${API_BASE}/apikey`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`
