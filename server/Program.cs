@@ -9,6 +9,7 @@ using server.Services.Analytics;
 using server.Services.Analytics.Processors;
 using server.Services.Background;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 
 namespace server
@@ -26,11 +27,10 @@ namespace server
             .AddJwtBearer(options => {
                 options.TokenValidationParameters = new TokenValidationParameters {
                     ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Issuer"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
                 };
             }).AddScheme<ApiKeyAuthOptions, ApiKeyAuthHandler>(
@@ -41,7 +41,22 @@ namespace server
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme, ApiKeyAuthOptions.DefaultScheme)
                     .RequireAuthenticatedUser()
                     .Build());
+
+                options.AddPolicy("Participant", new AuthorizationPolicyBuilder()
+                   .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                   .RequireAuthenticatedUser()
+                   .RequireClaim(ClaimTypes.Role, "Participant")
+                   .RequireClaim("sessionId")
+                   .RequireClaim("participantId")
+                   .Build());
+
+                options.AddPolicy("SessionViewer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .RequireClaim(ClaimTypes.Role, "User", "Participant")
+                    .Build());
             });
+
             // Get DB connection string
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContextFactory<AppDbContext>(options =>
