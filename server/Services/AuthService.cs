@@ -1,10 +1,15 @@
-﻿using server.Data;
+﻿using BCrypt;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using server.Data;
 using server.Models.Auth;
 using server.Models.Auth.DTOs;
-using Microsoft.EntityFrameworkCore;
-using System;
-using BCrypt;
+using server.Models.Enums;
 using server.Utils;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace server.Services
 {
@@ -43,7 +48,7 @@ namespace server.Services
                 throw new Exception("Invalid credentials.");
             }
 
-            var token = JwtUtils.GenerateJwtToken(user, _configuration);
+            var token = JwtUtils.GenerateUserToken(user, _configuration);
 
             return new AuthResponseDto {
                 UserId = user.Id.ToString(),
@@ -68,6 +73,24 @@ namespace server.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<ParticipantTokenResponseDto?> VerifyParticipantAsync(ValidateParticipantRequestDto request) {
+            var session = await _context.Sessions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == request.SessionId && s.JoinCode == request.JoinCode);
+
+            if (session == null || session.Status != SessionStatus.Active) {
+                return null;
+            }
+
+            var participantId = Guid.NewGuid();
+
+            var tokenString = JwtUtils.GenerateParticipantToken(session.Id, participantId, _configuration);
+
+            return new ParticipantTokenResponseDto {
+                Token = tokenString
+            };
         }
     }
 }

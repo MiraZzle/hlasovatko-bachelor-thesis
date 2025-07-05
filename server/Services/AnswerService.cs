@@ -37,7 +37,7 @@ namespace server.Services
             Tags = activity.Tags
         };
 
-        public async Task<AnswerResponseDto?> CreateAnswerAsync(Guid sessionId, CreateAnswerRequestDto answerDto) {
+        public async Task<AnswerResponseDto?> CreateAnswerAsync(Guid sessionId, Guid participantId, CreateAnswerRequestDto answerDto) { 
             var session = await _context.Sessions
                 .Include(s => s.Activities)
                 .FirstOrDefaultAsync(s => s.Id == sessionId);
@@ -47,6 +47,7 @@ namespace server.Services
                 return null;
             }
 
+            // Validate if activity is part of the session
             var activity = session.Activities.FirstOrDefault(a => a.Id == answerDto.ActivityId);
             if (activity == null) {
                 return null;
@@ -57,7 +58,7 @@ namespace server.Services
 
             var newAnswer = new Answer {
                 ActivityId = answerDto.ActivityId,
-                ParticipantId = answerDto.ParticipantId,
+                ParticipantId = participantId,
                 AnswerJson = answerJsonString,
                 Timestamp = DateTime.UtcNow
             };
