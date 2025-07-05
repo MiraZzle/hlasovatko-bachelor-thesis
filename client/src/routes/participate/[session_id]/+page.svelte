@@ -199,7 +199,7 @@
 					onSubmit={handleActivitySubmit}
 				/>
 			{:else}
-				<p>Waiting for the host to start the next activity...</p>
+				<p class="participate-page__message">No activity is currently running.</p>
 			{/if}
 		</main>
 
@@ -233,6 +233,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2rem;
+
+		&__message {
+			text-align: center;
+			font-size: 1.2rem;
+		}
 
 		&__header {
 			text-align: center;

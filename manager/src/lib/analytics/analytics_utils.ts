@@ -1,6 +1,6 @@
 import type { ActivityResult, StaticActivityType } from '$lib/activities/types';
 import { getToken } from '$lib/auth/auth';
-import { API_URL } from '$lib/config';
+import { API_URL, API_BASE } from '$lib/config';
 import type { Activity } from '$lib/activities/types';
 import type { Statistics } from './types';
 interface ActivityResponseDto {
@@ -28,7 +28,7 @@ export async function getStatistics(): Promise<Statistics | null> {
 	}
 
 	try {
-		const response = await fetch(`${API_URL}/api/v1/statistics`, {
+		const response = await fetch(`${API_URL}${API_BASE}/statistics`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -59,7 +59,7 @@ export async function exportStatistics(format: 'csv' | 'json'): Promise<void> {
 	}
 
 	try {
-		const response = await fetch(`${API_URL}/api/v1/statistics/export?format=${format}`, {
+		const response = await fetch(`${API_URL}${API_BASE}/statistics/export?format=${format}`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`
@@ -76,7 +76,6 @@ export async function exportStatistics(format: 'csv' | 'json'): Promise<void> {
 		const a = document.createElement('a');
 		a.style.display = 'none';
 		a.href = url;
-		// e.g., statistics-2025-06-29.csv
 		a.download = `statistics-${new Date().toISOString().split('T')[0]}.${format}`;
 		document.body.appendChild(a);
 		a.click();
@@ -100,7 +99,7 @@ export async function getActivityResultsForSession(sessionId: string): Promise<A
 	}
 
 	try {
-		const response = await fetch(`${API_URL}/api/v1/answer/session/${sessionId}/results`, {
+		const response = await fetch(`${API_URL}${API_BASE}/answer/session/${sessionId}/results`, {
 			method: 'GET',
 			headers: {
 				Authorization: `Bearer ${token}`

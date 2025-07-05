@@ -25,7 +25,7 @@
 
 	let isShareModalOpen = $state(false);
 	let isLoading = $state(false);
-	let participateUrl = $state(getParticipateSessionLink(sessionId));
+	let participateUrl = $state(getParticipateSessionLink(sessionId, joinCode));
 	let manageUrl = $state(getManageSessionLink(sessionId));
 
 	async function handleStartSession(): Promise<void> {

@@ -1,6 +1,8 @@
-import { API_URL } from '$lib/config';
+import { API_URL, API_BASE } from '$lib/config';
 import type { Activity, ActivityResult, StaticActivityType } from '$lib/activities/types';
 import type { SubmitPayload } from '$lib/activities/definition_types';
+import { getParticipantToken } from '$lib/auth/auth';
+import { getToken } from '$lib/auth/auth';
 
 interface ActivityResultDto {
 	activityRef: ActivityResponseDto;
@@ -16,23 +18,16 @@ interface ActivityResponseDto {
 }
 
 /**
- * Gets or creates a unique participant ID for the current browser session.
- */
-export function getParticipantId(): string {
-	let participantId = sessionStorage.getItem('participantId');
-	if (!participantId) {
-		participantId = crypto.randomUUID();
-		sessionStorage.setItem('participantId', participantId);
-	}
-	return participantId;
-}
-
-/**
  * Submits an answer for an activity.
  */
 export async function submitAnswer(sessionId: string, payload: SubmitPayload): Promise<boolean> {
-	const participantId = getParticipantId();
+	const token = getParticipantToken(sessionId);
 	let answerJson: object;
+
+	if (!token) {
+		console.error('Participant token not found for this session.');
+		return false;
+	}
 
 	switch (payload.activityType) {
 		case 'poll':
@@ -54,12 +49,14 @@ export async function submitAnswer(sessionId: string, payload: SubmitPayload): P
 			return false;
 	}
 
-	const response = await fetch(`${API_URL}/api/v1/answer/${sessionId}`, {
+	const response = await fetch(`${API_URL}${API_BASE}/answer/${sessionId}`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		},
 		body: JSON.stringify({
 			activityId: payload.activityId,
-			participantId: participantId,
 			answerJson: answerJson
 		})
 	});
@@ -73,29 +70,53 @@ export async function submitAnswer(sessionId: string, payload: SubmitPayload): P
 
 /**
  * Fetches the aggregated results for a single activity.
+ * @param sessionId The ID of the session.
+ * @param activityId The ID of the activity.
  */
 export async function getActivityResults(
 	sessionId: string,
 	activityId: string
 ): Promise<ActivityResult | null> {
-	const response = await fetch(
-		`${API_URL}/api/v1/answer/session/${sessionId}/activity/${activityId}/results`
-	);
-	if (!response.ok) return null;
-	const dto: ActivityResultDto = await response.json();
+	const token = getParticipantToken(sessionId) || getToken();
 
-	// Correctly map the DTO to the client-side Activity type
-	const activity: Activity = {
-		id: dto.activityRef.id,
-		title: dto.activityRef.title,
-		type: dto.activityRef.activityType as StaticActivityType,
-		definition: dto.activityRef.definition,
-		tags: dto.activityRef.tags
-	};
+	if (!token) {
+		console.error('Participant token not found for this session.');
+		return null;
+	}
 
-	return {
-		activityRef: activity,
-		baseActivityType: activity.type,
-		results: dto.results
-	};
+	try {
+		const response = await fetch(
+			`${API_URL}${API_BASE}/answer/session/${sessionId}/activity/${activityId}/results`,
+			{
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			}
+		);
+
+		if (!response.ok) {
+			console.error('Failed to fetch activity results:', response.statusText);
+			return null;
+		}
+
+		const dto: ActivityResultDto = await response.json();
+
+		const activity: Activity = {
+			id: dto.activityRef.id,
+			title: dto.activityRef.title,
+			type: dto.activityRef.activityType as StaticActivityType,
+			definition: dto.activityRef.definition,
+			tags: dto.activityRef.tags
+		};
+
+		return {
+			activityRef: activity,
+			baseActivityType: activity.type,
+			results: dto.results
+		};
+	} catch (err) {
+		console.error(`API error when fetching results for activity ${activityId}:`, err);
+		return null;
+	}
 }

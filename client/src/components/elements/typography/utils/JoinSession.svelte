@@ -5,7 +5,6 @@
 	import { goto } from '$app/navigation';
 	import Button from '$components/elements/typography/Button.svelte';
 	import Input from '$components/elements/typography/Input.svelte';
-	import { getSessionIdByJoinCode } from '$lib/sessions/session_utils';
 	import { base } from '$app/paths';
 	import { getSessionInfoByJoinCode } from '$lib/sessions/session_utils';
 	import { toast } from '$lib/stores/toast_store';
@@ -25,13 +24,13 @@
 		isLoading = true;
 		error = null;
 		try {
-			const sessionId = await getSessionInfoByJoinCode(code);
-			if (!sessionId) {
+			const sessionInfo = await getSessionInfoByJoinCode(code);
+			if (!sessionInfo) {
 				error = 'Invalid session code. Please try again.';
 				isLoading = false;
 				return;
 			}
-			await goto(`${base}/participate/${sessionId}`);
+			await goto(`${base}/participate/${sessionInfo.id}?code=${code}`);
 		} catch (err) {
 			console.error('Error joining session:', err);
 			toast.show('Failed to join session. Please try again later.', 'error');

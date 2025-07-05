@@ -28,7 +28,7 @@ namespace server.Tests
             var user = new User { Id = Guid.NewGuid(), Email = "jwt@test.com", Name = "JwtUser" };
 
             // Act
-            var tokenString = JwtUtils.GenerateJwtToken(user, _configuration);
+            var tokenString = JwtUtils.GenerateUserToken(user, _configuration);
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(tokenString);
 

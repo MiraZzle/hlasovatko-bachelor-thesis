@@ -29,5 +29,12 @@ namespace server.Services
         /// <param name="request">The password change request containing old and new passwords.</param>
         /// <returns><c>true</c> if the password was changed successfully; otherwise, <c>false</c>.</returns>
         Task<bool> ChangePasswordAsync(Guid userId, ChangePasswordRequestDto request);
+
+        /// <summary>
+        /// Verifies a session join code and generates a short-lived JWT for a participant.
+        /// </summary>
+        /// <param name="request">The request containing the join code.</param>
+        /// <returns>A DTO containing the participants token, or null if the join code is invalid.</returns>
+        Task<ParticipantTokenResponseDto?> VerifyParticipantAsync(ValidateParticipantRequestDto request);
     }
 }

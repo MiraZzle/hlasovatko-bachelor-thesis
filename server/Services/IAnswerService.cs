@@ -12,10 +12,11 @@ namespace server.Services
         /// </summary>
         /// <param name="sessionId">The unique id of the session.</param>
         /// <param name="answerDto">The DTO containing the answer details.</param>
+        /// <param name="participantId">The id of the participant submitting the answer.</param>
         /// <returns>
         /// The created <see cref="AnswerResponseDto"/>, or null if creation failed.
         /// </returns>
-        Task<AnswerResponseDto?> CreateAnswerAsync(Guid sessionId, CreateAnswerRequestDto answerDto);
+        Task<AnswerResponseDto?> CreateAnswerAsync(Guid sessionId, Guid participantId, CreateAnswerRequestDto answerDto);
 
         /// <summary>
         /// Retrieves all answers for a specific activity within a session and owner context.

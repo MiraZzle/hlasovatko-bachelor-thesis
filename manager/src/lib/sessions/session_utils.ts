@@ -1,6 +1,6 @@
 import type { Session, SessionStatus } from '$lib/sessions/types';
 import type { SessionMode } from '$lib/shared_types';
-import { API_URL } from '$lib/config';
+import { API_URL, API_BASE } from '$lib/config';
 import { getToken } from '$lib/auth/auth';
 import type { SessionJoinInfo } from '$lib/sessions/types';
 
@@ -52,7 +52,7 @@ export async function getSessionById(sessionID: string): Promise<Session | null>
 	if (!token) return null;
 
 	try {
-		const response = await fetch(`${API_URL}/api/v1/session/${sessionID}`, {
+		const response = await fetch(`${API_URL}${API_BASE}/session/${sessionID}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ export async function getSessionById(sessionID: string): Promise<Session | null>
  */
 export async function getSessionInfoByJoinCode(joinCode: string): Promise<SessionJoinInfo | null> {
 	try {
-		const response = await fetch(`${API_URL}/api/v1/session/join/${joinCode}`);
+		const response = await fetch(`${API_URL}${API_BASE}/session/join/${joinCode}`);
 		if (!response.ok) {
 			return null;
 		}
@@ -104,7 +104,7 @@ export async function getSessionInfoByJoinCode(joinCode: string): Promise<Sessio
 export async function getAllSessions(): Promise<Session[]> {
 	const token = getToken();
 
-	const response = await fetch(`${API_URL}/api/v1/session`, {
+	const response = await fetch(`${API_URL}${API_BASE}/session`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ export async function getAllSessions(): Promise<Session[]> {
 export async function getSessionsByTemplate(templateID: string): Promise<Session[]> {
 	const token = getToken();
 
-	const response = await fetch(`${API_URL}/api/v1/session/template/${templateID}`, {
+	const response = await fetch(`${API_URL}${API_BASE}/session/template/${templateID}`, {
 		method: 'GET',
 		headers: {
 			'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ export async function createNewSession(
 ): Promise<Session> {
 	const token = getToken();
 
-	const response = await fetch(`${API_URL}/api/v1/session`, {
+	const response = await fetch(`${API_URL}${API_BASE}/session`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -190,7 +190,7 @@ export async function createNewSession(
 export async function startSession(sessionId: string): Promise<Session> {
 	const token = getToken();
 
-	const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/start`, {
+	const response = await fetch(`${API_URL}${API_BASE}/session/${sessionId}/start`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -220,7 +220,7 @@ export async function startSession(sessionId: string): Promise<Session> {
  */
 export async function stopSession(sessionId: string): Promise<Session> {
 	const token = getToken();
-	const response = await fetch(`${API_URL}/api/v1/session/${sessionId}/stop`, {
+	const response = await fetch(`${API_URL}${API_BASE}/session/${sessionId}/stop`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -253,7 +253,7 @@ export async function deleteSession(sessionId: string): Promise<boolean> {
 	if (!token) return false;
 
 	try {
-		const res = await fetch(`${API_URL}/api/v1/session/${sessionId}`, {
+		const res = await fetch(`${API_URL}${API_BASE}/session/${sessionId}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: `Bearer ${token}`

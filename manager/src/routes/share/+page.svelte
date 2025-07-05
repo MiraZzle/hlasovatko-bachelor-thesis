@@ -5,8 +5,8 @@
 	import { page } from '$app/stores';
 
 	const sessionId = $page.url.searchParams.get('id') || '';
-	const joinCode = $page.url.searchParams.get('code');
-	const participateUrl = getParticipateSessionLink(sessionId);
+	const joinCode = $page.url.searchParams.get('code') || '';
+	const participateUrl = getParticipateSessionLink(sessionId, joinCode);
 
 	let qrCanvas: HTMLCanvasElement;
 
