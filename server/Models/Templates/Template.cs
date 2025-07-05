@@ -48,5 +48,10 @@ namespace server.Models
         /// Each activity includes its own metadata and definition.
         /// </remarks>
         public virtual ICollection<Activity> Definition { get; set; } = new List<Activity>();
+
+        /// <summary>
+        /// Stores the ordered list of activity ids for this template.
+        /// </summary>
+        public List<Guid> ActivityOrder { get; set; } = new();
     }
 }
