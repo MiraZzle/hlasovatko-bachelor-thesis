@@ -79,5 +79,10 @@ namespace server.Entities
         /// The version of the template used when this session was created - not used as of now.
         /// </summary>
         public int TemplateVersion { get; set; } = 0;
+
+        /// <summary>
+        /// Stores the ordered list of activity ids for this sessions.
+        /// </summary>
+        public List<Guid> ActivityOrder { get; set; } = new();
     }
 }

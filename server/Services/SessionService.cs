@@ -70,7 +70,20 @@ namespace server.Services
                 throw new Exception("Template not found or you do not have permission to access it.");
             }
 
-            // check if session is planned and format the date
+            var newActivitiesMap = new Dictionary<Guid, Activity>();
+            foreach (var templateActivityId in template.ActivityOrder) {
+                var templateActivity = template.Definition.First(a => a.Id == templateActivityId);
+                newActivitiesMap.Add(templateActivityId, new Activity {
+                    Title = templateActivity.Title,
+                    ActivityType = templateActivity.ActivityType,
+                    Definition = templateActivity.Definition,
+                });
+            }
+
+            var newActivitiesInOrder = newActivitiesMap.Values.ToList();
+
+
+            // Check if session is planned and format the date
             DateTime? setDate = request.ActivationDate.HasValue
                 ? DateTime.SpecifyKind(request.ActivationDate.Value, DateTimeKind.Utc)
                 : null;
@@ -84,13 +97,9 @@ namespace server.Services
                 ActivationDate = setDate,
                 CurrentActivity = null,
                 Mode = request.Mode ?? template.Settings.SessionPacing,
+                Activities = newActivitiesInOrder,
+                ActivityOrder = newActivitiesInOrder.Select(a => a.Id).ToList()
             };
-
-            session.Activities = template.Definition.Select(activity => new Activity {
-                Title = activity.Title,
-                ActivityType = activity.ActivityType,
-                Definition = activity.Definition,
-            }).ToList();
 
             _context.Sessions.Add(session);
             await _context.SaveChangesAsync();
@@ -167,7 +176,7 @@ namespace server.Services
                     Status = s.Status,
                     CurrentActivityId = s.CurrentActivity.HasValue
                                          ? s.Activities
-                                             .OrderBy(a => a.Id)
+                                             .OrderBy(a => s.ActivityOrder.IndexOf(a.Id))
                                              .Skip(s.CurrentActivity.Value)
                                              .Select(a => (Guid?)a.Id)
                                              .FirstOrDefault()
@@ -177,6 +186,18 @@ namespace server.Services
                 .FirstOrDefaultAsync();
         }
 
+        public IEnumerable<Activity> GetOrderedActivities(Session session) {
+            if (session?.Activities == null || session.ActivityOrder == null || !session.ActivityOrder.Any()) {
+                return session?.Activities ?? Enumerable.Empty<Activity>();
+            }
+
+            return session.Activities.OrderBy(a => session.ActivityOrder.IndexOf(a.Id));
+        }
+
+        /// <summary>
+        /// Generates a unique join code for a session.
+        /// </summary>
+        /// <returns> The generated join code. </returns>
         private async Task<string> GenerateUniqueJoinCode() {
             // Allowed chars in the code
             const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
@@ -193,6 +214,8 @@ namespace server.Services
         }
 
         private SessionResponseDto MapSessionToDto(Session session) {
+            var orderedActivities = GetOrderedActivities(session);
+
             return new SessionResponseDto {
                 Id = session.Id,
                 Title = session.Title,
@@ -205,18 +228,18 @@ namespace server.Services
                 Participants = session.Participants,
                 CurrentActivity = session.CurrentActivity,
                 CreatedAt = session.Created,
-                Activities = session.Activities?.Select(a => new ActivityResponseDto {
+                Activities = orderedActivities?.Select(a => new ActivityResponseDto {
                     Id = a.Id,
                     Title = a.Title,
                     ActivityType = a.ActivityType,
-                    Definition = JsonDocument.Parse(a.Definition).RootElement
+                    Definition = JsonDocument.Parse(a.Definition).RootElement,
+                    Tags = a.Tags,
                 }).ToList() ?? new List<ActivityResponseDto>()
             };
         }
 
         public async Task<IEnumerable<ActivityResponseDto>?> GetSessionActivitiesAsync(Guid sessionId) {
             var session = await _context.Sessions
-                .Include(s => s.Template)
                 .Include(s => s.Activities)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(s => s.Id == sessionId);
@@ -225,7 +248,9 @@ namespace server.Services
                 return null;
             }
 
-            return session.Activities.Select(a => new ActivityResponseDto {
+            var orderedActivities = GetOrderedActivities(session);
+
+            return orderedActivities?.Select(a => new ActivityResponseDto {
                 Id = a.Id,
                 Title = a.Title,
                 ActivityType = a.ActivityType,

@@ -44,22 +44,13 @@ namespace server
             });
             // Get DB connection string
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddDbContext<AppDbContext>(options =>
-                // Retry on failure to connect to the database
-                options.UseNpgsql(connectionString, npgsqlOptions => {
-                    npgsqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 5,
-                        maxRetryDelay: TimeSpan.FromSeconds(10),
-                        errorCodesToAdd: null);
-                }));
-
             builder.Services.AddDbContextFactory<AppDbContext>(options =>
-                options.UseNpgsql(connectionString, npgsqlOptions => {
-                    npgsqlOptions.EnableRetryOnFailure(
-                        maxRetryCount: 5,
-                        maxRetryDelay: TimeSpan.FromSeconds(10),
-                        errorCodesToAdd: null);
-                }));
+                 options.UseNpgsql(connectionString, npgsqlOptions => {
+                     npgsqlOptions.EnableRetryOnFailure(
+                         maxRetryCount: 5,
+                         maxRetryDelay: TimeSpan.FromSeconds(10),
+                         errorCodesToAdd: null);
+                 }));
 
             // Setup CORS to allow frontend clients
             var clientUrl = builder.Configuration["CLIENT_URL"] ?? "http://localhost:3000";
@@ -107,8 +98,10 @@ namespace server
             // Automatically apply migrations on startup
             try {
                 using (var scope = app.Services.CreateScope()) {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    dbContext.Database.Migrate();
+                    var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
+                    using (var dbContext = dbContextFactory.CreateDbContext()) {
+                        dbContext.Database.Migrate();
+                    }
                 }
 
                 // Seed initial data - for demo
