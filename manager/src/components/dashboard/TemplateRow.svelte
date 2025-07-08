@@ -1,13 +1,14 @@
 <script lang="ts">
 	/**
 	 * @file Reusable component for displaying a template row in the dashboard.
-	 * Renders template details and provides actions like viewing details and deleting.
+	 * Similar to SessionRow, but for templates.
 	 */
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
 	import type { Template } from '$lib/templates/types';
 	import { formatDate } from '$lib/functions/utils';
 	import { toast } from '$lib/stores/toast_store';
+	import { get } from 'svelte/store';
 
 	let {
 		template,
@@ -23,18 +24,29 @@
 	let isMenuOpen = $state(false);
 	let formattedDate = $derived(formatDate(template.dateCreated!));
 
-	function navigateToDetails(): void {
-		goto(`/overview/templates/${template.id}/overview`);
+	function getTemplateDetailsUrl(): string {
+		return `/overview/templates/${template.id}/overview`;
 	}
 
-	// Handler for the "See details" menu item
+	/**
+	 * Navigates to the template details page.
+	 */
+	function navigateToDetails(): void {
+		goto(getTemplateDetailsUrl());
+	}
+
+	/**
+	 * Handler for the "See Details" action in the menu.
+	 */
 	function handleSeeDetails(event: MouseEvent): void {
 		event.stopPropagation();
 		navigateToDetails();
 		isMenuOpen = false;
 	}
 
-	// Handler for the delte item
+	/**
+	 * Handler for the "Delete" action in the menu.
+	 */
 	function handleDelete(event: MouseEvent): void {
 		event.stopPropagation();
 		onDelete(template.id);
@@ -42,7 +54,9 @@
 		isMenuOpen = false;
 	}
 
-	// Toggles the actions menu visibility
+	/**
+	 * Toggles the visibility of the actions menu.
+	 */
 	async function toggleMenu(event: MouseEvent): Promise<void> {
 		event.stopPropagation();
 		isMenuOpen = !isMenuOpen;
@@ -61,7 +75,10 @@
 
 <tr class="template-row">
 	<td class="template-row__cell template-row__cell--title-code">
-		<span class="template-row__title">{template.settings!.title}</span>
+		<span class="template-row__title">
+			<a href={getTemplateDetailsUrl()} class="template-row__link">{template.settings!.title}</a
+			></span
+		>
 		<span class="template-row__code">(#{template.id})</span>
 	</td>
 
@@ -126,6 +143,16 @@
 			display: block;
 			font-weight: $font-weight-medium;
 			color: $color-text-primary;
+		}
+
+		&__link {
+			color: $color-text-primary;
+			text-decoration: none;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
 		}
 		&__code {
 			display: block;
