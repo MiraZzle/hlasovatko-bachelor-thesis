@@ -22,13 +22,15 @@
 		disabled = false,
 		maxLength = 300
 	}: Props = $props();
+
+	const currentAnswerLength = $derived(value?.length ?? 0);
 </script>
 
 <div class="open-ended-input">
 	<TextArea bind:value {placeholder} {disabled} rows={6} />
 	{#if maxLength}
-		<div class="open-ended-input__char-count" class:over-limit={value.length > maxLength}>
-			{value.length} / {maxLength}
+		<div class="open-ended-input__char-count" class:over-limit={currentAnswerLength > maxLength}>
+			{currentAnswerLength} / {maxLength}
 		</div>
 	{/if}
 </div>
