@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * @file Reusable component for displaying a session row in the dashboard.
-	 * Renders session details and provides actions like viewing details and deleting.
+	 * Similar to TemplateRow, but for sessions.
 	 */
 	import { goto } from '$app/navigation';
 	import type { Session } from '$lib/sessions/types';
@@ -23,12 +23,18 @@
 	let isMenuOpen = $state(false);
 	let formattedDate = $derived(formatDate(session.created));
 
-	// Navigate to the session details page
-	function navigateToDetails(): void {
-		goto(`/overview/sessions/${session.id}/overview`);
+	function getSessionDetailsUrl(): string {
+		return `/overview/sessions/${session.id}/overview`;
 	}
 
-	// Handler for see action menu
+	// Navigate to the session details page
+	function navigateToDetails(): void {
+		goto(getSessionDetailsUrl());
+	}
+
+	/**
+	 * Handler for the "See Details" action in the menu.
+	 */
 	function handleSeeDetails(event: MouseEvent): void {
 		event.stopPropagation();
 		navigateToDetails();
@@ -50,7 +56,9 @@
 		isMenuOpen = false;
 	}
 
-	// Handler for delete action in the actions menu
+	/**
+	 * Handler for the "Delete" action in the menu.
+	 */
 	function handleDelete(event: MouseEvent): void {
 		event.stopPropagation();
 		onDelete(session.id);
@@ -67,7 +75,9 @@
 
 <tr class="session-row">
 	<td class="session-row__cell session-row__cell--title-code">
-		<span class="session-row__title">{session.title}</span>
+		<span class="session-row__title">
+			<a href={getSessionDetailsUrl()} class="session-row__link"> {session.title} </a>
+		</span>
 		<span class="session-row__code">({session.joinCode})</span>
 	</td>
 
@@ -138,6 +148,16 @@
 			display: block;
 			font-weight: $font-weight-medium;
 			color: $color-text-primary;
+		}
+
+		&__link {
+			color: $color-text-primary;
+			text-decoration: none;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+			}
 		}
 
 		&__code {
