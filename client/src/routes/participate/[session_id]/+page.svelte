@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * @file Client participation page.
-	 * Implements the full flow for both student- and teacher-paced sessions.
+	 * Implements the full flow for interactive sessions.
 	 */
 	import { onMount, onDestroy } from 'svelte';
 	import { page } from '$app/stores';
@@ -17,8 +17,9 @@
 	import type { ParticipantSessionState } from '$lib/sessions/session_utils';
 	import type { StaticActivityType } from '$lib/activities/types';
 	import { toast } from '$lib/stores/toast_store';
+	import { MANAGER_FE_URL } from '$lib/config';
 
-	const session_id = $page.params.session_id;
+	const sessionId = $page.params.session_id;
 
 	// state management
 	let sessionInfo: Session | null = $state(null);
@@ -28,7 +29,6 @@
 
 	let studentPacedIndex = $state(0);
 	let sessionState: ParticipantSessionState | null = $state(null);
-
 	let submittedAnswers = $state<Record<string, boolean>>({});
 	let isLoading = $state(true);
 	let errorMessage: string | null = $state(null);
@@ -39,6 +39,7 @@
 	let isStudentPaced = $state(false);
 	let hasSubmitted = $state(false);
 	let showResults = $state(true);
+	let allActivitiesDone = $derived(isStudentPaced && studentPacedIndex >= allActivities.length);
 
 	// polling intervals
 	const STATE_POLLING_INTERVAL = 3000;
@@ -47,7 +48,7 @@
 
 	onMount(async () => {
 		try {
-			sessionInfo = await getSessionById(session_id);
+			sessionInfo = await getSessionById(sessionId);
 
 			if (!sessionInfo) {
 				errorMessage = 'Session not found';
@@ -57,19 +58,22 @@
 
 			isStudentPaced = sessionInfo!.mode === 'student-paced';
 
+			if (sessionInfo.status.toLowerCase() !== 'active' && isStudentPaced) {
+				errorMessage = 'This session is not currently active.';
+				isLoading = false;
+				return;
+			}
+
 			try {
-				allActivities = await getActivitiesFromSession(session_id);
-				console.log('These are the activities:', allActivities);
-				console.log(allActivities.length);
+				allActivities = await getActivitiesFromSession(sessionId);
 			} catch (error) {
-				console.error('Failed to fetch activities:', error);
 				errorMessage = 'Could not load activities for this session.';
 				isLoading = false;
 				return;
 			}
 
 			if (isStudentPaced) {
-				sessionState = await getSessionState(session_id);
+				sessionState = await getSessionState(sessionId);
 			} else {
 				pollStateWithJitter();
 			}
@@ -133,10 +137,16 @@
 	});
 
 	/**
+	 * Navigates the user back to the manager page.
+	 */
+	function navigateHome() {
+		window.location.href = MANAGER_FE_URL;
+	}
+	/**
 	 * Fetches the session state
 	 */
 	async function pollStateWithJitter(): Promise<void> {
-		sessionState = await getSessionState(session_id);
+		sessionState = await getSessionState(sessionId);
 
 		const jitter = Math.random() * JITTER_AMOUNT;
 		statePollTimeoutId = setTimeout(pollStateWithJitter, STATE_POLLING_INTERVAL + jitter);
@@ -147,7 +157,7 @@
 	 */
 	async function pollResultsWithJitter(): Promise<void> {
 		if (currentActivity) {
-			currentResults = await getActivityResults(session_id, currentActivity.id);
+			currentResults = await getActivityResults(sessionId, currentActivity.id);
 		}
 
 		const jitter = Math.random() * JITTER_AMOUNT;
@@ -160,7 +170,7 @@
 			activityType: currentActivity!.type as StaticActivityType
 		};
 
-		const success = await submitAnswer(session_id, fullPayload);
+		const success = await submitAnswer(sessionId, fullPayload);
 		if (success) {
 			submittedAnswers = { ...submittedAnswers, [payload.activityId]: true };
 			toast.show('Answer submitted successfully.', 'success');
@@ -170,7 +180,11 @@
 	}
 
 	function goToNext() {
-		if (studentPacedIndex < allActivities.length - 1) studentPacedIndex++;
+		if (studentPacedIndex < allActivities.length) studentPacedIndex++;
+	}
+
+	function goToPrevious() {
+		if (studentPacedIndex > 0) studentPacedIndex--;
 	}
 </script>
 
@@ -186,7 +200,7 @@
 	{:else if sessionInfo}
 		<header class="participate-page__header">
 			<h1 class="participate-page__title">{sessionInfo.title}</h1>
-			{#if isStudentPaced}
+			{#if isStudentPaced && !allActivitiesDone}
 				<p>Activity {studentPacedIndex + 1} of {allActivities.length}</p>
 			{/if}
 		</header>
@@ -198,6 +212,8 @@
 					disabled={hasSubmitted}
 					onSubmit={handleActivitySubmit}
 				/>
+			{:else if allActivitiesDone}
+				<p class="participate-page__message">You have completed all activities! 🎉</p>
 			{:else}
 				<p class="participate-page__message">No activity is currently running.</p>
 			{/if}
@@ -213,11 +229,20 @@
 			</div>
 		{/if}
 
-		{#if isStudentPaced}
+		{#if isStudentPaced && !allActivitiesDone}
 			<footer class="participate-page__footer">
-				<Button onclick={goToNext} disabled={studentPacedIndex >= allActivities.length - 1}
-					>Next</Button
+				<Button onclick={goToPrevious} disabled={studentPacedIndex <= 0} variant={'outline'}
+					>Previous</Button
 				>
+				<Button
+					onclick={goToNext}
+					disabled={studentPacedIndex >= allActivities.length || !hasSubmitted}
+					variant={'outline'}>Next</Button
+				>
+			</footer>
+		{:else if allActivitiesDone}
+			<footer class="participate-page__footer--centered">
+				<Button onclick={navigateHome} variant={'primary'} fullWidth>Go Home</Button>
 			</footer>
 		{/if}
 	{/if}
@@ -257,7 +282,8 @@
 		&__footer {
 			margin-top: 1rem;
 			display: flex;
-			flex-direction: column;
+			flex-direction: row;
+			justify-content: space-between;
 			gap: 1.5rem;
 		}
 	}
