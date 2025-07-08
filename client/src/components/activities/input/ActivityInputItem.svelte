@@ -35,14 +35,14 @@
 				const mcDef = act.definition as MultipleChoiceDefinition;
 				return mcDef?.allowMultipleAnswers ? [] : null;
 			case 'open_ended':
-				return ''; // Initialize as an empty string, not null
+				return '';
 			case 'scale_rating':
 			default:
 				return null;
 		}
 	}
 
-	// Holds user answer
+	// User answer value
 	let value: string | string[] | number | null = $state(getInitialValue(activity));
 
 	/**
@@ -63,7 +63,7 @@
 		return false;
 	});
 
-	// Function to handle the submission of the answer
+	// Handles the submission of the answer
 	function handleSubmit(): void {
 		if (!isSubmittable || disabled || isSubmitting) return;
 
