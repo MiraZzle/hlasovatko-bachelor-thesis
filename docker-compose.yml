@@ -50,7 +50,7 @@ services:
       - ASPNETCORE_URLS=http://+:${BACKEND_PORT}
       - MANAGER_URL=${VITE_MANAGER_URL}
       - CLIENT_URL=${VITE_CLIENT_URL}
-      - ConnectionStrings__DefaultConnection=Host=db;Port=${DB_PORT};Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
       - Jwt__Key=${JWT_SECRET}
       - Jwt__Issuer=${JWT_ISSUER}
       - A_USER_EMAIL=${A_USER_EMAIL}
