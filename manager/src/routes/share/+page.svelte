@@ -36,6 +36,8 @@
 	});
 </script>
 
+<title>EngaGenie | Share Session {sessionId}</title>
+
 <div class="share-page">
 	{#if joinCode}
 		<div class="share-page__container">

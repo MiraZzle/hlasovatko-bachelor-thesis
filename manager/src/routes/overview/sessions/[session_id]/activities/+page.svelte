@@ -9,13 +9,13 @@
 	import type { Activity } from '$lib/activities/types';
 	import { onMount } from 'svelte';
 
-	let session_id = $page.params.session_id;
+	let sessionId = $page.params.session_id;
 
 	let activities = $state<Activity[]>([]);
 
 	onMount(async () => {
 		try {
-			activities = await getActivitiesFromSession(session_id);
+			activities = await getActivitiesFromSession(sessionId);
 		} catch (error) {
 			console.error('Failed to load activities:', error);
 		}
@@ -23,7 +23,7 @@
 </script>
 
 <svelte:head>
-	<title>EngaGenie | Session {session_id} - Activities</title>
+	<title>EngaGenie | Session {sessionId} - Activities</title>
 </svelte:head>
 
 <div class="session-activities-page">
