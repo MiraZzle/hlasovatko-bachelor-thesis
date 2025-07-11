@@ -6,7 +6,7 @@
 
 ## About
 
-A real-time classroom engagement platform for improving and enriching the interaction between teachers and students. The frontend is built using [Svelte](https://svelte.dev/) and [TypeScript](https://www.typescriptlang.org/). The backend is powered by [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) and [C#](https://learn.microsoft.com/en-us/dotnet/csharp/). The platform uses a [PostgreSQL](https://www.postgresql.org/) database, which can be managed with [Adminer](https://www.adminer.org/).
+A near real-time classroom engagement platform for improving and enriching the interaction between teachers and students. The frontend is built using [Svelte](https://svelte.dev/) and [TypeScript](https://www.typescriptlang.org/). The backend is powered by [ASP.NET Core](https://dotnet.microsoft.com/apps/aspnet) and [C#](https://learn.microsoft.com/en-us/dotnet/csharp/). The platform uses a [PostgreSQL](https://www.postgresql.org/) database, which can be managed with [Adminer](https://www.adminer.org/).
 
 ## Running Locally
 
@@ -22,29 +22,33 @@ cd hlasovatko-bachelor-thesis
 Next, create a `.env` file in the root of the project with the following content (or just rename the file `.env.example` to `.env`):
 
 ```env
+# Port mappings
 CLIENT_PORT=3000
 MANAGER_PORT=3001
 BACKEND_PORT=5000
 DB_PORT=5432
 ADMINER_PORT=8085
 
+# URLs for services
 VITE_BACKEND_URL=http://localhost/server
-VITE_MANAGER_URL=http://localhost/
+VITE_MANAGER_URL=http://localhost
 VITE_CLIENT_URL=http://localhost/engage
 
-#At least 16 characters
-JWT_SECRET=ABCDEFGHIJKLMNOPQRSTUVWXYZ
+# JWT config - used for auth
+JWT_SECRET=3i6IyOHQPGT24Zpuv0yqI8QZoKAtS2Gl
 JWT_EXPIRATION=1h
 JWT_ISSUER=http://localhost/server
 
+# PostgreSQL login credentials
 DB_USER=postgres
 DB_PASSWORD=1234
 DB_NAME=engagenie
 
-# Initial user login credentials - used for demonstration purposes
+# Initial user login credentials - used for demo purposes
 A_USER_EMAIL=admin@example.com
 A_USER_PASSWORD=admin123456
 A_USER_NAME="Admin Veliky"
+
 ```
 
 Finally, run the following commands to build and start the application:
@@ -62,6 +66,16 @@ The applications will be available at the following URLs:
 - **Backend API:** [http://localhost/server](http://localhost/server)
 - **Adminer (DB UI):** [http://localhost:8085](http://localhost:8085)
 
+## Registering New Users
+
+Use the `register_user.sh` script to quickly register a user via the API:
+
+```bash
+./register_user.sh "User Name" "email@example.com" "password123"
+```
+
+> Run with --help or -h flag to see usage instructions.
+
 ## Testing
 
 This project uses [xUnit](https://xunit.net/) for Server unit testing.
@@ -78,6 +92,8 @@ dotnet test
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Commit messages should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
 
 ## License
 

@@ -22,23 +22,23 @@
 		activationDate?: string;
 	};
 
-	let session_id = $page.params.session_id;
+	let sessionId = $page.params.session_id;
 
 	let sessionDetails: SessionDetails | null = $state(null);
 	let isLoading = $state(true);
 	let error: string | null = $state(null);
 	let notification = $state('');
-	let manageUrl = $state(getManageSessionLink(session_id));
+	let manageUrl = $state(getManageSessionLink(sessionId));
 
 	// Fetch data when the component is first mounted
 	onMount(() => {
 		async function loadSessionData() {
 			isLoading = true;
 			try {
-				const sessionInfo = await getSessionById(session_id);
+				const sessionInfo = await getSessionById(sessionId);
 
 				if (!sessionInfo) {
-					throw new Error(`The session with ID '${session_id}' could not be found.`);
+					throw new Error(`The session with ID '${sessionId}' could not be found.`);
 				}
 
 				// Map data to the shape our component needs
@@ -48,8 +48,8 @@
 					status: sessionInfo.status,
 					createdDate: sessionInfo.created,
 					joinCode: sessionInfo.joinCode,
-					manageLink: getManageSessionLink(session_id),
-					participateLink: getParticipateSessionLink(session_id, sessionInfo.joinCode || ''),
+					manageLink: getManageSessionLink(sessionId),
+					participateLink: getParticipateSessionLink(sessionId, sessionInfo.joinCode || ''),
 					activationDate: sessionInfo.activationDate
 				};
 			} catch (err: any) {
@@ -100,14 +100,14 @@
 			return;
 		}
 
-		const url = `/share?id=${session_id}&code=${sessionDetails.joinCode}`;
+		const url = `/share?id=${sessiosessionIdn_id}&code=${sessionDetails.joinCode}`;
 		window.open(url, '_blank', 'noopener,noreferrer');
 		toast.show(`Join info opened!`, `info`);
 	}
 </script>
 
 <svelte:head>
-	<title>EngaGenie | Session {session_id} - Overview</title>
+	<title>EngaGenie | Session {sessionId} - Overview</title>
 </svelte:head>
 
 {#if sessionDetails}
@@ -157,7 +157,7 @@
 	<div class="session-not-found">
 		<h2 class="session-not-found__title">Session Not Found</h2>
 		<p class="session-not-found__message">
-			The session with ID '{session_id}' could not be found.
+			The session with ID '{sessionId}' could not be found.
 		</p>
 		<Button href="/dashboard">Go to Dashboard</Button>
 	</div>

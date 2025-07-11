@@ -19,7 +19,7 @@
 	import { getActivityBank } from '$lib/activities/activity_utils';
 	import { toast } from '$lib/stores/toast_store';
 
-	let template_id = $page.params.template_id;
+	let templateId = $page.params.template_id;
 	let activitiesFromBank = $state<Activity[]>([]);
 
 	// State management
@@ -44,7 +44,7 @@
 		isLoading = true;
 		error = null;
 		try {
-			const data = await getTemplateById(template_id);
+			const data = await getTemplateById(templateId);
 			if (!data) {
 				throw new Error('Template not found.');
 			}
@@ -141,7 +141,7 @@
 
 		try {
 			const updatedTemplateObject: Template = JSON.parse(templateJsonString);
-			const result = await updateTemplate(template_id, updatedTemplateObject);
+			const result = await updateTemplate(templateId, updatedTemplateObject);
 
 			if (!result) {
 				throw new Error('Server returned an error on save.');
@@ -160,7 +160,7 @@
 </script>
 
 <svelte:head>
-	<title>EngaGenie | Template {template_id} - Overview</title>
+	<title>EngaGenie | Template {templateId} - Overview</title>
 </svelte:head>
 
 <div class="template-overview-page">

@@ -19,7 +19,7 @@ namespace server.Tests
         [Fact]
         public async Task RegenerateKeyAsync_ShouldCreateNewApiKey() {
             // Arrange
-            using var context = new AppDbContext(_dbOptions);
+            await using var context = new AppDbContext(_dbOptions);
             var apiKeyService = new ApiKeyService(context);
             var user = new User { Id = Guid.NewGuid(), Email = "apikey@example.com", Name = "Neopatrny Pan", PasswordHash = "somehash" };
             context.Users.Add(user);
@@ -37,7 +37,7 @@ namespace server.Tests
         [Fact]
         public async Task GetUserFromApiKeyAsync_WithValidKey_ShouldReturnUser() {
             // Arrange
-            using var context = new AppDbContext(_dbOptions);
+            await using var context = new AppDbContext(_dbOptions);
             var apiKeyService = new ApiKeyService(context);
             var user = new User { Id = Guid.NewGuid(), Email = "getuser@example.com", Name = "Chci Jmeno", PasswordHash = "anotherhash" };
             context.Users.Add(user);

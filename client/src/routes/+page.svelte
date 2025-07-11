@@ -16,14 +16,14 @@
 	</div>
 
 	<h1 class="join-session-page__title">Join a Session</h1>
-	<p class="join-session-page__instructions">Enter the join code provided by your instructor.</p>
+	<p class="join-session-page__instructions">Enter the join code provided by your teacher.</p>
 
 	<div class="join-session-page__component-wrapper">
 		<JoinSession />
 	</div>
 
 	<p class="join-session-page__alternative-link">
-		Are you an instructor? <a href="{MANAGER_FE_URL}/login">Log in here</a>.
+		Are you an teacher? <a href="{MANAGER_FE_URL}/login">Sign in here</a>.
 	</p>
 </div>
 

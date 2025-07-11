@@ -45,9 +45,6 @@
 			<nav class="navbar__nav">
 				<ul class="navbar__list">
 					<li class="navbar__item">
-						<a href="#features" class="navbar__link" onclick={handleNavLinkClick}>Features</a>
-					</li>
-					<li class="navbar__item">
 						<a href="/guide" class="navbar__link" onclick={handleNavLinkClick}>Guide</a>
 					</li>
 					<li class="navbar__item">
@@ -63,7 +60,7 @@
 			</nav>
 
 			<div class="navbar__actions">
-				<Button variant="primary" onclick={handleLogin}>Log In</Button>
+				<Button variant="primary" onclick={handleLogin}>Sign In</Button>
 			</div>
 		</div>
 	</div>

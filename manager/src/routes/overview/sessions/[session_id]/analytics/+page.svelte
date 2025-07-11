@@ -9,12 +9,12 @@
 	import type { ActivityResult, StaticActivityType } from '$lib/activities/types';
 	import { onMount } from 'svelte';
 
-	let session_id = $page.params.session_id;
+	let sessionId = $page.params.session_id;
 	let activitiesWithResults: ActivityResult[] = $state<ActivityResult[]>([]);
 
 	onMount(async () => {
 		try {
-			activitiesWithResults = await getActivityResultsForSession(session_id);
+			activitiesWithResults = await getActivityResultsForSession(sessionId);
 			console.log('Loaded activity results:', activitiesWithResults);
 		} catch (error) {
 			console.error('Failed to load activity results:', error);
@@ -23,7 +23,7 @@
 </script>
 
 <svelte:head>
-	<title>EngaGenie | Session {session_id} - Analytics</title>
+	<title>EngaGenie | Session {sessionId} - Analytics</title>
 </svelte:head>
 
 <div class="session-analytics-page">

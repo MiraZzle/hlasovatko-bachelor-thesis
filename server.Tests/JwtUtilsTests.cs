@@ -12,8 +12,8 @@ namespace server.Tests
         private readonly IConfiguration _configuration;
 
         public JwtUtilsTests() {
-            var inMemorySettings = new Dictionary<string, string> {
-            {"Jwt:Key", "ThisIsAValidKeyForTesting123456!"},
+            var inMemorySettings = new Dictionary<string, string?> {
+            {"Jwt:Key", "G9EFySswrArNZfXNGOJFo89mXlcI9zc9!"},
             {"Jwt:Issuer", "TestIssuer"},
         };
 

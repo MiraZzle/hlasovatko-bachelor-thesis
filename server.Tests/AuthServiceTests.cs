@@ -20,9 +20,9 @@ namespace server.Tests
                 .UseInMemoryDatabase(databaseName: "TestAuthDb")
                 .Options;
 
-            // Create in-mem db for configuration
-            var inMemorySettings = new Dictionary<string, string> {
-            {"Jwt:Key", "YourSuperSecretKeyForTesting123!"},
+            // Setup inmem db for config
+            var inMemorySettings = new Dictionary<string, string?> {
+            {"Jwt:Key", "G9EFySswrArNZfXNGOJFo89mXlcI9zc9!"},
             {"Jwt:Issuer", "TestIssuer"},
         };
 
@@ -34,7 +34,7 @@ namespace server.Tests
         [Fact]
         public async Task RegisterAsync_ShouldCreateUser() {
             // Arrange
-            using var context = new AppDbContext(_dbOptions);
+            await using var context = new AppDbContext(_dbOptions);
             var authService = new AuthService(context, _configuration);
             var registerDto = new RegisterRequestDto { Email = "test@example.com", Name = "Uzivatel Skvely", Password = "password123" };
 
@@ -51,7 +51,7 @@ namespace server.Tests
         [Fact]
         public async Task LoginAsync_WithValidCredentials_ShouldReturnAuthResponse() {
             // Arrange
-            using var context = new AppDbContext(_dbOptions);
+            await using var context = new AppDbContext(_dbOptions);
             var authService = new AuthService(context, _configuration);
             var passwordHash = BCrypt.Net.BCrypt.HashPassword("password123");
             var user = new User { Email = "login@example.com", Name = "Uzivatel Skvely", PasswordHash = passwordHash };
@@ -70,11 +70,11 @@ namespace server.Tests
         [Fact]
         public async Task LoginAsync_WithInvalidCredentials_ShouldThrowException() {
             // Arrange
-            using var context = new AppDbContext(_dbOptions);
+            await using var context = new AppDbContext(_dbOptions);
             var authService = new AuthService(context, _configuration);
             var loginDto = new LoginRequestDto { Email = "neexistuju@example.com", Password = "wrongpassword" };
 
-            // AA: Act + Assert
+            // Act and Assert
             await Assert.ThrowsAsync<Exception>(() => authService.LoginAsync(loginDto));
         }
     }

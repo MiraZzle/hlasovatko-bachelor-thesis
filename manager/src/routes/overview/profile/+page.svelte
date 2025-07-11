@@ -282,7 +282,7 @@
 	</section>
 
 	<section class="profile-page__section profile-page__section--logout">
-		<Button variant="danger" onclick={handleLogout}>Log Out</Button>
+		<Button variant="danger" onclick={handleLogout}>Sign Out</Button>
 	</section>
 </div>
 
