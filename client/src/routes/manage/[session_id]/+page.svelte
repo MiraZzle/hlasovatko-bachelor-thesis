@@ -20,8 +20,9 @@
 	import type { Session } from '$lib/sessions/types';
 	import { get } from 'svelte/store';
 	import { toast } from '$lib/stores/toast_store';
+	import { MANAGER_FE_URL } from '$lib/config';
 
-	const session_id = $page.params.session_id;
+	const sessionId = $page.params.session_id;
 
 	// state management
 	let session = $state<Session | null>(null);
@@ -40,7 +41,7 @@
 
 	// polling
 	let resultsPollTimeoutId: any;
-	const RESULTS_POLLING_INTERVAL = 3000; // we can tinker with this - perhaps lower it?
+	const RESULTS_POLLING_INTERVAL = 3000; // We can tinker with this - perhaps lower it?
 	const JITTER_AMOUNT = 1000;
 
 	onMount(async () => {
@@ -50,9 +51,9 @@
 	async function loadInitialData() {
 		isLoading = true;
 		try {
-			session = await getSessionById(session_id);
+			session = await getSessionById(sessionId);
 			if (session) {
-				activities = await getActivitiesFromSession(session_id);
+				activities = await getActivitiesFromSession(sessionId);
 				currentIndex = session.currentActivity ?? 0;
 			}
 		} catch (error) {
@@ -69,7 +70,7 @@
 	$effect(() => {
 		currentActivity = activities[currentIndex];
 
-		//update the left panel
+		// Update the left panel
 		upcomingActivities = activities.slice(currentIndex + 1);
 		completedActivities = activities.slice(0, currentIndex);
 
@@ -90,7 +91,7 @@
 	async function pollResultsWithJitter(): Promise<void> {
 		if (!currentActivity) return;
 
-		currentActivityResult = await getActivityResults(session_id, currentActivity.id);
+		currentActivityResult = await getActivityResults(sessionId, currentActivity.id);
 
 		const jitter = Math.random() * JITTER_AMOUNT;
 		resultsPollTimeoutId = setTimeout(pollResultsWithJitter, RESULTS_POLLING_INTERVAL + jitter);
@@ -104,7 +105,7 @@
 		isAdvancing = true;
 
 		try {
-			const updatedSession = await nextActivity(session_id);
+			const updatedSession = await nextActivity(sessionId);
 			if (updatedSession) {
 				session = updatedSession;
 				currentIndex = updatedSession.currentActivity ?? currentIndex;
@@ -115,6 +116,10 @@
 		} finally {
 			isAdvancing = false;
 		}
+	}
+
+	function navigateToManager() {
+		window.location.href = MANAGER_FE_URL + `/overview/sessions/${sessionId}/overview`;
 	}
 </script>
 
@@ -144,6 +149,7 @@
 {:else}
 	<div class="live-session-page">
 		<header class="live-session-page__top-bar">
+			<Button variant="outline" onclick={navigateToManager}>Go Home</Button>
 			<Button variant="primary" onclick={advanceToNext} disabled={isAdvancing || sessionFinished}>
 				{advanceButtonText}
 			</Button>
@@ -235,7 +241,9 @@
 
 		&__top-bar {
 			display: flex;
+			flex-wrap: wrap;
 			justify-content: space-between;
+			gap: $spacing-sm;
 			align-items: center;
 			padding: $spacing-md $spacing-lg;
 			background-color: $color-surface;
@@ -247,11 +255,16 @@
 		}
 
 		&__main-grid {
-			display: grid;
-			grid-template-columns: 1fr;
+			display: flex;
+			flex-direction: column;
 			gap: $spacing-lg;
 			padding: $spacing-lg;
 			flex-grow: 1;
+
+			@media (min-width: $breakpoint-sm) {
+				display: grid;
+				grid-template-columns: 1fr;
+			}
 
 			@media (min-width: $breakpoint-lg) {
 				grid-template-columns: 350px 1fr;
