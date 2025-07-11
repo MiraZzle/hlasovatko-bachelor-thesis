@@ -100,7 +100,7 @@
 			return;
 		}
 
-		const url = `/share?id=${sessiosessionIdn_id}&code=${sessionDetails.joinCode}`;
+		const url = `/share?id=${sessionId}&code=${sessionDetails.joinCode}`;
 		window.open(url, '_blank', 'noopener,noreferrer');
 		toast.show(`Join info opened!`, `info`);
 	}
