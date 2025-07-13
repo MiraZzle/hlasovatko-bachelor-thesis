@@ -71,8 +71,10 @@ The applications will be available at the following URLs:
 Use the `register_user.sh` script to quickly register a user via the API:
 
 ```bash
-./register_user.sh "User Name" "email@example.com" "password123"
+./register_user.sh "User Name" "email@example.com"
 ```
+
+The password is entered securely after running the script.
 
 > Run with --help or -h flag to see usage instructions.
 

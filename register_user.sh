@@ -6,19 +6,18 @@ API_URL="http://localhost/server/api/v1/auth/register"
 # Display usage information for the script
 show_help() {
   cat << EOF
-Usage: $0 "User Name" <email> <password>
-Registers a new user for the EngaGenie platform by sending a request to the API.
+Usage: $0 "User Name" <email>
+Registers a new user for the EngaGenie platform by prompting for a password.
 
 Arguments:
   "User Name"   The full name of the user (must be enclosed in quotes).
   email         The user's email address.
-  password      The user's password (at least 6 chars).
 
 Options:
   -h, --help    Display this help message and exit.
 
 Example:
-  $0 "Clovek Uzasny" "clovek.uzasny@example.com" "secretPassword123"
+  $0 "Clovek Uzasny" "clovek.uzasny@example.com"
 EOF
 }
 
@@ -28,14 +27,17 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   exit 0
 fi
 
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 2 ]; then
   show_help
   exit 1
 fi
 
 NAME=$1
 EMAIL=$2
-PASSWORD=$3
+
+# Prompt for the password securely
+read -sp "Enter Password: (at least 6 chars long): " PASSWORD
+echo
 
 JSON_PAYLOAD=$(cat <<EOF
 {
