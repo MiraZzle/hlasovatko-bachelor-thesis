@@ -41,7 +41,7 @@
 	let selectedTemplateId = $state<string>('');
 	let sessionTitle = $state<string>('');
 	let isSubmitting = $state(false);
-	let activationDate = $state<string>(''); // For YYYY-MM-DD format from <input type="date">
+	let activationDate = $state<string>('');
 	let sessionMode = $state<SessionMode>('teacher-paced');
 	let planSession = $state(false);
 
@@ -62,12 +62,13 @@
 
 	const todayString = new Date().toISOString().split('T')[0];
 
-	// Auto-fill session title based on selected template
+	// Autofill session title based on selected template
 	$effect(() => {
 		if (selectedTemplateId) {
 			const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
 			if (selectedTemplate) {
 				sessionTitle = selectedTemplate.title;
+				sessionMode = selectedTemplate.defaultPacing || 'teacher-paced';
 			}
 		} else {
 			sessionTitle = '';

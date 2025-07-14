@@ -44,7 +44,8 @@
 		// Map the full Template objects to TemplateStub objects for the modal
 		availableTemplates = templatesData.map((t) => ({
 			id: t.id,
-			title: t.settings?.title ?? 'Untitled Template'
+			title: t.settings?.title ?? 'Untitled Template',
+			defaultPacing: (t.settings?.sessionPacing as SessionMode) || 'teacher-paced'
 		}));
 
 		sessions = sessionsData;
