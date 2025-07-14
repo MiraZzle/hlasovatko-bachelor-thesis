@@ -23,7 +23,7 @@
 		>
 			<span class="toaster__icon">{toastDetails[t.type].icon}</span>
 			<p class="toaster__message">{t.message}</p>
-			<button class="toaster__close-button" on:click={() => toast.remove(t.id)} aria-label="Close">
+			<button class="toaster__close-button" onclick={() => toast.remove(t.id)} aria-label="Close">
 				<span>&times;</span>
 			</button>
 		</div>
@@ -35,7 +35,7 @@
 		position: fixed;
 		bottom: 1rem;
 		right: 1rem;
-		z-index: 100;
+		z-index: $toast-z-index;
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
@@ -48,7 +48,6 @@
 			min-width: 280px;
 			max-width: 350px;
 
-			/* New subtle styling */
 			color: $color-text-primary;
 			background-color: rgba($color-surface, 0.85);
 			backdrop-filter: blur(5px);

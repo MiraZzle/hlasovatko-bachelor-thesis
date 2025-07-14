@@ -116,3 +116,7 @@ $transition-duration-fast: 150ms;
 $transition-duration-base: 300ms;
 $transition-duration-slow: 500ms;
 $transition-timing-function: ease-in-out;
+
+// Z-index
+$modal-z-index: 1000;
+$toast-z-index: 1100;
