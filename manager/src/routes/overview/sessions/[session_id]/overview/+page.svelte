@@ -65,7 +65,6 @@
 
 	// Icons
 	const IconCopy = () => '📄';
-	const IconLink = () => '🔗';
 
 	// Copy join code to clipboard
 	function copyJoinCode() {
@@ -103,6 +102,16 @@
 		const url = `/share?id=${sessionId}&code=${sessionDetails.joinCode}`;
 		window.open(url, '_blank', 'noopener,noreferrer');
 		toast.show(`Join info opened!`, `info`);
+	}
+
+	function openManagePage(): void {
+		if (!manageUrl) {
+			toast.show(`Manage link is not available.`, `error`);
+			return;
+		}
+
+		window.open(manageUrl, '_blank', 'noopener,noreferrer');
+		toast.show(`Manage page opened!`, `info`);
 	}
 </script>
 
@@ -142,7 +151,7 @@
 					</button>
 				</div>
 				<div class="info-card__join-group">
-					<Button href={manageUrl} variant="primary" fullWidth>Manage Session</Button>
+					<Button onclick={openManagePage} variant="primary" fullWidth>Manage Session</Button>
 				</div>
 				<div class="info-card__join-group">
 					<Button onclick={openSharePage} variant="secondary" fullWidth>Open Join Info</Button>

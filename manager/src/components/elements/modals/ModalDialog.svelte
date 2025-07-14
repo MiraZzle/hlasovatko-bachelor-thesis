@@ -122,7 +122,7 @@
 		&__overlay {
 			position: fixed;
 			inset: 0;
-			z-index: 1000;
+			z-index: $modal-z-index;
 			background-color: rgba(0, 0, 0, 0.35);
 			backdrop-filter: blur(3px);
 			display: flex;

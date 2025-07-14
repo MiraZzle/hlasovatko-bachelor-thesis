@@ -4,6 +4,7 @@ import type { Activity } from '$lib/activities/types';
 export interface TemplateStub {
 	id: string;
 	title: string;
+	defaultPacing?: SessionMode;
 }
 
 export interface Template {

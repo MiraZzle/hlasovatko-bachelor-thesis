@@ -8,9 +8,9 @@
 	import Input from '$components/elements/typography/Input.svelte';
 	import TextArea from '$components/elements/typography/utils/TextArea.svelte';
 	import type { SelectOption } from '$lib/shared_types';
-	import type { NewActivityData } from '$lib/activities/types';
-	import type { StaticActivityType } from '$lib/activities/types';
+	import type { NewActivityData, StaticActivityType } from '$lib/activities/types';
 	import { toast } from '$lib/stores/toast_store';
+	import { writable } from 'svelte/store';
 
 	let {
 		open = $bindable(false),
@@ -18,7 +18,7 @@
 		onclose = () => {
 			open = false;
 		},
-		onAdd = async (data) => {
+		onAdd = async (data: NewActivityData) => {
 			console.warn('onAdd handler not provided', data);
 		}
 	}: {
@@ -28,45 +28,59 @@
 		onAdd?: (data: NewActivityData) => void | Promise<void>;
 	} = $props();
 
+	// Store for boilerplate activity definitions
+	const activityBoilerplates = writable<Record<StaticActivityType, object>>({
+		multiple_choice: {
+			options: [{ id: '1', text: 'Option 1' }],
+			allowMultipleAnswers: false,
+			correctOptionId: '1'
+		},
+		poll: { options: [{ id: '1', text: 'Option A' }] },
+		scale_rating: { min: 1, max: 5, minLabel: 'Min', maxLabel: 'Max' },
+		open_ended: { placeholder: 'Enter your answer...' },
+		custom_activity: {}
+	});
+
 	let title = $state('');
 	let selectedActivityType = $state<StaticActivityType>('multiple_choice');
 	let activityDefinition = $state('');
 	let categoriesString = $state('');
 	let isSubmitting = $state(false);
 
-	// Function to derive activity type options from the provided activityTypes
 	function getActivityTypeOptions(): SelectOption[] {
 		return [{ value: '', label: 'Select activity type...' }, ...activityTypes];
 	}
 
 	const activityTypeOptions = $derived(getActivityTypeOptions());
 
+	// Reset modal state when opened
 	$effect(() => {
 		if (open) {
 			title = '';
 			selectedActivityType = 'multiple_choice';
-			activityDefinition = '';
 			categoriesString = '';
 			isSubmitting = false;
 		}
 	});
 
-	/**
-	 * Handles the form submission to add a new activity.
-	 * Validates input and calls the onAdd callback with the new activity data.
-	 */
+	// Update the definition when activity type changes
+	$effect(() => {
+		if (selectedActivityType && open) {
+			const boilerplate = $activityBoilerplates[selectedActivityType];
+			activityDefinition = JSON.stringify(boilerplate, null, 2);
+		}
+	});
+
 	async function handleSubmit(): Promise<void> {
 		if (!title.trim() || !selectedActivityType) {
 			toast.show('Please provide a title and select an activity type.', 'error');
 			return;
 		}
-		if (activityDefinition.trim()) {
-			try {
-				JSON.parse(activityDefinition);
-			} catch (e) {
-				toast.show('Activity definition does not seem to be valid JSON.', 'error');
-				return;
-			}
+		try {
+			JSON.parse(activityDefinition);
+		} catch (e) {
+			toast.show('Activity definition does not seem to be valid JSON.', 'error');
+			return;
 		}
 
 		if (isSubmitting) return;
@@ -83,6 +97,7 @@
 				definition: JSON.parse(activityDefinition),
 				tags: categories
 			});
+			toast.show(`Activity ${title} added successfully!`, 'success');
 			requestClose();
 		} catch (err) {
 			console.error('Error adding activity:', err);
@@ -108,12 +123,12 @@
 <ModalDialog bind:open {onclose} width="md" {titleId} {descriptionId}>
 	<h2 id={titleId} class="add-activity-modal__title">Add activity to bank</h2>
 	<p id={descriptionId} class="add-activity-modal__description">
-		Create new activity to reuse later.
+		Create a new activity to reuse later.
 	</p>
 
 	<form onsubmit={handleSubmit} class="add-activity-modal__form">
 		<Input
-			label="Title"
+			label="Title (Question)"
 			id="activity-title-modal"
 			bind:value={title}
 			required
@@ -131,14 +146,23 @@
 			width="full"
 		/>
 
-		<TextArea
-			label="Activity Definition (JSON)"
-			id="activity-definition-modal"
-			bind:value={activityDefinition}
-			placeholder="Predefined activity JSON..."
-			rows={6}
-			disabled={isSubmitting}
-		/>
+		<div>
+			<TextArea
+				label="Activity Definition (JSON)"
+				id="activity-definition-modal"
+				bind:value={activityDefinition}
+				placeholder="Predefined activity JSON..."
+				rows={8}
+				disabled={isSubmitting}
+			/>
+			<p class="add-activity-modal__definition-guide">
+				For more information on the expected JSON structure, please see the <a
+					href="/guide"
+					target="_blank"
+					rel="noopener noreferrer">API Guide</a
+				>.
+			</p>
+		</div>
 
 		<Input
 			label="Categories"
@@ -182,6 +206,21 @@
 			display: flex;
 			flex-direction: column;
 			gap: $spacing-lg;
+		}
+
+		&__definition-guide {
+			font-size: $font-size-sm;
+			color: $color-text-secondary;
+			margin-top: $spacing-sm;
+			text-align: left;
+
+			a {
+				color: $color-primary;
+				text-decoration: none;
+				&:hover {
+					text-decoration: underline;
+				}
+			}
 		}
 
 		&__actions {
