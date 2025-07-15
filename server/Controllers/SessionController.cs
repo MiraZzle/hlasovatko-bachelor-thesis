@@ -42,7 +42,8 @@ namespace server.Controllers
         }
 
         /// <summary>
-        /// Gets the current state of a session for a participant. Requires a valid Participant token.
+        /// Gets the current state of a session for a participant. 
+        /// Requires a valid Participant token.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
         /// <returns>
@@ -72,6 +73,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Deletes a session owned by the current user.
+        /// Requires authenticated user access.
         /// </summary>
         /// <param name="id">The session id.</param>
         /// <returns>
@@ -93,6 +95,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Creates a new session from a template.
+        /// Requires authenticated user access.
         /// </summary>
         /// <param name="request">The session creation details.</param>
         /// <returns>
@@ -114,6 +117,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Gets all sessions owned by the current user.
+        /// Requires authenticated user access.
         /// </summary>
         /// <returns>
         /// 200 OK with a list of sessions.
@@ -128,6 +132,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Gets all sessions created from a specific template for the current user.
+        /// Requires authenticated user access.
         /// </summary>
         /// <param name="templateId">The template id.</param>
         /// <returns>
@@ -186,6 +191,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Starts a session owned by the current user.
+        /// Requires authenticated user access.
         /// </summary>
         /// <param name="id">The session id.</param>
         /// <returns>
@@ -202,6 +208,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Stops a session owned by the current user.
+        /// Requires authenticated user access.
         /// </summary>
         /// <param name="id">The session id.</param>
         /// <returns>
@@ -218,6 +225,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Advances the session to the next activity.
+        /// Requires authenticated user access.
         /// </summary>
         /// <param name="id">The session id.</param>
         /// <returns>

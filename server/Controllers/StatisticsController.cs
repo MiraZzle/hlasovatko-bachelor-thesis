@@ -10,6 +10,7 @@ namespace server.Controllers
 {
     /// <summary>
     /// Controller for any kind of stats.
+    /// Requires authenticated user access.
     /// </summary>
     [ApiController]
     [Route("api/v1/statistics")]

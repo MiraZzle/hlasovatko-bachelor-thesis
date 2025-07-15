@@ -9,6 +9,7 @@ namespace server.Controllers
 {
     /// <summary>
     /// Controller for managing templates. Requires authenticated users.
+    /// Requires authenticated user access.
     /// </summary>
     [Route("api/v1/template")]
     [ApiController]
