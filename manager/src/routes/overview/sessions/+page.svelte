@@ -27,7 +27,7 @@
 	let sessions = $state<Session[]>([]);
 	let isLoading = $state(true);
 
-	// Define columns for the DataTable
+	// Columns for the DataTable
 	const columns: ColumnHeader<Session>[] = [
 		{ key: 'title', label: 'Title', sortable: true },
 		{ key: 'created', label: 'Created', sortable: true },
@@ -36,7 +36,7 @@
 		{ key: 'id', label: 'Actions', sortable: false }
 	];
 
-	// Fetch data when the component mounts
+	// Fetch data on mount
 	onMount(async () => {
 		isLoading = true;
 		const [templatesData, sessionsData] = await Promise.all([getAllTemplates(), getAllSessions()]);

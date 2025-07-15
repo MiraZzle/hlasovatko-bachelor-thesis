@@ -57,7 +57,7 @@
 	}
 
 	/**
-	 * Handler for the "Delete" action in the menu.
+	 * Handler for the delete action in the menu.
 	 */
 	function handleDelete(event: MouseEvent): void {
 		event.stopPropagation();

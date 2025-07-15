@@ -86,6 +86,7 @@
 		return path.split('.').reduce((o, k) => (o ? o[k] : undefined), obj as any);
 	}
 
+	// Sort items whenever the items, sortKey, or sortDirection changes
 	$effect(() => {
 		if (!sortKey) {
 			sortedItems = [...items];

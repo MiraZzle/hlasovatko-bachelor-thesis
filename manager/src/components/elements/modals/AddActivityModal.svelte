@@ -159,7 +159,7 @@
 				For more information on the expected JSON structure, please see the <a
 					href="/guide"
 					target="_blank"
-					rel="noopener noreferrer">API Guide</a
+					rel="noopener noreferrer">Guide</a
 				>.
 			</p>
 		</div>
