@@ -11,7 +11,7 @@ namespace server.Extensions
     public static class ControllerExtensions
     {
         /// <summary>
-        /// Gets the current authenticated user's ID from the JWT token claims.
+        /// Gets the current authenticated users ID from the JWT token claims.
         /// </summary>
         public static Guid GetCurrentUserId(this ControllerBase controller) {
             var userIdClaim = controller.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

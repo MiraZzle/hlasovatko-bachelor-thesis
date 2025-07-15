@@ -76,6 +76,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Retrieves all answers for a specific session for the current user.
+        /// Requires the user to be authenticated.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
         /// <returns>
@@ -91,6 +92,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Retrieves all answers for a specific activity within a session for the current user.
+        /// Requires the user to be authenticated.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
         /// <param name="activityId">The activity id.</param>
@@ -107,6 +109,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Retrieves aggregated results for all activities in a session for the current user.
+        /// Requires the user to be authenticated.
         /// </summary>
         /// <param name="sessionId">The session id.</param>
         /// <returns>

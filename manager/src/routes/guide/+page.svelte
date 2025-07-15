@@ -13,11 +13,6 @@
 <div class="page-wrapper">
 	<Navbar />
 	<main class="about-page">
-		<h1 class="about-page__title">About EngaGenie</h1>
-		<p class="about-page__text">
-			EngaGenie is an open-source platform designed to facilitate interactive learning experiences
-		</p>
-
 		<section class="about-page__section">
 			<h2 class="about-page__subtitle">Supported Activity Types</h2>
 			<p class="about-page__text">The platform supports the following activity types:</p>
@@ -30,31 +25,9 @@
 		</section>
 
 		<section class="about-page__section">
-			<h2 class="about-page__subtitle">How to add an activity to the Bank</h2>
-			<p class="about-page__text">
-				The "Activity bank" is user personal collection of reusable activities. To add a new one:
-			</p>
-			<ol class="about-page__steps">
-				<li class="about-page__step">
-					Navigate to the <a href="/overview/activity-bank"> Activity Bank </a> after logging in.
-				</li>
-				<li class="about-page__step">
-					Click the "Add Activity" button to open the creation modal.
-				</li>
-				<li class="about-page__step">
-					Fill in the required fields: give your activity a title, select its type, and provide the
-					specific JSON definition for it.
-				</li>
-				<li class="about-page__step">
-					Click Save to add the activity to your bank for future use in templates.
-				</li>
-			</ol>
-		</section>
-
-		<section class="about-page__section">
 			<h2 class="about-page__subtitle">Activity JSON Schemas</h2>
 			<p class="about-page__text">
-				Each activity type has a specific JSON schema that defines itss structure. The schemas are
+				Each activity type has a specific JSON schema that defines its structure. The schemas are
 				used to validate the activity definitions when creating new activities.
 			</p>
 			{#each data.activitySchemas as { type, schema }}
@@ -125,7 +98,6 @@
 			font-size: 1rem;
 
 			&::before {
-				content: '✓';
 				position: absolute;
 				left: 0;
 				color: $color-primary;

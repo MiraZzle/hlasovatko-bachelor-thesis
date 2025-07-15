@@ -43,7 +43,7 @@ namespace server.Utils
         }
 
         /// <summary>
-        /// Generates a short-lived JWT token for an anonymous session participant.
+        /// Generates a JWT token for anonymous session participant.
         /// </summary>
         public static string GenerateParticipantToken(Guid sessionId, Guid participantId, IConfiguration configuration) {
             var jwtKey = configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured.");

@@ -16,7 +16,6 @@ namespace server.Data
         /// </summary>
         /// <param name="app">The host app.</param>
         public static async Task SeedAdminUserAsync(IHost app) {
-            // Need to create a scope to resolve services
             using var scope = app.Services.CreateScope();
             var serviceProvider = scope.ServiceProvider;
             var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
@@ -36,7 +35,7 @@ namespace server.Data
                     return;
                 }
 
-                // Check for existence
+                // Check for user's existence
                 if (!await context.Users.AnyAsync(u => u.Email == email)) {
                     var registerDto = new RegisterRequestDto {
                         Email = email,
@@ -72,7 +71,6 @@ namespace server.Data
         /// </summary>
         /// <returns>A list of ActivityRequestDtos.</returns>
         private static List<ActivityRequestDto> GetInitialActivities() {
-
             // Helper method for creating jsonelem from an object
             JsonElement ToJsonElement(object obj) {
                 var jsonString = JObject.FromObject(obj).ToString();

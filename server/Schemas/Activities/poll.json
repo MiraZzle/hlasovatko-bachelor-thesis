@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://yourdomain.com/schemas/poll.json",
+  "$id": "https://raw.githubusercontent.com/MiraZzle/hlasovatko-bachelor-thesis/main/server/Schemas/Activities/poll.json",
   "title": "Poll Activity",
   "description": "Schema for a simple poll with multiple options.",
   "type": "object",

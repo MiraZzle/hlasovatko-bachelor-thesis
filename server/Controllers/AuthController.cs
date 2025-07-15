@@ -26,6 +26,7 @@ namespace server.Controllers
 
         /// <summary>
         /// Registers a new user with the provided details.
+        /// Allows anonymous access for user registration.
         /// </summary>
         /// <returns>
         /// 201 Created with the new user ID, name, email if succsful.<br/>

@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://yourdomain.com/schemas/scale_rating_answer.json",
+  "$id": "https://raw.githubusercontent.com/MiraZzle/hlasovatko-bachelor-thesis/main/server/Schemas/Answers/scale_rating_answer.json",
   "title": "Scale Rating Activity Answer",
   "description": "Schema for an answer to a scale rating activity.",
   "type": "object",

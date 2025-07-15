@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://yourdomain.com/schemas/open_ended_answer.json",
+  "$id": "https://raw.githubusercontent.com/MiraZzle/hlasovatko-bachelor-thesis/main/server/Schemas/Answers/open_ended_answer.json",
   "title": "Open-Ended Activity Answer",
   "description": "Schema for an answer to an open-ended question.",
   "type": "object",

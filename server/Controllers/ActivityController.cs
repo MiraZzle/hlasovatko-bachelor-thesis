@@ -9,6 +9,7 @@ namespace server.Controllers
 {
     /// <summary>
     /// Controller for handling activity bank operations.
+    /// Requires authenticated user access.
     /// </summary>
     [Route("api/v1/activity-bank")]
     [ApiController]

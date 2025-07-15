@@ -1,12 +1,11 @@
 /** @type {import('./$types').PageLoad} */
 export const load = () => {
-	// Possible API call to get the schemas??
 	const activitySchemas = [
 		{
 			type: 'Multiple Choice',
 			schema: `{
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://yourdomain.com/schemas/multiple_choice.json",
+  "$id": "https://raw.githubusercontent.com/MiraZzle/hlasovatko-bachelor-thesis/main/server/Schemas/Activities/multiple_choice.json",
   "title": "Multiple Choice Activity",
   "description": "Schema for a multiple-choice question activity.",
   "type": "object",
@@ -53,7 +52,7 @@ export const load = () => {
 			type: 'Poll',
 			schema: `{
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://yourdomain.com/schemas/poll.json",
+  "$id": "https://raw.githubusercontent.com/MiraZzle/hlasovatko-bachelor-thesis/main/server/Schemas/Activities/poll.json",
   "title": "Poll Activity",
   "description": "Schema for a simple poll with multiple options.",
   "type": "object",
@@ -85,7 +84,7 @@ export const load = () => {
 			type: 'Scale Rating',
 			schema: `{
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://yourdomain.com/schemas/scale_rating.json",
+  "$id": "https://raw.githubusercontent.com/MiraZzle/hlasovatko-bachelor-thesis/main/server/Schemas/Activities/scale_rating.json",
   "title": "Scale Rating Activity",
   "description": "Schema for an activity where users provide a rating on a numerical scale.",
   "type": "object",
@@ -114,7 +113,7 @@ export const load = () => {
 			type: 'Open-Ended',
 			schema: `{
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://yourdomain.com/schemas/open_ended.json",
+  "$id": "https://raw.githubusercontent.com/MiraZzle/hlasovatko-bachelor-thesis/main/server/Schemas/Activities/open_ended.json",
   "title": "Open-Ended Activity",
   "description": "Schema for an activity where users provide a text-based answer.",
   "type": "object",

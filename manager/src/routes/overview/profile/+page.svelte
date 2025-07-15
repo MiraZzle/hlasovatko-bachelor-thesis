@@ -29,7 +29,7 @@
 		partialApiKey: ''
 	});
 
-	// State variables for password change
+	// State management for password change
 	let currentPassword = $state('');
 	let newPassword = $state('');
 	let confirmPassword = $state('');

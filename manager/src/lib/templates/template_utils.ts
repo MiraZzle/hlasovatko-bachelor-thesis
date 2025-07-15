@@ -37,8 +37,8 @@ interface ActivityResponse {
 function mapResponseToTemplate(t: TemplateResponse): Template {
 	return {
 		id: t.id,
-		ownerId: '', // Not provided by the API, can be added if needed
-		version: 1, // Not provided by the API, can be added if needed
+		ownerId: '',
+		version: 1,
 		dateCreated: t.dateCreated,
 		settings: {
 			title: t.title,
