@@ -27,16 +27,15 @@ namespace server.Services.Analytics
 
             if (_processors.TryGetValue(activity.ActivityType, out var processor)) {
                 try {
-                    // Attempt to process the results using the found strategy.
                     return processor.Process(activity.Definition, answers);
                 }
                 catch (Exception ex) {
-                    // If any processor fails, log the specific error and return a structured error message.
-                    return JsonSerializer.SerializeToElement(new { error = $"Could not process results for activity type '{activity.ActivityType}'. Please check activity definition and answer format.", details = ex.Message });
+                    return JsonSerializer.SerializeToElement(new { error = $"Could not process results for activity type '{activity.ActivityType}'.", 
+                        details = ex.Message });
                 }
             }
 
-            // Fallback for any unregistered activity types
+            // Fallback for unknown activity types
             return JsonSerializer.SerializeToElement(new List<object>());
         }
     }

@@ -30,19 +30,16 @@ namespace server.Services.Background
 
         private async Task ActivatePlannedSessions() {
             using (var scope = _serviceProvider.CreateScope()) {
-                _logger.LogInformation("Checking for planned sessions to activate...");
                 var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 var sessionService = scope.ServiceProvider.GetRequiredService<ISessionService>();
 
-                // Get planned sessions that are due for activation
+                // Get planned sessions for activation
                 var sessionsToActivate = await dbContext.Sessions
                     .Where(s => s.Status == SessionStatus.Planned && s.ActivationDate.HasValue && s.ActivationDate.Value <= DateTime.UtcNow)
                     .Include(s => s.Template)
                     .ToListAsync();
 
                 if (sessionsToActivate.Any()) {
-                    _logger.LogInformation($"Found {sessionsToActivate.Count} sessions to activate");
-
                     foreach (var session in sessionsToActivate) {
                         try {
                             await sessionService.StartSessionAsync(session.Id, session.Template.OwnerId);
