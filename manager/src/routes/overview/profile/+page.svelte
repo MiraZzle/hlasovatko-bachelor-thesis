@@ -40,6 +40,7 @@
 	let isRegeneratingKey = $state(false);
 	let apiKeyError = $state<string | null>(null);
 	let copySuccessMessage = $state<string | null>(null);
+	let showRegenerateInfo = $state(false);
 
 	/*
 	 * Get the current user from localStorage and initialize the component.
@@ -91,6 +92,7 @@
 		}
 		if (newPassword !== confirmPassword) {
 			passwordUpdateError = 'New passwords do not match.';
+			toast.show(passwordUpdateError, 'error');
 			return;
 		}
 
@@ -100,6 +102,7 @@
 			let success = await changePassword(currentPassword, newPassword);
 			if (!success) {
 				passwordUpdateError = 'Password change failed. Please check your current password.';
+				toast.show(passwordUpdateError, 'error');
 				isUpdatingPassword = false;
 				return;
 			} else {
@@ -108,6 +111,7 @@
 		} catch (error) {
 			console.error('Password change failed:', error);
 			passwordUpdateError = 'Failed to update password. Please try again.';
+			toast.show(passwordUpdateError, 'error');
 			isUpdatingPassword = false;
 			return;
 		}
@@ -139,10 +143,7 @@
 		try {
 			await navigator.clipboard.writeText(currentUser.apiKey);
 			copySuccessMessage = 'API Key copied!';
-			await tick();
-			setTimeout(() => {
-				copySuccessMessage = null;
-			}, 2500);
+			toast.show(copySuccessMessage, 'info');
 		} catch (err) {
 			toast.show('Failed to copy API Key to clipboard.', 'error');
 		}
@@ -154,12 +155,14 @@
 		isRegeneratingKey = true;
 		apiKeyError = null;
 		copySuccessMessage = null;
+		showRegenerateInfo = false;
 
 		try {
 			const newKey = await regenerateApiKey();
 			currentUser.apiKey = newKey;
 			currentUser.partialApiKey = await getPartialApiKey();
 			isApiKeyVisible = true;
+			showRegenerateInfo = true;
 
 			toast.show('API Key regenerated! Copy it now – it will not be shown again!', 'info');
 		} catch (e) {
@@ -260,9 +263,9 @@
 				Copy
 			</Button>
 		</div>
-		{#if copySuccessMessage}
-			<p class="profile-card__message profile-card__message--success api-key-display__copy-success">
-				{copySuccessMessage}
+		{#if showRegenerateInfo}
+			<p class="api-key-info-message">
+				Important: Copy your new API key now. You won't be able to see it again!
 			</p>
 		{/if}
 
@@ -434,5 +437,14 @@
 		border-top: none;
 		padding-top: 0;
 		margin-top: $spacing-md;
+	}
+
+	.api-key-info-message {
+		font-size: $font-size-sm;
+		color: $color-primary-dark;
+		padding: $spacing-sm;
+		border-radius: $border-radius-sm;
+		background-color: rgba($color-primary-light, 0.2);
+		text-align: center;
 	}
 </style>
