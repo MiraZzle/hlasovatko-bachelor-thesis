@@ -12,7 +12,7 @@ services:
     ports:
       - "${CLIENT_PORT}:3000"
     environment:
-      - PORT=${CLIENT_PORT}
+      - PORT=3000
       - VITE_BACKEND_URL=${VITE_BACKEND_URL}
       - VITE_MANAGER_URL=${VITE_MANAGER_URL}
       - VITE_CLIENT_URL=${VITE_CLIENT_URL}
@@ -30,7 +30,7 @@ services:
     ports:
       - "${MANAGER_PORT}:3001"
     environment:
-      - PORT=${MANAGER_PORT}
+      - PORT=3001
       - VITE_BACKEND_URL=${VITE_BACKEND_URL}
       - VITE_CLIENT_URL=${VITE_CLIENT_URL}
       - VITE_MANAGER_URL=${VITE_MANAGER_URL}
@@ -47,7 +47,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      - ASPNETCORE_URLS=http://+:${BACKEND_PORT}
+      # - ASPNETCORE_URLS=http://+:${BACKEND_PORT}
+      - ASPNETCORE_URLS=http://+:5000
       - MANAGER_URL=${VITE_MANAGER_URL}
       - CLIENT_URL=${VITE_CLIENT_URL}
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}
