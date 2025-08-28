@@ -9,6 +9,7 @@
 	import { formatDate } from '$lib/functions/utils';
 	import { toast } from '$lib/stores/toast_store';
 	import { get } from 'svelte/store';
+	import { base } from '$app/paths';
 
 	let {
 		template,
@@ -25,7 +26,7 @@
 	let formattedDate = $derived(formatDate(template.dateCreated!));
 
 	function getTemplateDetailsUrl(): string {
-		return `/overview/templates/${template.id}/overview`;
+		return `${base}/overview/templates/${template.id}/overview`.replace(/\/{2,}/g, '/');
 	}
 
 	/**

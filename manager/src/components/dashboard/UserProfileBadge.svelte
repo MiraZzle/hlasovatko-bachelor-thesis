@@ -6,6 +6,7 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { logout } from '$lib/auth/auth';
+	import { base } from '$app/paths';
 
 	let {
 		initials = 'XY',
@@ -52,14 +53,14 @@
 	}
 
 	function goToProfile(): void {
-		goto('/overview/profile');
+		goto(`${base}/overview/profile`);
 		closeDropdown();
 	}
 
 	function handleSignOut(): void {
 		logout();
 		closeDropdown();
-		goto('/');
+		goto(base);
 	}
 
 	onMount(() => {
