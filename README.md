@@ -33,6 +33,7 @@ ADMINER_PORT=8085
 VITE_BACKEND_URL=http://localhost/server
 VITE_MANAGER_URL=http://localhost
 VITE_CLIENT_URL=http://localhost/engage
+VITE_MANAGER_BASE_PATH=/hlasovatko
 
 # JWT config - used for auth
 JWT_SECRET=3i6IyOHQPGT24Zpuv0yqI8QZoKAtS2Gl

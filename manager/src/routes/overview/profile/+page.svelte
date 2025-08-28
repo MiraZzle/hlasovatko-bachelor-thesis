@@ -12,6 +12,7 @@
 	import { getInitials } from '$lib/functions/utils';
 	import type { User } from '$lib/auth/types';
 	import { toast } from '$lib/stores/toast_store';
+	import { base } from '$app/paths';
 
 	type CurrentUser = User & {
 		initials: string;
@@ -122,7 +123,7 @@
 
 	function handleLogout() {
 		logout();
-		goto('');
+		goto(base);
 	}
 
 	/**
