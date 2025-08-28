@@ -10,6 +10,7 @@
 	import { getSessionById } from '$lib/sessions/session_utils';
 	import { getParticipateSessionLink, getManageSessionLink } from '$lib/router/external_routes';
 	import { toast } from '$lib/stores/toast_store';
+	import { base } from '$app/paths';
 
 	type SessionDetails = {
 		title: string;
@@ -99,7 +100,7 @@
 			return;
 		}
 
-		const url = `/share?id=${sessionId}&code=${sessionDetails.joinCode}`;
+		const url = `${base}/share?id=${sessionId}&code=${sessionDetails.joinCode}`;
 		window.open(url, '_blank', 'noopener,noreferrer');
 		toast.show(`Join info opened!`, `info`);
 	}
@@ -168,7 +169,7 @@
 		<p class="session-not-found__message">
 			The session with ID '{sessionId}' could not be found.
 		</p>
-		<Button href="/dashboard">Go to Dashboard</Button>
+		<Button href="overview/sessions">Go to Dashboard</Button>
 	</div>
 {/if}
 

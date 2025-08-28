@@ -157,7 +157,7 @@
 			/>
 			<p class="add-activity-modal__definition-guide">
 				For more information on the expected JSON structure, please see the <a
-					href="/guide"
+					href="guide"
 					target="_blank"
 					rel="noopener noreferrer">Guide</a
 				>.

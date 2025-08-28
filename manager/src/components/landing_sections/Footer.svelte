@@ -10,7 +10,7 @@
 <footer class="app-footer">
 	<div class="app-footer__container page-container">
 		<div class="app-footer__brand">
-			<a href="/" class="app-footer__logo" aria-label="Homepage">EngaGenie</a>
+			<a href="." class="app-footer__logo" aria-label="Homepage">EngaGenie</a>
 			<p class="app-footer__copy">&copy; {currentYear} EngaGenie. All rights reserved.</p>
 		</div>
 

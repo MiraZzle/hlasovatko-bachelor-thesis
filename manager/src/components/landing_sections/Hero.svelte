@@ -14,8 +14,8 @@
 			A university-focused interactive platform for quizzes, polls, live Q&A sessions.
 		</p>
 		<div class="hero-section__actions">
-			<Button variant="secondary" href="/guide">Get Started</Button>
-			<Button variant="primary" href="/login">Create Session</Button>
+			<Button variant="secondary" href="guide">Get Started</Button>
+			<Button variant="primary" href="login">Create Session</Button>
 		</div>
 	</div>
 </section>

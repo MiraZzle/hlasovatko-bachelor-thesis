@@ -50,7 +50,7 @@
 		const raw = localStorage.getItem('user');
 		if (!raw) {
 			console.warn('User not found in localStorage');
-			goto('/login');
+			goto('login');
 			return;
 		}
 
@@ -122,7 +122,7 @@
 
 	function handleLogout() {
 		logout();
-		goto('/');
+		goto('');
 	}
 
 	/**

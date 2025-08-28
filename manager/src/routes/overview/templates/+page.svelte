@@ -69,7 +69,7 @@
 		if (newTemplate) {
 			toast.show(`Template "${newTemplate.settings!.title}" created successfully!`, 'success');
 			templates.push(newTemplate);
-			await goto(`/overview/templates/${newTemplate.id}/overview`);
+			await goto(`overview/templates/${newTemplate.id}/overview`);
 		} else {
 			toast.show('Failed to create template.', 'error');
 		}

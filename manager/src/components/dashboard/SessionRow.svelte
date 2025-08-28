@@ -9,6 +9,7 @@
 	import { onDestroy } from 'svelte';
 	import { formatDate } from '$lib/functions/utils';
 	import { toast } from '$lib/stores/toast_store';
+	import { base } from '$app/paths';
 
 	let {
 		session,
@@ -24,7 +25,7 @@
 	let formattedDate = $derived(formatDate(session.created));
 
 	function getSessionDetailsUrl(): string {
-		return `/overview/sessions/${session.id}/overview`;
+		return `${base}/overview/sessions/${session.id}/overview`.replace(/\/{2,}/g, '/');
 	}
 
 	// Navigate to the session details page

@@ -18,13 +18,13 @@
 	}
 
 	function handleLogin(): void {
-		window.location.href = '/login';
+		window.location.href = 'login';
 	}
 </script>
 
 <header class="navbar" class:navbar--menu-open={isMenuOpen}>
 	<div class="navbar__inner page-container">
-		<a href="/" class="navbar__logo" aria-label="Homepage" onclick={handleNavLinkClick}>
+		<a href="." class="navbar__logo" aria-label="Homepage" onclick={handleNavLinkClick}>
 			EngaGenie
 		</a>
 
@@ -45,7 +45,7 @@
 			<nav class="navbar__nav">
 				<ul class="navbar__list">
 					<li class="navbar__item">
-						<a href="/guide" class="navbar__link" onclick={handleNavLinkClick}>Guide</a>
+						<a href="guide" class="navbar__link" onclick={handleNavLinkClick}>Guide</a>
 					</li>
 					<li class="navbar__item">
 						<a

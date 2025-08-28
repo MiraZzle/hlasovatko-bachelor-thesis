@@ -27,7 +27,7 @@
 			const success = await login(email, password);
 
 			if (success) {
-				await goto('/overview/templates');
+				await goto('overview/templates');
 			} else {
 				error = 'Invalid email or password. Please try again.';
 			}
@@ -39,7 +39,7 @@
 	}
 
 	function goToSignUp(): void {
-		goto('/signup');
+		goto('signup');
 	}
 </script>
 

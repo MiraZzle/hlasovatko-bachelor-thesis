@@ -4,6 +4,7 @@
 	 * Dynamically generates main navigation links and sublinks based on current page context.
 	 */
 	import { page } from '$app/stores';
+	import { base } from '$app/paths';
 
 	interface NavLink {
 		href: string;
@@ -22,7 +23,7 @@
 	const IconProfile = '👤';
 	const IconSettings = '⚙️';
 
-	const OVERVIEW_BASE_PATH = '/overview';
+	const OVERVIEW_BASE_PATH = 'overview';
 
 	/*
 	 * Dynamically generates the main navigation links for the dashboard sidebar.
@@ -51,8 +52,8 @@
 			}
 		];
 
-		// Register "my templates" sublibks
-		if (currentTemplateId && $page.url.pathname.startsWith(`${OVERVIEW_BASE_PATH}/templates/`)) {
+		// Register "my templates" sublinks
+		if (currentTemplateId && $page.url.pathname.includes(`${OVERVIEW_BASE_PATH}/templates/`)) {
 			const templateLinkIndex = links.findIndex(
 				(link) => link.href === `${OVERVIEW_BASE_PATH}/templates`
 			);
@@ -79,7 +80,7 @@
 		}
 
 		// Register "my sessions" sublinks
-		if (currentSessionId && $page.url.pathname.startsWith(`${OVERVIEW_BASE_PATH}/sessions/`)) {
+		if (currentSessionId && $page.url.pathname.includes(`${OVERVIEW_BASE_PATH}/sessions/`)) {
 			const sessionLinkIndex = links.findIndex(
 				(link) => link.href === `${OVERVIEW_BASE_PATH}/sessions`
 			);
@@ -116,24 +117,26 @@
 	 * @returns True if the current page matches the href, false otherwise.
 	 */
 	function isActive(href: string, isParent = false): boolean {
-		const currentPath = $page.url.pathname;
+		const target = (base + '/' + href).replace(/\/{2,}/g, '/'); // absolutní odkaz s base
+		const current = $page.url.pathname.replace(/\/+$/, ''); // aktuální URL bez koncového /
+
 		if (isParent) {
-			return currentPath === href || currentPath.startsWith(href + '/');
+			return current === target || current.startsWith(target + '/');
 		} else {
-			return currentPath === href;
+			return current === target;
 		}
 	}
 </script>
 
 <aside class="sidebar">
-	<a href="/" class="sidebar__logo" aria-label="Homepage"> EngaGenie </a>
+	<a href={base} class="sidebar__logo" aria-label="Homepage"> EngaGenie </a>
 
 	<nav class="sidebar__nav sidebar__nav--main" aria-label="Main">
 		<ul>
 			{#each mainNavLinks as link (link.href)}
 				<li class="sidebar__item">
 					<a
-						href={link.href}
+						href={base + '/' + link.href}
 						class="sidebar__link"
 						class:sidebar__link--active={isActive(link.href, true)}
 						aria-current={isActive(link.href, true) ? 'page' : undefined}
@@ -147,7 +150,7 @@
 							{#each link.subLinks as subLink (subLink.href)}
 								<li class="sidebar__subitem">
 									<a
-										href={subLink.href}
+										href={base + '/' + subLink.href}
 										class="sidebar__sublink"
 										class:sidebar__sublink--active={isActive(subLink.href)}
 										aria-current={isActive(subLink.href) ? 'page' : undefined}
