@@ -1,9 +1,10 @@
-import adapter from '@sveltejs/adapter-auto';
+// import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import adapter from '@sveltejs/adapter-node';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
