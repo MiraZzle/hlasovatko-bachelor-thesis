@@ -22,4 +22,4 @@ RUN pnpm build
 ENV PORT=3000
 EXPOSE 3000
 
-CMD ["sh", "-c", "pnpm preview --host --port $PORT"]
+CMD ["node", "build"]
